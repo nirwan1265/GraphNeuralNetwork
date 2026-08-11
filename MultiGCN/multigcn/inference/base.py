@@ -23,7 +23,12 @@ class BaseRunner(abc.ABC):
                  time_series: Optional[Path] = None):
         self.spec = spec
         self.params = params or {}
-        self.time_series = Path(time_series) if time_series else None
+        # Resolve to absolute. RScriptRunner executes with cwd set to the
+        # scripts directory so wrappers can source their siblings, which means
+        # a relative path handed in here resolves against the wrong directory.
+        # Python runners inherit the caller's cwd, so this failed for R
+        # algorithms only - a confusing asymmetry.
+        self.time_series = Path(time_series).resolve() if time_series else None
 
     @property
     def params_json(self) -> str:
