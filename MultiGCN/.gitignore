@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+multigcn_output/
+multigcn/inference/scripts/r/*.R
+multigcn/inference/scripts/python/*.py
+multigcn/inference/scripts/r/MEOMI_src/
+!multigcn/inference/scripts/**/.gitkeep
