@@ -299,6 +299,10 @@ register(AlgorithmSpec(
         "alpha": ParamSpec("alpha", "from_data", str,
                            help="Degradation rate: 'from_data' or a positive number."),
         "nthreads": ParamSpec("nthreads", 1, int, minimum=1),
+        "source_path": ParamSpec("source_path", "", str,
+                                 help="Path to the dynGENIE3 clone's "
+                                      "dynGENIE3_python directory, if not on "
+                                      "sys.path or in DYNGENIE3_PATH."),
     },
     notes="TIME SERIES REQUIRED. Models dY/dt, so steady-state data alone will "
           "not run. Optionally accepts steady-state data *in addition* via "
@@ -367,14 +371,19 @@ register(AlgorithmSpec(
                             "what makes the output continuous - see notes."),
         "restart": ParamSpec("restart", 0, int, minimum=0,
                              help="Random restarts for hc/tabu."),
-        "cluster": ParamSpec("cluster", 1, int, minimum=1,
-                             help="Parallel workers via the parallel package."),
+        "cluster": ParamSpec("cluster", 0, int, minimum=0,
+                             help="Parallel workers. 0 = auto (all cores but "
+                                  "one, leaving the machine usable); 1 = "
+                                  "serial. Near-linear speedup, no effect on "
+                                  "results."),
     },
     notes="Runs boot.strength(), NOT a single structure fit. A single fit returns "
           "a DAG - binary edges - which is useless to a pipeline that ranks by "
           "continuous confidence. Bootstrap model averaging yields edge strengths "
           "in [0,1]. Score is combined as strength * direction so the output is "
-          "directed.",
+          "directed. BY FAR the slowest algorithm here: R complete structure "
+          "searches, each scoring ~n^2 candidate arcs. Time a small bnlearn_R "
+          "first and extrapolate before committing to the full run.",
 ))
 
 # --------------------------------------------------------------------------
