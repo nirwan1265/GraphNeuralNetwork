@@ -21,8 +21,10 @@ from multigcn.data.dream4 import summarise, to_time_series
 DATA = Path("~/Documents/Github/GraphNeuralNetwork/data/Database.DREAM4"
             ).expanduser()
 EXP = DATA / "EXP" / "dream4_100_03_exp.csv"
+GS = DATA / "GS" / "dream4_100_03_gs.csv"
 
-# Tier 1: pip only. arboreto is the single dependency.
+# Tier 1: pip only. No R, no Docker, no arboreto - GENIE3/GRNBOOST2 are
+# implemented natively on scikit-learn.
 PYTHON_TIER = ["GENIE3_RF", "GENIE3_ET", "GRNBOOST2"]
 
 # Tier 2: + R packages, steady-state only (no time-series file needed).
@@ -39,7 +41,9 @@ def main():
     ap.add_argument("--tier", default="python",
                     choices=["python", "r", "timeseries", "all"])
     ap.add_argument("--exp", type=Path, default=EXP)
-    ap.add_argument("--gold-standard", type=Path, default=None)
+    ap.add_argument("--gold-standard", type=Path, default=GS,
+                    help="genes x genes matrix or 3-column edge list; "
+                         "format is auto-detected")
     ap.add_argument("--output", type=Path, default=Path("dream4_net3_out"))
     ap.add_argument("--top-x", type=float, default=0.10)
     ap.add_argument("--epochs", type=int, default=300)
@@ -68,17 +72,28 @@ def main():
         "all": PYTHON_TIER + R_TIER + TIME_SERIES_TIER,
     }[args.tier]
 
+    # Only pass parameters for algorithms actually in this run. The package
+    # now warns rather than crashes on the rest, but keeping this conditional
+    # means no spurious warnings on the common tiers.
+    extra = {}
+    if any(m.startswith("GENIE3") or m == "GRNBOOST2" for m in methods):
+        extra["genie3_ntrees"] = 1000
+    if "SWING" in methods:
+        extra["swing_source_path"] = str(
+            Path("~/Documents/Github/SWING").expanduser())
+    if "DYNGENIE3" in methods:
+        extra["dyngenie3_source_path"] = str(
+            Path("~/Documents/Github/dynGENIE3/dynGENIE3_python").expanduser())
+    if "DYNUGENE" in methods:
+        extra["dynugene_ntree"] = 500
+
     model = MultiGCN(
         methods=methods,
         top_x=args.top_x,
         epochs=args.epochs,
         iterations=args.iterations,
         output_dir=str(args.output),
-        genie3_ntrees=1000,
-        swing_source_path=str(Path("~/Documents/Github/SWING").expanduser()),
-        dyngenie3_source_path=str(
-            Path("~/Documents/Github/dynGENIE3/dynGENIE3_python").expanduser()),
-        dynugene_ntree=500,
+        **extra,
     )
     print(model.plan(), "\n")
 

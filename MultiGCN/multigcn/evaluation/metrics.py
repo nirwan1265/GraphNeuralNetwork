@@ -49,11 +49,45 @@ def binary_metrics(predicted: np.ndarray, truth: np.ndarray) -> Dict[str, float]
 
 
 def load_gold_standard(path, genes) -> np.ndarray:
+    """
+    Load a gold standard, accepting either layout DREAM ships:
+
+      matrix     genes x genes, first column and header row are gene ids
+                 (this is what data/Database.DREAM4/GS/*.csv uses)
+      edge list  headerless source,target,label - label 0/1
+
+    Detected from the file rather than configured, because getting it wrong is
+    silent: an edge list parsed as a matrix yields an all-zero truth and an
+    AUPR of 0 that looks like a modelling failure.
+    """
     import pandas as pd
+
+    path = str(path)
+    index = {g: i for i, g in enumerate(genes)}
+    mat = np.zeros((len(genes), len(genes)), dtype=np.int8)
+
+    head = pd.read_csv(path, sep=None, engine="python", nrows=1, header=None)
+
+    # A matrix has one column per gene (plus the label column); an edge list
+    # has exactly three.
+    if head.shape[1] > 3:
+        df = pd.read_csv(path, sep=None, engine="python", index_col=0)
+        missing = [g for g in genes if g not in df.index or g not in df.columns]
+        if missing:
+            raise ValueError(
+                f"Gold-standard matrix at {path} is missing {len(missing)} "
+                f"gene(s) present in the expression data, e.g. {missing[:5]}."
+            )
+        sub = df.loc[genes, genes].to_numpy()
+        return (sub > 0).astype(np.int8)
+
     df = pd.read_csv(path, sep=None, engine="python", header=None,
                      names=["source", "target", "label"])
-    index = {g: i for i, g in enumerate(genes)}
     df = df[(df["label"] > 0) & df["source"].isin(index) & df["target"].isin(index)]
-    mat = np.zeros((len(genes), len(genes)), dtype=np.int8)
+    if df.empty:
+        raise ValueError(
+            f"No positive edges in {path} matched the expression genes. "
+            "Check that gene names agree between the two files."
+        )
     mat[df["source"].map(index), df["target"].map(index)] = 1
     return mat

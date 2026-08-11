@@ -1,0 +1,7 @@
+Condition	Fraction	N_total	N_selected	Min_N_Phenotypes	Median_N_Phenotypes	Max_N_Phenotypes
+CTL	0.05	1165	59	11	27	64
+CTL	0.1	1165	117	10	11	64
+CTL	0.2	1165	233	9	10	64
+LIN	0.05	4323	217	5	6	20
+LIN	0.1	4323	433	3	5	20
+LIN	0.2	4323	865	2	3	20

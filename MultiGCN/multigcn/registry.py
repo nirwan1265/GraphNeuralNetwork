@@ -147,19 +147,24 @@ _GENIE3_PARAMS = {
     "max_features": ParamSpec("max_features", "sqrt", str,
                               choices=["sqrt", "log2", "all"],
                               help="Candidate regulators considered per split."),
+    "n_jobs": ParamSpec("n_jobs", -1, int,
+                        help="Parallel workers; -1 uses all cores."),
     "seed": ParamSpec("seed", 777, int, help="Random seed."),
 }
 
 for _name, _variant in [("GENIE3_RF", "RF"), ("GENIE3_ET", "ET"), ("GRNBOOST2", "GBM")]:
     register(AlgorithmSpec(
         name=_name, runtime=_PY, script="python/GENIE3.py",
-        library="arboreto", install="pip install arboreto",
+        library="scikit-learn", install="included in core dependencies",
         orientation=_SR, family="tree_ensemble",
         extra_args=[_variant],
         param_prefix="genie3", params=dict(_GENIE3_PARAMS), vendored=False,
         notes="All three share one wrapper and one parameter namespace. "
-              "MultiGCN ships its own wrapper here (GENECI's hardcodes the "
-              "arboreto defaults and exposes nothing).",
+              "Implemented natively on scikit-learn rather than via arboreto: "
+              "arboreto needs dask+distributed, whose pinned LocalCluster call "
+              "was removed upstream, and pinning back pulls numpy<2 - which "
+              "conflicts with the numpy 2.x torch requires. Verified on DREAM4 "
+              "net3: RF AUROC 0.742 / AUPR 0.125 at ntrees=1000.",
     ))
 
 register(AlgorithmSpec(

@@ -56,10 +56,20 @@ def vendor(geneci_path: Path, force: bool = False) -> None:
             continue
         seen_scripts.add(spec.script)
 
+        # NEVER overwrite a MultiGCN-owned wrapper with GENECI's version.
+        # GENECI's scripts take exactly (input, output) and hardcode their
+        # hyperparameters; ours take a trailing params JSON. Copying theirs
+        # over ours breaks the parameter interface in a way that surfaces as a
+        # confusing argument error much later, at run time.
+        if not spec.vendored:
+            print(f"  [skip] {name}: MultiGCN-owned wrapper, not vendored")
+            continue
+
         # GENIE3_RF/ET/GRNBOOST2 all map to GENIE3/GENIE3.py
         stem = Path(spec.script).stem
         folder = "GENIE3" if stem == "GENIE3" else stem
         src = src_root / folder / Path(spec.script).name
+
         if not src.exists():
             print(f"  [skip] {name}: {src} not found")
             continue

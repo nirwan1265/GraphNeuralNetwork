@@ -5,8 +5,29 @@ build/
 dist/
 .pytest_cache/
 .coverage
+.DS_Store
 multigcn_output/
-multigcn/inference/scripts/r/*.R
-multigcn/inference/scripts/python/*.py
+dream4_net3_out/
+
+# Vendored third-party wrappers only.
+#
+# These are copied from GENECI by `python -m multigcn.inference.vendor` and are
+# not ours to redistribute in this repo. Listed by exact filename on purpose:
+# a blanket `scripts/r/*.R` also excludes MultiGCN's OWN wrappers, which then
+# vanish on a fresh clone and get silently replaced by GENECI's incompatible
+# versions during vendoring.
+multigcn/inference/scripts/r/ARACNE.R
+multigcn/inference/scripts/r/BC3NET.R
+multigcn/inference/scripts/r/C3NET.R
+multigcn/inference/scripts/r/CLR.R
+multigcn/inference/scripts/r/KBOOST.R
+multigcn/inference/scripts/r/LEAP.R
+multigcn/inference/scripts/r/MEOMI.R
+multigcn/inference/scripts/r/MRNET.R
+multigcn/inference/scripts/r/MRNETB.R
+multigcn/inference/scripts/r/PCIT.R
+multigcn/inference/scripts/r/TIGRESS.R
+multigcn/inference/scripts/r/functions.R
 multigcn/inference/scripts/r/MEOMI_src/
-!multigcn/inference/scripts/**/.gitkeep
+multigcn/inference/scripts/python/INFERELATOR.py
+multigcn/inference/scripts/python/NONLINEARODES.py

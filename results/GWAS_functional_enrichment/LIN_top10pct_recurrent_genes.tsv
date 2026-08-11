@@ -1,0 +1,434 @@
+GeneID	Condition	GeneName	Family_SubFamily	Protein_class	Best_P_Value	Max_N_Phenotypes	TraitLayers
+SORBI_3004G004800	LIN	Soluble acid invertase	OS02G0106100 PROTEIN (PTHR31953:SF42)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G005200	LIN	TMPIT-like protein	OS02G0106800 PROTEIN (PTHR21433:SF4)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G005300	LIN	Protein kinase domain-containing protein	OS02G0106900 PROTEIN (PTHR27001:SF522)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G005700	LIN	Peptidase S1 domain-containing protein	PEPTIDASE S1 DOMAIN-CONTAINING PROTEIN (PTHR18868:SF28)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G006400	LIN	Cytochrome P450	CYTOCHROME P450 89A2 (PTHR24298:SF892)	oxygenase(PC00177)	2.605726e-21	20	individual;sumratio
+SORBI_3004G006500	LIN	Uncharacterized protein	PROTEIN ROH1A (PTHR31509:SF68)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G006600	LIN	JmjC domain-containing protein	LYSINE-SPECIFIC DEMETHYLASE JMJ25 (PTHR12549:SF11)	histone modifying enzyme(PC00261)	2.605726e-21	20	individual;sumratio
+SORBI_3004G006700	LIN	Uncharacterized protein	OS02G0109800 PROTEIN (PTHR46284:SF9)	microtubule binding motor protein(PC00156)	2.605726e-21	20	individual;sumratio
+SORBI_3004G006800	LIN	Uncharacterized protein	DENEDDYLASE (PTHR35694:SF1)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G006900	LIN	F-box domain-containing protein	F-BOX PROTEIN INTERACTION DOMAIN CONTAINING PROTEIN, EXPRESSED (PTHR47993:SF359)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G006966	LIN	Uncharacterized protein	DENEDDYLASE (PTHR35694:SF1)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G007032	LIN	Uncharacterized protein	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G007100	LIN	Uncharacterized protein	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G007133	LIN	FACT complex subunit	FACT COMPLEX SUBUNIT SPT16 (PTHR13980:SF15)	chromatin/chromatin-binding, or -regulatory protein(PC00077)	2.605726e-21	20	individual;sumratio
+SORBI_3004G007200	LIN	Secreted protein	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G007300	LIN	Uncharacterized protein	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G007400	LIN	CCT domain-containing protein	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G007500	LIN	Uncharacterized protein	INACTIVE LINOLENATE HYDROPEROXIDE LYASE-RELATED (PTHR24286:SF49)	oxygenase(PC00177)	2.605726e-21	20	individual;sumratio
+SORBI_3004G007600	LIN	Glycosyltransferase	BETA-1,2-XYLOSYLTRANSFEREASE XAX1 (PTHR20961:SF27)	glycosyltransferase(PC00111)	2.605726e-21	20	individual;sumratio
+SORBI_3004G007800	LIN	Protein kinase domain-containing protein	RECEPTOR-LIKE SERINE_THREONINE-PROTEIN KINASE NCRK (PTHR27001:SF782)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G008300	LIN	NA	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G008400	LIN	NA	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G008500	LIN	NA	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G008800	LIN	NA	NA	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G008900	LIN	aldehyde oxygenase (deformylating)	ALDEHYDE OXYGENASE (DEFORMYLATING) (PTHR11863:SF152)	oxidase(PC00175)	2.605726e-21	20	individual;sumratio
+SORBI_3004G009000	LIN	Uncharacterized protein	OS02G0111900 PROTEIN (PTHR47957:SF2)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3004G009100	LIN	Protein FAM32A-like	PROTEIN FAM32A (PTHR13282:SF6)	NA	2.605726e-21	20	individual;sumratio
+SORBI_3003G087000	LIN	Uncharacterized protein	TRANSMEMBRANE PROTEIN 214 (PTHR13448:SF0)	NA	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G087100	LIN	Protein MAO HUZI 4, chloroplastic	PROTEIN ABA DEFICIENT 4, CHLOROPLASTIC (PTHR34543:SF1)	NA	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G087200	LIN	Aspergillus nuclease S1	ASPERGILLUS NUCLEASE S1 (PTHR33146:SF21)	NA	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G087600	LIN	Uncharacterized protein	TRANSCRIPTION FACTOR MYB62 (PTHR45675:SF30)	homeodomain transcription factor(PC00119)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088200	LIN	NAD-dependent epimerase_dehydratase domain-containing protein	TETRAKETIDE ALPHA-PYRONE REDUCTASE 2 (PTHR10366:SF503)	dehydratase(PC00091)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088300	LIN	Uncharacterized protein	TRANSCRIPTION FACTOR MYB90 (PTHR47999:SF24)	homeodomain transcription factor(PC00119)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088400	LIN	Bowman-Birk serine protease inhibitors family domain-containing protein	BOWMAN-BIRK TYPE WOUND-INDUCED PROTEINASE INHIBITOR WIP1 (PTHR37378:SF8)	NA	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088600	LIN	Factor of DNA methylation 1-5_IDN2 domain-containing protein	FACTOR OF DNA METHYLATION 1-RELATED (PTHR21596:SF3)	endoribonuclease(PC00094)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088700	LIN	Uncharacterized protein	NA	NA	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088800	LIN	Plastocyanin-like domain-containing protein	MULTICOPPER OXIDASE LPR1 (PTHR11709:SF2)	oxidase(PC00175)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G088900	LIN	Plastocyanin-like domain-containing protein	MULTICOPPER OXIDASE LPR1 HOMOLOG 1 (PTHR11709:SF340)	oxidase(PC00175)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G089000	LIN	UBC core domain-containing protein	UBIQUITIN-CONJUGATING ENZYME E2 23-RELATED (PTHR46116:SF21)	ubiquitin-protein ligase(PC00234)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G089100	LIN	Uncharacterized protein	WD REPEAT-CONTAINING PROTEIN 1 (PTHR19856:SF0)	non-motor actin binding protein(PC00165)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G089200	LIN	Uncharacterized protein	GLUTAMYL-TRNA (GLN) AMIDOTRANSFERASE SUBUNIT C (PTHR38393:SF1)	RNA processing factor(PC00147)	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3003G089300	LIN	HMA domain-containing protein	HEAVY METAL-ASSOCIATED ISOPRENYLATED PLANT PROTEIN 37 (PTHR45868:SF19)	NA	4.4644129999999997e-20	19	individual;sumratio
+SORBI_3010G150325	LIN	F-box domain-containing protein	F-BOX DOMAIN-CONTAINING PROTEIN (PTHR34591:SF23)	NA	1.414455e-18	16	individual;sumratio
+SORBI_3010G150575	LIN	Small ribosomal subunit protein uS5 C-terminal domain-containing protein	RIBOSOMAL PROTEIN S2, PUTATIVE, EXPRESSED-RELATED (PTHR13718:SF118)	ribosomal protein(PC00202)	1.414455e-18	16	individual;sumratio
+SORBI_3010G150600	LIN	Uncharacterized protein	NA	NA	1.414455e-18	16	individual;sumratio
+SORBI_3010G150700	LIN	PABC domain-containing protein	NA	NA	1.414455e-18	16	individual;sumratio
+SORBI_3010G150800	LIN	Cytoplasmic tRNA 2-thiolation protein 1 C-terminal domain-containing protein	CYTOPLASMIC TRNA 2-THIOLATION PROTEIN (PTHR33513:SF45)	NA	5.936528e-12	16	individual;sumratio
+SORBI_3010G150900	LIN	Uncharacterized protein	OS06G0523300 PROTEIN (PTHR33513:SF43)	NA	5.936528e-12	16	individual;sumratio
+SORBI_3010G151000	LIN	CMP-sialic acid transporter 1	UDP-SUGAR TRANSPORTER PROTEIN SLC35A4-RELATED (PTHR10231:SF43)	transporter(PC00227)	5.936528e-12	16	individual;sumratio
+SORBI_3010G151325	LIN	Protein FAR1-RELATED SEQUENCE	PROTEIN FAR1-RELATED SEQUENCE (PTHR31669:SF168)	NA	7.256755e-12	16	individual;sumratio
+SORBI_3010G150701	LIN	Uncharacterized protein	NA	NA	3.732413e-11	16	individual;sumratio
+SORBI_3010G151200	LIN	GRF-type domain-containing protein	NA	NA	3.732413e-11	16	individual;sumratio
+SORBI_3001G101650	LIN	Uncharacterized protein	NA	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G101700	LIN	SS18 N-terminal domain-containing protein	NA	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G101900	LIN	SCP domain-containing protein	CAP (CYSTEINE-RICH SECRETORY PROTEINS, ANTIGEN 5, AND PATHOGENESIS-RELATED 1 PROTEIN) SUPERFAMILY PROTEIN (PTHR10334:SF385)	defense/immunity protein(PC00090)	7.419754e-14	15	individual;sumratio
+SORBI_3001G102000	LIN	Uncharacterized protein	NA	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G102150	LIN	Uncharacterized protein	NA	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G102200	LIN	Uncharacterized protein	OS03G0733000 PROTEIN (PTHR35135:SF2)	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G102300	LIN	NA	NA	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G103300	LIN	NA	NA	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G103900	LIN	Uncharacterized protein	MINOR HISTOCOMPATIBILITY ANTIGEN H13 (PTHR12174:SF23)	aspartic protease(PC00053)	7.419754e-14	15	individual;sumratio
+SORBI_3001G104000	LIN	BSD domain-containing protein	BSD DOMAIN-CONTAINING PROTEIN (PTHR31923:SF4)	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G104300	LIN	16S rRNA (uracil(1498)-N(3))-methyltransferase	16S RRNA (URACIL(1498)-N(3))-METHYLTRANSFERASE (PTHR30027:SF3)	RNA processing factor(PC00147)	7.419754e-14	15	individual;sumratio
+SORBI_3001G104400	LIN	Uncharacterized protein	EXPRESSED PROTEIN (PTHR33696:SF18)	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G104700	LIN	Thioredoxin domain-containing protein	THIOREDOXIN SUPERFAMILY PROTEIN (PTHR28630:SF23)	NA	7.419754e-14	15	individual;sumratio
+SORBI_3001G104800	LIN	Uncharacterized protein	T12C22.21 PROTEIN (PTHR35283:SF3)	NA	1.382095e-13	15	individual;sumratio
+SORBI_3001G105100	LIN	MPN domain-containing protein	ER MEMBRANE PROTEIN COMPLEX SUBUNIT 8_9 HOMOLOG (PTHR12941:SF10)	NA	6.496753e-13	15	individual;sumratio
+SORBI_3010G064200	LIN	1,3-beta-glucan synthase	CALLOSE SYNTHASE 5 (PTHR12741:SF107)	NA	3.397631e-16	13	individual
+SORBI_3001G101400	LIN	Bowman-Birk serine protease inhibitors family domain-containing protein	EXPRESSED PROTEIN (PTHR33832:SF27)	protease inhibitor(PC00191)	7.419754e-14	13	individual;sumratio
+SORBI_3001G012000	LIN	4-hydroxyphenylacetaldehyde oxime monooxygenase	CYTOCHROME P450 71B10 (PTHR47956:SF80)	oxygenase(PC00177)	4.240237e-13	13	individual;sumratio
+SORBI_3001G012400	LIN	Glycosyltransferase	GLYCOSYLTRANSFERASE (PTHR11926:SF1091)	transferase(PC00220)	4.240237e-13	13	individual;sumratio
+SORBI_3001G012600	LIN	Protein DETOXIFICATION	PROTEIN DETOXIFICATION (PTHR11206:SF301)	transporter(PC00227)	4.240237e-13	13	individual;sumratio
+SORBI_3003G169600	LIN	Mitochondrial carrier protein	MITOCHONDRIAL NICOTINAMIDE ADENINE DINUCLEOTIDE TRANSPORTER 1-RELATED (PTHR45683:SF2)	transporter(PC00227)	6.983884e-67	12	individual;sumratio
+SORBI_3003G086600	LIN	LOB domain-containing protein	OS01G0129600 PROTEIN (PTHR31304:SF10)	NA	1.9675759999999999e-19	12	individual;sumratio
+SORBI_3001G011400	LIN	NA	NA	NA	4.240237e-13	12	individual;sumratio
+SORBI_3001G011600	LIN	NA	NA	NA	4.240237e-13	12	individual;sumratio
+SORBI_3001G012500	LIN	glutathione transferase	GLUTATHIONE S-TRANSFERASE GSTF2-RELATED (PTHR43900:SF39)	transferase(PC00220)	4.240237e-13	12	individual;sumratio
+SORBI_3001G012800	LIN	Nucleotide-diphospho-sugar transferase domain-containing protein	NUCLEOTIDE-DIPHOSPHO-SUGAR TRANSFERASE FAMILY PROTEIN (PTHR46038:SF14)	NA	4.240237e-13	12	individual;sumratio
+SORBI_3004G004300	LIN	Protein transport protein sec16	SECRETORY 16, ISOFORM I (PTHR13402:SF6)	NA	3.8491359999999996e-19	11	individual;sumratio
+SORBI_3004G005000	LIN	RING-type domain-containing protein	RING-H2 FINGER PROTEIN ATL61-RELATED (PTHR45798:SF88)	NA	3.8491359999999996e-19	11	individual;sumratio
+SORBI_3003G406120	LIN	Uncharacterized protein	NA	NA	2.698367e-17	11	individual;sumratio
+SORBI_3003G406600	LIN	SBP-type domain-containing protein	SQUAMOSA PROMOTER-BINDING-LIKE PROTEIN 4 (PTHR31251:SF106)	NA	2.698367e-17	11	individual;sumratio
+SORBI_3003G406800	LIN	MADS-box domain-containing protein	MADS-BOX TRANSCRIPTION FACTOR 51 (PTHR11945:SF732)	MADS box transcription factor(PC00250)	2.698367e-17	11	individual;sumratio
+SORBI_3003G406850	LIN	Secreted protein	NA	NA	2.698367e-17	11	individual;sumratio
+SORBI_3003G407200	LIN	CG-1 domain-containing protein	OS01G0923600 PROTEIN (PTHR23335:SF35)	DNA-binding transcription factor(PC00218)	2.698367e-17	11	individual;sumratio
+SORBI_3003G407300	LIN	Uncharacterized protein	HISTIDINE KINASE 3 (PTHR43719:SF73)	histidine kinase receptor of two-component system(PC00265)	2.698367e-17	11	individual;sumratio
+SORBI_3003G408800	LIN	DEK-C domain-containing protein	PROTEIN DEK (PTHR13468:SF1)	chromatin/chromatin-binding, or -regulatory protein(PC00077)	2.698367e-17	11	individual;sumratio
+SORBI_3003G409000	LIN	Uncharacterized protein	OS01G0924966 PROTEIN (PTHR31374:SF118)	NA	2.698367e-17	11	individual;sumratio
+SORBI_3007G102400	LIN	Aminotransferase-like plant mobile domain-containing protein	AMINOTRANSFERASE-LIKE PLANT MOBILE DOMAIN-CONTAINING PROTEIN (PTHR48243:SF1)	NA	1.96846e-12	9	individual
+SORBI_3002G115900	LIN	Uncharacterized protein	HOMEOBOX DOMAIN-CONTAINING PROTEIN (PTHR45654:SF110)	homeodomain transcription factor(PC00119)	3.761098e-13	7	individual
+SORBI_3005G105550	LIN	Uncharacterized protein	NA	NA	3.933664e-12	7	individual;sumratio
+SORBI_3005G105700	LIN	Uncharacterized protein	CAROTENOID CLEAVAGE DIOXYGENASE 8 (PTHR10543:SF102)	oxygenase(PC00177)	3.933664e-12	7	individual;sumratio
+SORBI_3005G105500	LIN	ER membrane protein complex subunit 10	ER MEMBRANE PROTEIN COMPLEX SUBUNIT 10 (PTHR21397:SF4)	chromatin/chromatin-binding, or -regulatory protein(PC00077)	3.977857e-11	7	individual;sumratio
+SORBI_3006G182900	LIN	MHD1 domain-containing protein	DNA TOPOISOMERASE 4 SUBUNIT B (DUF810) (PTHR31280:SF3)	NA	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G183600	LIN	DUF4005 domain-containing protein	PROTEIN IQ-DOMAIN 22 (PTHR32295:SF11)	NA	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G183701	LIN	Uncharacterized protein	COMM DOMAIN-CONTAINING PROTEIN 9 (PTHR15663:SF4)	NA	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G183800	LIN	Branchpoint-bridging protein	SPLICING FACTOR 1 (PTHR11208:SF45)	RNA splicing factor(PC00148)	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G183900	LIN	Cytochrome P450	CYTOCHROME P450, FAMILY 87, SUBFAMILY A, POLYPEPTIDE 2 (PTHR24286:SF11)	oxygenase(PC00177)	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G184400	LIN	Protein DETOXIFICATION	PROTEIN DETOXIFICATION (PTHR11206:SF343)	transporter(PC00227)	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G184700	LIN	AP2_ERF domain-containing protein	ETHYLENE-RESPONSIVE TRANSCRIPTION FACTOR ERF027 (PTHR31985:SF302)	DNA-binding transcription factor(PC00218)	3.3845540000000002e-18	6	individual;sumratio
+SORBI_3006G190000	LIN	Fe2OG dioxygenase domain-containing protein	PROTEIN DOWNY MILDEW RESISTANCE 6 (PTHR47990:SF70)	oxygenase(PC00177)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G190150	LIN	Uncharacterized protein	NA	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G190300	LIN	Protein kinase domain-containing protein	OS10G0351500 PROTEIN (PTHR27005:SF45)	transmembrane signal receptor(PC00197)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G190800	LIN	BZIP domain-containing protein	ABSCISIC ACID-INSENSITIVE 5-LIKE PROTEIN 5 (PTHR22952:SF485)	basic leucine zipper transcription factor(PC00056)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G190950	LIN	DNA2_NAM7 helicase-like C-terminal domain-containing protein	OS04G0582000 PROTEIN (PTHR10887:SF461)	RNA helicase(PC00032)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191000	LIN	Helicase ATP-binding domain-containing protein	OS04G0582000 PROTEIN (PTHR10887:SF461)	RNA helicase(PC00032)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191200	LIN	Helicase ATP-binding domain-containing protein	OS04G0582000 PROTEIN (PTHR10887:SF461)	RNA helicase(PC00032)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191400	LIN	Uncharacterized protein	NA	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191500	LIN	Pentacotripeptide-repeat region of PRORP domain-containing protein	OS04G0583101 PROTEIN (PTHR47934:SF14)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191600	LIN	Uncharacterized protein	OS04G0583200 PROTEIN (PTHR33172:SF105)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191700	LIN	Expansin	EXPANSIN-A13 (PTHR31867:SF3)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191800	LIN	NA	NA	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G191900	LIN	FYVE-type domain-containing protein	F12P19.9 PROTEIN (PTHR22870:SF350)	guanyl-nucleotide exchange factor(PC00113)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G192000	LIN	RRM domain-containing protein	NUCLEOLAR PROTEIN 8 (PTHR48029:SF1)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G192200	LIN	protein-serine_threonine phosphatase	PROTEIN PHOSPHATASE 2C 43-RELATED (PTHR47992:SF199)	protein phosphatase(PC00195)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G192266	LIN	Uncharacterized protein	NA	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G192332	LIN	Uncharacterized protein	NA	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G192400	LIN	RING-type E3 ubiquitin transferase	OS04G0584500 PROTEIN (PTHR35549:SF1)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G193000	LIN	NA	NA	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194150	LIN	dihydroorotase	DIHYDROOROTASE (PTHR43137:SF1)	hydrolase(PC00121)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194300	LIN	FLZ-type domain-containing protein	OS04G0586200 PROTEIN (PTHR46057:SF43)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194400	LIN	Cyclin-like domain-containing protein	CYCLIN-T1-3 (PTHR10026:SF157)	kinase activator(PC00138)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194500	LIN	Uncharacterized protein	OS05G0352800 PROTEIN (PTHR48210:SF1)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194600	LIN	Malectin-like domain-containing protein	OS04G0586500 PROTEIN (PTHR34590:SF5)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194700	LIN	RING-type domain-containing protein	OS04G0586700 PROTEIN (PTHR45768:SF79)	ubiquitin-protein ligase(PC00234)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G194900	LIN	Pectinesterase inhibitor domain-containing protein	OS04G0587100 PROTEIN (PTHR31080:SF76)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G195000	LIN	Probable purine permease	PURINE PERMEASE-RELATED (PTHR31376:SF36)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G195100	LIN	Probable purine permease	PURINE PERMEASE-RELATED (PTHR31376:SF48)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G195200	LIN	Probable purine permease	PURINE PERMEASE-RELATED (PTHR31376:SF35)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G195400	LIN	Uncharacterized protein	OSJNBB0016D16.16-LIKE PROTEIN (PTHR35486:SF9)	NA	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3006G195500	LIN	DNA replication ATP-dependent helicase_nuclease	DNA REPLICATION ATP-DEPENDENT HELICASE_NUCLEASE DNA2 (PTHR10887:SF433)	RNA helicase(PC00032)	2.2405130000000002e-17	6	individual;sumratio
+SORBI_3010G170000	LIN	O-acyltransferase	DIACYLGLYCEROL O-ACYLTRANSFERASE 1 (PTHR10408:SF7)	acyltransferase(PC00042)	3.159062e-15	6	individual
+SORBI_3002G116200	LIN	Adenylate kinase isoenzyme 6 homolog	ADENYLATE KINASE ISOENZYME 6 (PTHR12595:SF0)	chromatin/chromatin-binding, or -regulatory protein(PC00077)	3.761098e-13	6	individual
+SORBI_3002G116300	LIN	Poly [ADP-ribose] polymerase	POLY [ADP-RIBOSE] POLYMERASE 1 (PTHR10459:SF80)	DNA metabolism protein(PC00009)	3.761098e-13	6	individual
+SORBI_3002G116400	LIN	Uncharacterized protein	NA	NA	3.761098e-13	6	individual
+SORBI_3002G116500	LIN	tRNA N(3)-methylcytidine methyltransferase	TRNA N(3)-METHYLCYTIDINE METHYLTRANSFERASE (PTHR22809:SF14)	methyltransferase(PC00155)	3.761098e-13	6	individual
+SORBI_3002G116600	LIN	C2H2-type domain-containing protein	C2H2 AND C2HC ZINC FINGERS SUPERFAMILY PROTEIN (PTHR45801:SF114)	NA	3.761098e-13	6	individual
+SORBI_3002G116800	LIN	Uncharacterized protein	ALPHA-1,2-GALACTOSYLTRANSFERASE (PTHR31306:SF4)	transferase(PC00220)	3.761098e-13	6	individual
+SORBI_3002G117100	LIN	Protein kinase domain-containing protein	CYCLIN-DEPENDENT KINASE G-1 (PTHR24055:SF585)	non-receptor serine/threonine protein kinase(PC00167)	3.761098e-13	6	individual
+SORBI_3002G117300	LIN	Thaumatin-like protein	OS07G0419300 PROTEIN (PTHR31048:SF218)	NA	3.761098e-13	6	individual
+SORBI_3002G117400	LIN	C2H2-type domain-containing protein	OS07G0419800 PROTEIN (PTHR31197:SF7)	NA	3.761098e-13	6	individual
+SORBI_3001G189000	LIN	Peroxidase	PEROXIDASE 1-RELATED (PTHR31235:SF83)	peroxidase(PC00180)	4.33485e-13	6	individual
+SORBI_3001G189600	LIN	F-box domain-containing protein	F-BOX DOMAIN CONTAINING PROTEIN, EXPRESSED (PTHR38926:SF12)	NA	4.33485e-13	6	individual
+SORBI_3004G115200	LIN	Myb_SANT-like domain-containing protein	MYB_SANT-LIKE DOMAIN-CONTAINING PROTEIN (PTHR47127:SF6)	NA	1.371428e-12	6	individual;sumratio
+SORBI_3004G115350	LIN	U4_U6 small nuclear ribonucleoprotein Prp3	U4_U6 SMALL NUCLEAR RIBONUCLEOPROTEIN PRP3 (PTHR14212:SF0)	RNA splicing factor(PC00148)	1.371428e-12	6	individual;sumratio
+SORBI_3001G188700	LIN	Dolichyl-diphosphooligosaccharide--protein glycosyltransferase subunit 3	GH11935P (PTHR12692:SF0)	glycosyltransferase(PC00111)	1.891978e-12	6	individual
+SORBI_3001G188900	LIN	DUF952 domain-containing protein	DUF952 DOMAIN-CONTAINING PROTEIN (PTHR34129:SF1)	NA	1.891978e-12	6	individual
+SORBI_3005G105850	LIN	Carboxypeptidase	OS11G0460800 PROTEIN (PTHR11802:SF204)	serine protease(PC00203)	3.933664e-12	6	individual;sumratio
+SORBI_3005G106000	LIN	Small EDRK-rich factor-like N-terminal domain-containing protein	NA	NA	3.933664e-12	6	individual;sumratio
+SORBI_3005G106200	LIN	ApaG domain-containing protein	F-BOX PROTEIN SKIP16 (PTHR47463:SF2)	NA	3.933664e-12	6	individual;sumratio
+SORBI_3001G188800	LIN	Gnk2-homologous domain-containing protein	OS03G0564600 PROTEIN (PTHR32099:SF30)	NA	9.444692e-12	6	individual
+SORBI_3001G188100	LIN	HTH La-type RNA-binding domain-containing protein	OS03G0566500 PROTEIN (PTHR22792:SF113)	RNA metabolism protein(PC00031)	1.156826e-11	6	individual
+SORBI_3001G188600	LIN	Pentacotripeptide-repeat region of PRORP domain-containing protein	BOX HELICASE FAMILY PROTEIN, PUTATIVE, EXPRESSED-RELATED (PTHR47932:SF74)	NA	1.156826e-11	6	individual
+SORBI_3002G114700	LIN	Carbohydrate kinase FGGY C-terminal domain-containing protein	D-RIBULOSE KINASE (PTHR10196:SF80)	carbohydrate kinase(PC00065)	2.595338e-11	6	individual
+SORBI_3002G114800	LIN	Uncharacterized protein	CALCIUM-DEPENDENT PROTEIN KINASE 18 (PTHR24349:SF349)	non-receptor serine/threonine protein kinase(PC00167)	2.595338e-11	6	individual
+SORBI_3002G114900	LIN	Importin N-terminal domain-containing protein	IMPORTIN N-TERMINAL DOMAIN-CONTAINING PROTEIN (PTHR11223:SF9)	transporter(PC00227)	2.595338e-11	6	individual
+SORBI_3002G115000	LIN	NA	NA	NA	2.595338e-11	6	individual
+SORBI_3002G115025	LIN	Uncharacterized protein	NA	NA	2.595338e-11	6	individual
+SORBI_3002G115200	LIN	Gnk2-homologous domain-containing protein	GNK2-HOMOLOGOUS DOMAIN-CONTAINING PROTEIN (PTHR32080:SF54)	NA	2.595338e-11	6	individual
+SORBI_3002G115500	LIN	Uncharacterized protein	NA	NA	2.595338e-11	6	individual
+SORBI_3001G187600	LIN	Tyrosine N-monooxygenase	OS04G0171600 PROTEIN (PTHR24298:SF143)	oxygenase(PC00177)	2.818379e-11	6	individual
+SORBI_3001G187700	LIN	Uncharacterized protein	EXPRESSED PROTEIN (PTHR35131:SF1)	NA	2.818379e-11	6	individual
+SORBI_3001G187800	LIN	Aldose 1-epimerase	GALACTOSE MUTAROTASE-LIKE SUPERFAMILY PROTEIN (PTHR10091:SF8)	epimerase/racemase(PC00096)	2.818379e-11	6	individual
+SORBI_3001G187900	LIN	NA	NA	NA	2.818379e-11	6	individual
+SORBI_3001G188400	LIN	THH1_TOM1_TOM3 domain-containing protein	OS03G0565600 PROTEIN (PTHR31142:SF34)	NA	2.818379e-11	6	individual
+SORBI_3001G188500	LIN	Demeter RRM-fold domain-containing protein	OS02G0496500 PROTEIN (PTHR46213:SF4)	DNA-binding transcription factor(PC00218)	2.818379e-11	6	individual
+SORBI_3001G189100	LIN	Clathrin_coatomer adaptor adaptin-like N-terminal domain-containing protein	COATOMER SUBUNIT BETA-1 (PTHR10635:SF3)	vesicle coat protein(PC00235)	2.818379e-11	6	individual
+SORBI_3001G189200	LIN	Peroxidase	PEROXIDASE (PTHR31235:SF254)	peroxidase(PC00180)	2.818379e-11	6	individual
+SORBI_3001G189300	LIN	4-coumarate--CoA ligase-like 7	4-COUMARATE--COA LIGASE-LIKE 7 (PTHR24096:SF346)	ligase(PC00142)	2.818379e-11	6	individual
+SORBI_3001G189400	LIN	BTB domain-containing protein	MAB1 (PTHR26379:SF469)	NA	2.818379e-11	6	individual
+SORBI_3001G187300	LIN	Molybdate transporter 1	MOLYBDATE TRANSPORTER 1 (PTHR31970:SF0)	NA	1.060812e-10	6	individual
+SORBI_3004G181800	LIN	Uncharacterized protein	ARGOS7 (PTHR38928:SF7)	NA	2.053025e-10	6	individual;sumratio
+SORBI_3004G181900	LIN	Ankyrin repeat protein SKIP35	OS02G0562400 PROTEIN (PTHR36024:SF2)	NA	2.053025e-10	6	individual;sumratio
+SORBI_3004G182000	LIN	Late embryogenesis abundant protein LEA-2 subgroup domain-containing protein	NDR1_HIN1-LIKE PROTEIN 6 (PTHR31852:SF1)	NA	2.053025e-10	6	individual;sumratio
+SORBI_3004G182100	LIN	Uncharacterized protein	NA	NA	2.053025e-10	6	individual;sumratio
+SORBI_3004G182201	LIN	Uncharacterized protein	NA	NA	2.053025e-10	6	individual;sumratio
+SORBI_3001G187400	LIN	Tyrosine N-monooxygenase	OS04G0171600 PROTEIN (PTHR24298:SF143)	oxygenase(PC00177)	5.375058e-10	6	individual
+SORBI_3006G188900	LIN	Uncharacterized protein	SCARECROW-LIKE PROTEIN 8 (PTHR31636:SF221)	NA	3.340361e-17	5	individual;sumratio
+SORBI_3006G188700	LIN	RING-type domain-containing protein	OS04G0579200 PROTEIN (PTHR45969:SF89)	NA	5.728618e-17	5	individual;sumratio
+SORBI_3010G170300	LIN	4-hydroxy-7-methoxy-3-oxo-3,4-dihydro-2H-1,4-benzoxazin-2-yl glucosidebeta-D-glucosidase	BETA-GLUCOSIDASE 11 (PTHR10353:SF160)	glycosidase(PC00110)	3.159062e-15	5	individual
+SORBI_3010G170400	LIN	Cytochrome P450 711A1	CYTOCHROME P450 FAMILY CYP711A MEMBER (PTHR24301:SF16)	isomerase(PC00135)	3.159062e-15	5	individual
+SORBI_3007G183050	LIN	Transcription factor	TRANSCRIPTION FACTOR (PTHR11514:SF140)	NA	2.576647e-14	5	individual;sumratio
+SORBI_3008G100600	LIN	SEC7 domain-containing protein	ARF GUANINE-NUCLEOTIDE EXCHANGE FACTOR GNL2 (PTHR10663:SF322)	guanyl-nucleotide exchange factor(PC00113)	5.261562e-14	5	individual
+SORBI_3008G100700	LIN	SS18 N-terminal domain-containing protein	NA	NA	5.261562e-14	5	individual
+SORBI_3008G100801	LIN	Uncharacterized protein	NA	NA	5.261562e-14	5	individual
+SORBI_3008G100900	LIN	Uncharacterized protein	NA	NA	5.261562e-14	5	individual
+SORBI_3008G100950	LIN	Uncharacterized protein	NA	NA	5.261562e-14	5	individual
+SORBI_3008G101000	LIN	NA	NA	NA	5.261562e-14	5	individual
+SORBI_3008G101100	LIN	Uncharacterized protein	OS11G0492900 PROTEIN (PTHR36766:SF55)	NA	5.261562e-14	5	individual
+SORBI_3008G101200	LIN	NA	NA	NA	5.261562e-14	5	individual
+SORBI_3002G116900	LIN	Uncharacterized protein	OS07G0418000 PROTEIN (PTHR15157:SF25)	NA	3.761098e-13	5	individual
+SORBI_3002G117200	LIN	Potassium channel tetramerisation-type BTB domain-containing protein	GH08630P (PTHR14499:SF136)	scaffold/adaptor protein(PC00226)	3.761098e-13	5	individual
+SORBI_3010G170900	LIN	FHA domain-containing protein	SMAD_FHA DOMAIN-CONTAINING PROTEIN (PTHR37733:SF1)	NA	1.227939e-12	5	individual
+SORBI_3003G082401	LIN	Protein kinase domain-containing protein	RECEPTOR SERINE_THREONINE KINASE (PTHR27009:SF128)	NA	1.367717e-12	5	individual
+SORBI_3003G082600	LIN	EF-hand domain-containing protein	CALCIUM-BINDING PROTEIN CML27-RELATED (PTHR10891:SF814)	calmodulin-related(PC00061)	1.367717e-12	5	individual
+SORBI_3003G082700	LIN	GH10 domain-containing protein	OS01G0134900 PROTEIN (PTHR31490:SF14)	metalloprotease(PC00153)	1.367717e-12	5	individual
+SORBI_3003G083000	LIN	GH10 domain-containing protein	OS01G0134800 PROTEIN (PTHR31490:SF42)	metalloprotease(PC00153)	1.367717e-12	5	individual
+SORBI_3003G083100	LIN	Uncharacterized protein	NA	NA	1.367717e-12	5	individual
+SORBI_3003G410800	LIN	Exostosin GT47 domain-containing protein	BETA-1,4-XYLOSYLTRANSFERASE IRX10L-RELATED (PTHR11062:SF200)	glycosyltransferase(PC00111)	1.904759e-12	5	individual;sumratio
+SORBI_3001G384100	LIN	phosphoglycerate mutase (2,3-diphosphoglycerate-independent)	2,3-BISPHOSPHOGLYCERATE-INDEPENDENT PHOSPHOGLYCERATE MUTASE (PTHR31637:SF0)	mutase(PC00160)	2.002883e-12	5	individual
+SORBI_3001G384200	LIN	Hexosyltransferase	GALACTURONOSYLTRANSFERASE 7-RELATED (PTHR32116:SF12)	transferase(PC00220)	2.002883e-12	5	individual
+SORBI_3001G384400	LIN	Alpha-1,3-glucosyltransferase	DOLICHYL PYROPHOSPHATE MAN9GLCNAC2 ALPHA-1,3-GLUCOSYLTRANSFERASE (PTHR12413:SF1)	glycosyltransferase(PC00111)	2.002883e-12	5	individual
+SORBI_3001G384500	LIN	Protein kinase domain-containing protein	PROTEIN KINASE DOMAIN-CONTAINING PROTEIN (PTHR48006:SF96)	NA	2.002883e-12	5	individual
+SORBI_3004G044700	LIN	Protein kinase domain-containing protein	OS02G0154975 PROTEIN (PTHR27000:SF756)	transmembrane signal receptor(PC00197)	1.598385e-11	5	individual;sumratio
+SORBI_3004G044800	LIN	Protein kinase domain-containing protein	OS02G0154200 PROTEIN (PTHR48005:SF81)	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G045000	LIN	Leucine-rich repeat-containing N-terminal plant-type domain-containing protein	OS02G0154975 PROTEIN (PTHR27000:SF756)	transmembrane signal receptor(PC00197)	1.598385e-11	5	individual;sumratio
+SORBI_3004G045100	LIN	Leucine-rich repeat-containing N-terminal plant-type domain-containing protein	LEUCINE-RICH REPEAT-CONTAINING N-TERMINAL PLANT-TYPE DOMAIN-CONTAINING PROTEIN (PTHR27000:SF752)	transmembrane signal receptor(PC00197)	1.598385e-11	5	individual;sumratio
+SORBI_3004G045300	LIN	NA	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G045400	LIN	NA	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G045500	LIN	NA	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G045632	LIN	Uncharacterized protein	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G045700	LIN	Leucine-rich repeat-containing N-terminal plant-type domain-containing protein	LEUCINE-RICH REPEAT-CONTAINING N-TERMINAL PLANT-TYPE DOMAIN-CONTAINING PROTEIN (PTHR27000:SF708)	transmembrane signal receptor(PC00197)	1.598385e-11	5	individual;sumratio
+SORBI_3004G046100	LIN	Sulfotransferase	SULFOTRANSFERASE (PTHR11783:SF317)	transferase(PC00220)	1.598385e-11	5	individual;sumratio
+SORBI_3004G046800	LIN	DUF1618 domain-containing protein	OS01G0182100 PROTEIN (PTHR33086:SF62)	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G047001	LIN	NA	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G047200	LIN	NA	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G048000	LIN	IST1-like protein	REGULATOR OF VPS4 ACTIVITY IN THE MVB PATHWAY PROTEIN (PTHR12161:SF14)	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G048100	LIN	Uncharacterized protein	OS02G0159250 PROTEIN (PTHR37900:SF5)	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G048300	LIN	Knottin scorpion toxin-like domain-containing protein	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G048400	LIN	Knottin scorpion toxin-like domain-containing protein	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G048500	LIN	Knottin scorpion toxin-like domain-containing protein	NA	NA	1.598385e-11	5	individual;sumratio
+SORBI_3004G048600	LIN	Small EDRK-rich factor-like N-terminal domain-containing protein	F9L1.21 PROTEIN (PTHR28632:SF9)	NA	1.598385e-11	5	individual;sumratio
+SORBI_3005G105300	LIN	NA	NA	NA	7.921142e-11	5	individual;sumratio
+SORBI_3010G107000	LIN	1-phosphatidylinositol-3-phosphate 5-kinase	1-PHOSPHATIDYLINOSITOL-3-PHOSPHATE 5-KINASE (PTHR45748:SF1)	kinase(PC00137)	1.346217e-10	5	individual
+SORBI_3004G115000	LIN	BHLH domain-containing protein	TRANSCRIPTION FACTOR SPEECHLESS (PTHR46684:SF4)	DNA-binding transcription factor(PC00218)	4.996904e-10	5	individual;sumratio
+SORBI_3001G188000	LIN	Methyltransferase FkbM domain-containing protein	EXPRESSED PROTEIN (PTHR34203:SF13)	methyltransferase(PC00155)	5.375058e-10	5	individual
+SORBI_3002G116000	LIN	Starch synthase, chloroplastic_amyloplastic	STARCH SYNTHASE, CHLOROPLASTIC_AMYLOPLASTIC (PTHR45825:SF17)	NA	1.146277e-9	5	individual
+SORBI_3002G116100	LIN	H(+)_Pi cotransporter	H(+)_PI COTRANSPORTER (PTHR24064:SF520)	secondary carrier transporter(PC00258)	1.146277e-9	5	individual
+SORBI_3003G048900	LIN	Uncharacterized protein	NA	NA	2.752678e-73	4	individual
+SORBI_3004G130001	LIN	Uncharacterized protein	NA	NA	3.487852e-22	4	individual
+SORBI_3010G170150	LIN	Protein kinase domain-containing protein	OS12G0608500 PROTEIN (PTHR27007:SF62)	NA	3.159062e-15	4	individual
+SORBI_3006G243200	LIN	Isoaspartyl peptidase_L-asparaginase 2	ISOASPARTYL PEPTIDASE_L-ASPARAGINASE 2-RELATED (PTHR10188:SF13)	protease(PC00190)	1.258093e-13	4	individual;sumratio
+SORBI_3002G116700	LIN	Thaumatin-like protein	OS07G0417600 PROTEIN (PTHR31048:SF208)	NA	3.761098e-13	4	individual
+SORBI_3001G189500	LIN	L-gulonolactone oxidase	L-GULONOLACTONE OXIDASE 5 (PTHR13878:SF67)	oxidase(PC00175)	4.33485e-13	4	individual
+SORBI_3008G106200	LIN	Cytochrome P450	OS06G0497350 PROTEIN (PTHR47956:SF84)	oxygenase(PC00177)	9.175627e-13	4	individual
+SORBI_3010G170500	LIN	Rx N-terminal domain-containing protein	NA	NA	1.227939e-12	4	individual
+SORBI_3010G170550	LIN	Midasin	NA	NA	1.227939e-12	4	individual
+SORBI_3010G170600	LIN	HSF-type DNA-binding domain-containing protein	HEAT STRESS TRANSCRIPTION FACTOR A-2 (PTHR10015:SF338)	winged helix/forkhead transcription factor(PC00246)	1.227939e-12	4	individual
+SORBI_3010G170700	LIN	Uncharacterized protein	NA	NA	1.227939e-12	4	individual
+SORBI_3003G082950	LIN	Reverse transcriptase zinc-binding domain-containing protein	OS03G0794050 PROTEIN (PTHR47746:SF85)	NA	1.367717e-12	4	individual;sumratio
+SORBI_3008G106800	LIN	NmrA-like domain-containing protein	PINORESINOL REDUCTASE 1-RELATED (PTHR43349:SF4)	oxidoreductase(PC00176)	1.766655e-12	4	individual
+SORBI_3001G384000	LIN	Uncharacterized protein	EXPRESSED PROTEIN (PTHR31008:SF5)	NA	2.002883e-12	4	individual
+SORBI_3001G218500	LIN	MATH domain-containing protein	MATH DOMAIN CONTAINING PROTEIN (PTHR46162:SF7)	NA	3.206333e-12	4	individual
+SORBI_3001G218600	LIN	MATH domain-containing protein	ANKYRIN REPEAT-CONTAINING PROTEIN-RELATED (PTHR46162:SF2)	NA	3.206333e-12	4	individual
+SORBI_3001G218800	LIN	DUF4220 domain-containing protein	TRANSMEMBRANE PROTEIN (PTHR36353:SF1)	NA	3.206333e-12	4	individual
+SORBI_3001G219400	LIN	ALOG domain-containing protein	PROTEIN G1-LIKE5 (PTHR31165:SF123)	NA	3.206333e-12	4	individual
+SORBI_3005G106300	LIN	Uncharacterized protein	OS11G0265300 PROTEIN (PTHR31928:SF17)	NA	3.933664e-12	4	individual;sumratio
+SORBI_3005G106366	LIN	Protein FAR1-RELATED SEQUENCE	PROTEIN FAR1-RELATED SEQUENCE (PTHR31669:SF307)	NA	3.933664e-12	4	individual;sumratio
+SORBI_3005G106432	LIN	CCHC-type domain-containing protein	OS11G0296500 PROTEIN (PTHR23002:SF89)	RNA metabolism protein(PC00031)	3.933664e-12	4	individual;sumratio
+SORBI_3005G106500	LIN	Dehydrogenase_reductase SDR family member 7	NAD(P)-BINDING ROSSMANN-FOLD SUPERFAMILY PROTEIN (PTHR45274:SF2)	NA	3.933664e-12	4	individual;sumratio
+SORBI_3005G106600	LIN	Protein kinase domain-containing protein	MITOGEN-ACTIVATED PROTEIN KINASE 14 (PTHR24055:SF379)	non-receptor serine/threonine protein kinase(PC00167)	3.933664e-12	4	individual;sumratio
+SORBI_3001G191400	LIN	NA	NA	NA	9.646242e-12	4	individual
+SORBI_3001G191500	LIN	NA	NA	NA	9.646242e-12	4	individual
+SORBI_3003G201750	LIN	Uncharacterized protein	NA	NA	1.120387e-11	4	individual
+SORBI_3003G201800	LIN	Splicing factor YJU2 (Fragment)	SPLICING FACTOR YJU2 (PTHR12111:SF3)	RNA splicing factor(PC00148)	1.120387e-11	4	individual
+SORBI_3003G201850	LIN	Uncharacterized protein	NA	NA	1.120387e-11	4	individual
+SORBI_3003G201900	LIN	Splicing factor YJU2	SPLICING FACTOR YJU2 (PTHR12111:SF1)	RNA splicing factor(PC00148)	1.120387e-11	4	individual
+SORBI_3010G172200	LIN	Tyrosine N-monooxygenase	PHENYLALANINE N-MONOOXYGENASE (PTHR24298:SF675)	oxygenase(PC00177)	2.418094e-11	4	individual
+SORBI_3002G113800	LIN	PABS domain-containing protein	SPERMIDINE SYNTHASE (PTHR11558:SF11)	transferase(PC00220)	2.595338e-11	4	individual
+SORBI_3002G114200	LIN	GAGA-binding transcriptional activator	PROTEIN BASIC PENTACYSTEINE3 (PTHR31421:SF22)	NA	2.595338e-11	4	individual
+SORBI_3001G190000	LIN	Uncharacterized protein	OS07G0695900 PROTEIN (PTHR46993:SF14)	homeodomain transcription factor(PC00119)	2.818379e-11	4	individual
+SORBI_3001G190100	LIN	NA	NA	NA	2.818379e-11	4	individual
+SORBI_3003G173400	LIN	NA	NA	NA	3.298393e-11	4	individual
+SORBI_3007G179900	LIN	Probable 6-phosphogluconolactonase	6-PHOSPHOGLUCONOLACTONASE 3, CHLOROPLASTIC-RELATED (PTHR11054:SF3)	hydrolase(PC00121)	3.373222e-11	4	individual;sumratio
+SORBI_3010G032000	LIN	Early nodulin	EARLY NODULIN-93 (PTHR33605:SF2)	NA	4.012228e-11	4	individual;sumratio
+SORBI_3010G032100	LIN	Early nodulin	EARLY NODULIN (PTHR33605:SF15)	NA	4.012228e-11	4	individual;sumratio
+SORBI_3010G032400	LIN	Uncharacterized protein	MITOTIC CHECKPOINT PROTEIN BUB3 (PTHR10971:SF5)	RNA metabolism protein(PC00031)	4.012228e-11	4	individual;sumratio
+SORBI_3010G032800	LIN	PIR2-like helical domain-containing protein	PIR2-LIKE HELICAL DOMAIN-CONTAINING PROTEIN (PTHR33120:SF57)	NA	4.012228e-11	4	individual;sumratio
+SORBI_3005G120900	LIN	DUF4220 domain-containing protein	OS02G0543500 PROTEIN (PTHR31325:SF6)	NA	1.522578e-10	4	individual;sumratio
+SORBI_3005G121100	LIN	C2H2-type domain-containing protein	ZINC FINGER PROTEIN 511 (PTHR21354:SF0)	NA	1.522578e-10	4	individual;sumratio
+SORBI_3004G181500	LIN	RecA family profile 1 domain-containing protein	DNA REPAIR PROTEIN XRCC3 (PTHR46487:SF1)	DNA metabolism protein(PC00009)	2.053025e-10	4	individual;sumratio
+SORBI_3004G183300	LIN	Uncharacterized protein	OS02G0564300 PROTEIN (PTHR37724:SF1)	NA	2.053025e-10	4	individual
+SORBI_3004G183400	LIN	Uncharacterized protein	NA	NA	2.053025e-10	4	individual
+SORBI_3004G183501	LIN	Uncharacterized protein	NA	NA	2.053025e-10	4	individual
+SORBI_3004G183600	LIN	GTP 3',8-cyclase	MOLYBDENUM COFACTOR BIOSYNTHESIS PROTEIN 1 (PTHR22960:SF0)	NA	2.053025e-10	4	individual
+SORBI_3004G183701	LIN	Uncharacterized protein	NA	NA	2.053025e-10	4	individual
+SORBI_3004G183800	LIN	Clp ATPase C-terminal domain-containing protein	ATP-DEPENDENT CLP PROTEASE ATP-BINDING SUBUNIT CLPX-LIKE, MITOCHONDRIAL (PTHR48102:SF7)	protease(PC00190)	2.053025e-10	4	individual
+SORBI_3004G183900	LIN	Cyclin N-terminal domain-containing protein	OS02G0600266 PROTEIN (PTHR10177:SF456)	kinase activator(PC00138)	2.053025e-10	4	individual
+SORBI_3004G184000	LIN	Vesicle transport protein	VESICLE TRANSPORT PROTEIN (PTHR23137:SF6)	NA	2.053025e-10	4	individual
+SORBI_3004G184200	LIN	BHLH domain-containing protein	OS02G0564700 PROTEIN (PTHR16223:SF215)	basic helix-loop-helix transcription factor(PC00055)	2.053025e-10	4	individual
+SORBI_3004G184101	LIN	ABA-responsive LEA-like protein	OS02G0564600 PROTEIN (PTHR33509:SF21)	NA	2.410616e-10	4	individual
+SORBI_3004G184800	LIN	Uncharacterized protein	OS04G0446401 PROTEIN (PTHR36721:SF1)	NA	2.410616e-10	4	individual
+SORBI_3002G113900	LIN	Uncharacterized protein	C2 CALCIUM_LIPID-BINDING ENDONUCLEASE_EXONUCLEASE_PHOSPHATASE-RELATED (PTHR10774:SF190)	membrane trafficking regulatory protein(PC00151)	3.601268e-10	4	individual
+SORBI_3002G114300	LIN	Carbohydrate kinase FGGY C-terminal domain-containing protein	D-RIBULOSE KINASE (PTHR10196:SF80)	carbohydrate kinase(PC00065)	3.601268e-10	4	individual
+SORBI_3008G021200	LIN	V-type proton ATPase subunit C	V-TYPE PROTON ATPASE SUBUNIT C (PTHR10137:SF6)	ATP synthase(PC00002)	4.074617e-10	4	individual
+SORBI_3001G311700	LIN	Uncharacterized protein	NA	NA	5.251615e-10	4	individual
+SORBI_3001G311866	LIN	No apical meristem-associated C-terminal domain-containing protein	OS10G0563100 PROTEIN (PTHR45224:SF15)	NA	5.251615e-10	4	individual
+SORBI_3001G311900	LIN	Carboxypeptidase	CARBOXYPEPTIDASE (PTHR11802:SF223)	serine protease(PC00203)	5.251615e-10	4	individual
+SORBI_3001G186800	LIN	Purple acid phosphatase	PURPLE ACID PHOSPHATASE 18 (PTHR22953:SF155)	phosphatase(PC00181)	5.375058e-10	4	individual
+SORBI_3001G186850	LIN	DUF1618 domain-containing protein	DUF1618 DOMAIN-CONTAINING PROTEIN (PTHR33074:SF42)	NA	5.375058e-10	4	individual
+SORBI_3001G186925	LIN	DUF1618 domain-containing protein	DUF1618 DOMAIN-CONTAINING PROTEIN (PTHR33074:SF42)	NA	5.375058e-10	4	individual
+SORBI_3001G187000	LIN	4-coumarate--CoA ligase	4-COUMARATE--COA LIGASE (PTHR24096:SF375)	ligase(PC00142)	5.375058e-10	4	individual
+SORBI_3001G187100	LIN	tRNA-uridine aminocarboxypropyltransferase	TRNA-URIDINE AMINOCARBOXYPROPYLTRANSFERASE 2 (PTHR21392:SF0)	NA	5.375058e-10	4	individual
+SORBI_3001G187200	LIN	Transmembrane protein 14C (Fragment)	PROTEIN FATTY ACID EXPORT 5-RELATED (PTHR12668:SF5)	NA	5.375058e-10	4	individual
+SORBI_3001G187500	LIN	Cytochrome P450	OS04G0171600 PROTEIN (PTHR24298:SF143)	oxygenase(PC00177)	5.375058e-10	4	individual
+SORBI_3004G183100	LIN	Pentacotripeptide-repeat region of PRORP domain-containing protein	PENTACOTRIPEPTIDE-REPEAT REGION OF PRORP DOMAIN-CONTAINING PROTEIN (PTHR47942:SF99)	NA	5.754498e-10	4	individual
+SORBI_3001G056200	LIN	rRNA-processing protein EFG1	RRNA-PROCESSING PROTEIN EFG1 (PTHR33911:SF1)	NA	7.741034e-10	4	individual;sumratio
+SORBI_3010G106900	LIN	Ketose-bisphosphate aldolase class-II family protein	KETOSE-BISPHOSPHATE ALDOLASE CLASS-II FAMILY PROTEIN (PTHR42851:SF9)	aldolase(PC00044)	9.524815e-10	4	individual
+SORBI_3010G107050	LIN	Bifunctional inhibitor_plant lipid transfer protein_seed storage helical domain-containing protein	NA	NA	9.524815e-10	4	individual
+SORBI_3002G112300	LIN	Subtilisin-like protease	CO(2)-RESPONSE SECRETED PROTEASE (PTHR10795:SF769)	serine protease(PC00203)	1.030512e-9	4	individual
+SORBI_3001G040500	LIN	NA	NA	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G041700	LIN	BRCT domain-containing protein	TP53-BINDING PROTEIN 1 (PTHR15321:SF3)	DNA metabolism protein(PC00009)	1.127564e-9	4	individual;sumratio
+SORBI_3001G041800	LIN	Mg-protoporphyrin IX chelatase	MAGNESIUM-CHELATASE SUBUNIT CHLD, CHLOROPLASTIC (PTHR43473:SF2)	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G041900	LIN	PNPLA domain-containing protein	OS03G0810900 PROTEIN (PTHR14226:SF30)	esterase(PC00097)	1.127564e-9	4	individual;sumratio
+SORBI_3001G042200	LIN	Mitochondrial Rho GTPase	MITOCHONDRIAL RHO GTPASE (PTHR24072:SF73)	small GTPase(PC00208)	1.127564e-9	4	individual;sumratio
+SORBI_3001G042400	LIN	Uncharacterized protein	OS05G0173500 PROTEIN (PTHR34480:SF11)	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G042600	LIN	Uncharacterized protein	F5J5.12 (PTHR31099:SF28)	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G042700	LIN	Uncharacterized protein	F5J5.12 (PTHR31099:SF28)	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G042800	LIN	Nudix hydrolase domain-containing protein	DIPHOSPHOINOSITOL-POLYPHOSPHATE DIPHOSPHATASE (PTHR12629:SF0)	phosphatase(PC00181)	1.127564e-9	4	individual;sumratio
+SORBI_3001G042901	LIN	Adenylate isopentenyltransferase	ADENYLATE ISOPENTENYLTRANSFERASE (PTHR11088:SF41)	RNA processing factor(PC00147)	1.127564e-9	4	individual;sumratio
+SORBI_3001G044800	LIN	NA	NA	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G045300	LIN	Ubiquitin-like domain-containing protein	OS03G0808400 PROTEIN (PTHR10666:SF286)	NA	1.127564e-9	4	individual;sumratio
+SORBI_3001G045400	LIN	Polygalacturonase	POLYGALACTURONASE QRT2 (PTHR31375:SF177)	NA	1.127564e-9	4	individual;sumratio
+SORBI_3008G081400	LIN	Major facilitator superfamily (MFS) profile domain-containing protein	MAJOR FACILITATOR SUPERFAMILY (MFS) PROFILE DOMAIN-CONTAINING PROTEIN (PTHR11654:SF377)	transporter(PC00227)	4.496153e-33	3	individual;sumratio
+SORBI_3008G081500	LIN	Uncharacterized protein	MAJOR FACILITATOR SUPERFAMILY (MFS) PROFILE DOMAIN-CONTAINING PROTEIN (PTHR11654:SF377)	transporter(PC00227)	4.496153e-33	3	individual;sumratio
+SORBI_3008G081900	LIN	NA	NA	NA	4.496153e-33	3	individual;sumratio
+SORBI_3008G082000	LIN	NA	NA	NA	4.496153e-33	3	individual;sumratio
+SORBI_3008G096200	LIN	Protein kinase domain-containing protein	OS12G0480200 PROTEIN (PTHR45637:SF86)	NA	3.318223e-31	3	individual
+SORBI_3008G096300	LIN	Uncharacterized protein	CYTOCHROME C BIOGENESIS B-RELATED (PTHR30070:SF1)	NA	3.318223e-31	3	individual
+SORBI_3001G398000	LIN	NA	NA	NA	3.487852e-22	3	individual
+SORBI_3010G149800	LIN	Uncharacterized protein	NA	NA	1.414455e-18	3	individual
+SORBI_3010G150100	LIN	WRKY transcription factor 19	OS11G0223400 PROTEIN (PTHR31827:SF60)	NA	1.414455e-18	3	individual
+SORBI_3010G150200	LIN	F-box domain-containing protein	F-BOX DOMAIN-CONTAINING PROTEIN (PTHR32133:SF359)	NA	1.414455e-18	3	individual
+SORBI_3008G098300	LIN	ubiquitinyl hydrolase 1	UBIQUITIN CARBOXYL-TERMINAL HYDROLASE 48 (PTHR24006:SF722)	cysteine protease(PC00081)	6.939107000000001e-17	3	individual
+SORBI_3010G053600	LIN	MPN domain-containing protein	PRE-MRNA-PROCESSING-SPLICING FACTOR 8 (PTHR11140:SF0)	RNA splicing factor(PC00148)	1.152137e-16	3	individual
+SORBI_3010G053700	LIN	DUF295 domain-containing protein	DUF295 DOMAIN-CONTAINING PROTEIN (PTHR33127:SF96)	NA	1.152137e-16	3	individual
+SORBI_3010G053800	LIN	AP-1 complex subunit gamma	AP-1 COMPLEX SUBUNIT GAMMA (PTHR22780:SF5)	membrane traffic protein(PC00150)	1.152137e-16	3	individual
+SORBI_3010G054000	LIN	Alkyl transferase	DEHYDRODOLICHYL DIPHOSPHATE SYNTHASE COMPLEX SUBUNIT DHDDS (PTHR10291:SF43)	acyltransferase(PC00042)	1.152137e-16	3	individual
+SORBI_3010G054100	LIN	Malectin domain-containing protein	OS06G0587000 PROTEIN (PTHR48059:SF30)	NA	1.152137e-16	3	individual
+SORBI_3010G054150	LIN	Ovule protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G054300	LIN	Metaxin	FAILED AXON CONNECTIONS-RELATED (PTHR12289:SF41)	transporter(PC00227)	1.152137e-16	3	individual
+SORBI_3010G054400	LIN	Protein kinase domain-containing protein	OS11G0695000 PROTEIN (PTHR27008:SF497)	NA	1.152137e-16	3	individual
+SORBI_3010G054500	LIN	Fe2OG dioxygenase domain-containing protein	FE2OG DIOXYGENASE DOMAIN-CONTAINING PROTEIN (PTHR10209:SF492)	oxidoreductase(PC00176)	1.152137e-16	3	individual
+SORBI_3010G054600	LIN	Ribonucleoside-diphosphate reductase	RIBONUCLEOSIDE-DIPHOSPHATE REDUCTASE LARGE SUBUNIT (PTHR11573:SF6)	reductase(PC00198)	1.152137e-16	3	individual
+SORBI_3010G054700	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G054800	LIN	Hydrophobic seed protein domain-containing protein	BIFUNCTIONAL INHIBITOR_LIPID-TRANSFER PROTEIN_SEED STORAGE 2S ALBUMIN SUPERFAMILY PROTEIN (PTHR31731:SF16)	NA	1.152137e-16	3	individual
+SORBI_3010G054900	LIN	Protein kinase domain-containing protein	OS06G0168800 PROTEIN (PTHR45621:SF116)	NA	1.152137e-16	3	individual
+SORBI_3010G055000	LIN	Protein kinase domain-containing protein	OS06G0170100 PROTEIN (PTHR27005:SF173)	transmembrane signal receptor(PC00197)	1.152137e-16	3	individual
+SORBI_3010G055100	LIN	Protein kinase domain-containing protein	OS06G0170100 PROTEIN (PTHR27005:SF173)	transmembrane signal receptor(PC00197)	1.152137e-16	3	individual
+SORBI_3010G055200	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G055300	LIN	Cytochrome P450	OS01G0804400 PROTEIN (PTHR24296:SF265)	oxygenase(PC00177)	1.152137e-16	3	individual
+SORBI_3010G055400	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G055500	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G055600	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G055700	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G055800	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G055900	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G056000	LIN	GAGA-binding transcriptional activator	PROTEIN BASIC PENTACYSTEINE3 (PTHR31421:SF22)	NA	1.152137e-16	3	individual
+SORBI_3010G056100	LIN	Fanconi-associated nuclease	FANCONI-ASSOCIATED NUCLEASE 1 (PTHR15749:SF4)	NA	1.152137e-16	3	individual
+SORBI_3010G056200	LIN	Uncharacterized protein	GAMYB-BINDING PROTEIN (PTHR43991:SF21)	NA	1.152137e-16	3	individual
+SORBI_3010G056300	LIN	Pentacotripeptide-repeat region of PRORP domain-containing protein	OS06G0172000 PROTEIN (PTHR47932:SF17)	NA	1.152137e-16	3	individual
+SORBI_3010G056500	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G056600	LIN	Acidic protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G056700	LIN	Zinc finger GRF-type domain-containing protein	OS02G0474200 PROTEIN (PTHR33680:SF7)	NA	1.152137e-16	3	individual
+SORBI_3010G056800	LIN	Acidic protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G056900	LIN	Acidic protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G057000	LIN	EF-hand domain-containing protein	CALCIUM-BINDING PROTEIN CML30-RELATED (PTHR10891:SF796)	calmodulin-related(PC00061)	1.152137e-16	3	individual
+SORBI_3010G057100	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G057200	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G057250	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G057300	LIN	galactinol--sucrose galactosyltransferase	GALACTINOL--SUCROSE GALACTOSYLTRANSFERASE 6-RELATED (PTHR31268:SF5)	NA	1.152137e-16	3	individual
+SORBI_3010G057400	LIN	galactinol--sucrose galactosyltransferase	GALACTINOL--SUCROSE GALACTOSYLTRANSFERASE (PTHR31268:SF31)	NA	1.152137e-16	3	individual
+SORBI_3010G057500	LIN	Telomere-associated protein Rif1 N-terminal domain-containing protein	TELOMERE-ASSOCIATED PROTEIN RIF1 (PTHR22928:SF3)	DNA metabolism protein(PC00009)	1.152137e-16	3	individual
+SORBI_3010G057600	LIN	Uncharacterized protein	HPC2-RELATED DOMAIN-CONTAINING PROTEIN (PTHR31534:SF3)	NA	1.152137e-16	3	individual
+SORBI_3010G057633	LIN	SHSP domain-containing protein	23.6 KDA HEAT SHOCK PROTEIN MITOCHONDRIAL (PTHR46991:SF9)	NA	1.152137e-16	3	individual
+SORBI_3010G057666	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G057700	LIN	NA	NA	NA	1.152137e-16	3	individual
+SORBI_3010G057800	LIN	Rx N-terminal domain-containing protein	OS05G0533301 PROTEIN (PTHR33377:SF115)	NA	1.152137e-16	3	individual
+SORBI_3010G058600	LIN	Transposase (Putative), gypsy type	F5J5.12 (PTHR31099:SF28)	NA	1.152137e-16	3	individual
+SORBI_3010G058650	LIN	Uncharacterized protein	NA	NA	1.152137e-16	3	individual
+SORBI_3010G058700	LIN	Transposase (Putative), gypsy type	AMINOTRANSFERASE-LIKE PLANT MOBILE DOMAIN-CONTAINING PROTEIN (PTHR31099:SF19)	NA	1.152137e-16	3	individual
+SORBI_3008G092800	LIN	AAA+ ATPase domain-containing protein	FIDGETIN-LIKE PROTEIN 1 (PTHR23074:SF17)	non-motor microtubule binding protein(PC00166)	2.914024e-15	3	individual;sumratio
+SORBI_3004G011900	LIN	Metal-nicotianamine transporter YSL8	METAL-NICOTIANAMINE TRANSPORTER YSL7-RELATED (PTHR31645:SF22)	transporter(PC00227)	3.593366e-15	3	individual;sumratio
+SORBI_3004G009300	LIN	Uncharacterized protein	OVATE FAMILY PROTEIN (PTHR36038:SF3)	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G009400	LIN	Major facilitator superfamily (MFS) profile domain-containing protein	HIGH-AFFINITY NITRATE TRANSPORTER 2.1-RELATED (PTHR23515:SF29)	transporter(PC00227)	4.92621e-15	3	individual;sumratio
+SORBI_3004G009500	LIN	Major facilitator superfamily (MFS) profile domain-containing protein	HIGH-AFFINITY NITRATE TRANSPORTER 2.1-RELATED (PTHR23515:SF29)	transporter(PC00227)	4.92621e-15	3	individual;sumratio
+SORBI_3004G009600	LIN	Brahma1	ATP-DEPENDENT HELICASE BRM (PTHR10799:SF978)	DNA helicase(PC00011)	4.92621e-15	3	individual;sumratio
+SORBI_3004G009900	LIN	WAT1-related protein	WAT1-RELATED PROTEIN (PTHR31218:SF256)	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010000	LIN	Carboxypeptidase	SERINE CARBOXYPEPTIDASE-LIKE 48 (PTHR11802:SF259)	serine protease(PC00203)	4.92621e-15	3	individual;sumratio
+SORBI_3004G010050	LIN	CCHC-type domain-containing protein	OS02G0303350 PROTEIN (PTHR33075:SF7)	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010151	LIN	Uncharacterized protein	NA	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010200	LIN	Protein Lines C-terminal domain-containing protein	PROTEIN LINES HOMOLOG 1 (PTHR16057:SF1)	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010300	LIN	NA	NA	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010600	LIN	NA	NA	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010800	LIN	NA	NA	NA	4.92621e-15	3	individual;sumratio
+SORBI_3004G010900	LIN	NA	NA	NA	4.92621e-15	3	individual;sumratio
+SORBI_3003G323800	LIN	Uncharacterized protein	NA	NA	1.277574e-14	3	individual;sumratio
+SORBI_3003G323900	LIN	Uncharacterized protein	NA	NA	1.277574e-14	3	individual;sumratio
+SORBI_3003G324400	LIN	AP 37 protein	OS01G0797600 PROTEIN (PTHR31677:SF168)	DNA-binding transcription factor(PC00218)	1.277574e-14	3	individual;sumratio
+SORBI_3003G324500	LIN	AP2_ERF domain-containing protein	ETHYLENE-RESPONSIVE TRANSCRIPTION FACTOR 12 (PTHR31677:SF202)	DNA-binding transcription factor(PC00218)	1.277574e-14	3	individual;sumratio
+SORBI_3003G324600	LIN	Transcription factor MYC_MYB N-terminal domain-containing protein	GB|AAF34833.1 (PTHR47375:SF1)	NA	1.277574e-14	3	individual;sumratio
+SORBI_3005G119100	LIN	NA	NA	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G119250	LIN	NA	NA	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G119700	LIN	Uncharacterized protein	NA	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G119800	LIN	Uncharacterized protein	NA	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G119900	LIN	FAD-binding PCMH-type domain-containing protein	OS11G0495950 PROTEIN (PTHR32448:SF29)	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G119950	LIN	CCHC-type domain-containing protein	OS11G0296500 PROTEIN (PTHR23002:SF89)	RNA metabolism protein(PC00031)	1.538159e-14	3	individual;sumratio
+SORBI_3005G120101	LIN	Uncharacterized protein	NA	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G120201	LIN	No apical meristem-associated C-terminal domain-containing protein	OS02G0603500 PROTEIN (PTHR45125:SF28)	NA	1.538159e-14	3	individual;sumratio
+SORBI_3005G120301	LIN	CCHC-type domain-containing protein	OS11G0296500 PROTEIN (PTHR23002:SF89)	RNA metabolism protein(PC00031)	1.538159e-14	3	individual;sumratio
+SORBI_3002G226100	LIN	Protein disulfide-isomerase	PROTEIN DISULFIDE-ISOMERASE SCO2 (PTHR36035:SF1)	chaperone(PC00072)	1.814447e-14	3	individual;sumratio
+SORBI_3002G226200	LIN	Uncharacterized protein	NA	NA	1.814447e-14	3	individual;sumratio
+SORBI_3002G226900	LIN	Enoyl reductase (ER) domain-containing protein	PROSTAGLANDIN REDUCTASE 3 (PTHR43677:SF3)	oxidoreductase(PC00176)	1.814447e-14	3	individual;sumratio
+SORBI_3002G227000	LIN	Enoyl reductase (ER) domain-containing protein	ENOYL REDUCTASE (ER) DOMAIN-CONTAINING PROTEIN (PTHR43677:SF8)	oxidoreductase(PC00176)	1.814447e-14	3	individual;sumratio
+SORBI_3002G227100	LIN	Cyclin-dependent kinase inhibitor domain-containing protein	CYCLIN-DEPENDENT KINASE INHIBITOR 6 (PTHR46776:SF16)	kinase inhibitor(PC00139)	1.814447e-14	3	individual;sumratio
+SORBI_3002G227200	LIN	J domain-containing protein	DNAJ HEAT SHOCK N-TERMINAL DOMAIN-CONTAINING PROTEIN (PTHR21454:SF47)	NA	1.814447e-14	3	individual;sumratio
+SORBI_3002G227300	LIN	Uncharacterized protein	OS09G0460100 PROTEIN (PTHR36324:SF1)	NA	1.814447e-14	3	individual;sumratio
+SORBI_3002G227400	LIN	Pentacotripeptide-repeat region of PRORP domain-containing protein	OS04G0350000 PROTEIN (PTHR45613:SF2)	NA	1.814447e-14	3	individual;sumratio
+SORBI_3002G227500	LIN	Protein transport protein SEC23	PROTEIN TRANSPORT PROTEIN SEC23 (PTHR11141:SF24)	vesicle coat protein(PC00235)	1.814447e-14	3	individual;sumratio
+SORBI_3002G227800	LIN	Alpha_beta hydrolase fold-3 domain-containing protein	CARBOXYLESTERASE 2-RELATED (PTHR23024:SF577)	deacetylase(PC00087)	1.814447e-14	3	individual;sumratio
+SORBI_3002G227900	LIN	Alpha_beta hydrolase fold-3 domain-containing protein	OS09G0461500 PROTEIN (PTHR23024:SF165)	deacetylase(PC00087)	1.814447e-14	3	individual;sumratio
+SORBI_3001G479800	LIN	Hexosyltransferase	UDP-GLUCURONATE:XYLAN ALPHA-GLUCURONOSYLTRANSFERASE 2 (PTHR11183:SF44)	glycosyltransferase(PC00111)	2.571433e-14	3	individual
+SORBI_3008G076100	LIN	F-box domain-containing protein	F-BOX DOMAIN-CONTAINING PROTEIN (PTHR33165:SF78)	NA	2.821838e-14	3	individual
+SORBI_3008G076200	LIN	aldehyde oxygenase (deformylating)	NA	NA	2.821838e-14	3	individual
+SORBI_3008G076250	LIN	Aldehyde oxygenase (deformylating)	VERY-LONG-CHAIN ALDEHYDE DECARBONYLASE CER1 (PTHR11863:SF193)	oxidase(PC00175)	2.821838e-14	3	individual
+SORBI_3001G168800	LIN	NPH3 domain-containing protein	BTB_POZ DOMAIN-CONTAINING PROTEIN NPY2 (PTHR32370:SF4)	NA	2.978268e-14	3	individual;sumratio
+SORBI_3001G169100	LIN	Major facilitator superfamily (MFS) profile domain-containing protein	ANION TRANSPORTER 5-RELATED (PTHR11662:SF282)	secondary carrier transporter(PC00258)	2.978268e-14	3	individual;sumratio
+SORBI_3001G171001	LIN	WIYLD domain-containing protein	NA	NA	2.978268e-14	3	individual;sumratio
+SORBI_3001G171100	LIN	WIYLD domain-containing protein	WIYLD DOMAIN-CONTAINING PROTEIN (PTHR34271:SF5)	histone modifying enzyme(PC00261)	2.978268e-14	3	individual;sumratio
+SORBI_3006G033001	LIN	NA	NA	NA	3.522187e-14	3	individual;sumratio
+SORBI_3009G021500	LIN	Cathepsin propeptide inhibitor domain-containing protein	NA	NA	3.691445e-14	3	individual
+SORBI_3009G021600	LIN	Dirigent protein	DIRIGENT PROTEIN (PTHR46506:SF67)	NA	3.691445e-14	3	individual
+SORBI_3008G101300	LIN	DNA repair protein RAD51 homolog	DNA REPAIR PROTEIN RAD51 HOMOLOG 1 (PTHR22942:SF39)	DNA metabolism protein(PC00009)	5.261562e-14	3	individual
+SORBI_3007G210801	LIN	JmjC domain-containing protein	OS08G0508500 PROTEIN (PTHR12461:SF96)	protein modifying enzyme(PC00260)	6.043383e-14	3	individual;sumratio
+SORBI_3006G218200	LIN	PIR2-like helical domain-containing protein	PIR2-LIKE HELICAL DOMAIN-CONTAINING PROTEIN (PTHR33120:SF44)	NA	7.046525e-14	3	individual;sumratio
+SORBI_3001G098500	LIN	CBS domain-containing protein	CBS DOMAIN-CONTAINING PROTEIN (PTHR43080:SF2)	NA	7.419754e-14	3	individual;sumratio
+SORBI_3001G099100	LIN	Endoglucanase	ENDOGLUCANASE 10 (PTHR22298:SF171)	NA	7.419754e-14	3	individual;sumratio
+SORBI_3001G099400	LIN	Uncharacterized protein	OS04G0660900 PROTEIN (PTHR11654:SF156)	transporter(PC00227)	7.419754e-14	3	individual;sumratio
+SORBI_3001G099600	LIN	NA	NA	NA	7.419754e-14	3	individual;sumratio
+SORBI_3001G099800	LIN	NA	NA	NA	7.419754e-14	3	individual;sumratio
+SORBI_3001G100000	LIN	NA	NA	NA	7.419754e-14	3	individual;sumratio
+SORBI_3001G100200	LIN	NA	NA	NA	7.419754e-14	3	individual;sumratio
+SORBI_3001G100300	LIN	NA	NA	NA	7.419754e-14	3	individual;sumratio

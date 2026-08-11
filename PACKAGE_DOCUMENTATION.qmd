@@ -1,0 +1,405 @@
+---
+title: "GCN-GAE Ensemble for Gene Regulatory Network Inference"
+subtitle: "Technical documentation for package development"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+    theme: cosmo
+---
+
+# Purpose of this document
+
+This document is a complete technical handoff for turning the working pipeline in this
+repository into a proper installable package. It covers: what the pipeline does, why
+every design choice was made (with the actual measured evidence behind it), what data
+format is required and how to get it, and — critically — a full log of what was already
+tried and rejected, so none of that work gets silently repeated.
+
+The three production scripts already in `models/` (`gcn_gae_improved_model.py`,
+`gcn_gae_bilinear_model.py`, `gcn_gae_ensemble_best_model.py`) are working reference
+implementations. This document explains the reasoning behind them well enough that a
+package can be built around the same logic, restructured properly (modules, tests,
+config, CLI), without needing to re-derive any of the validated decisions from scratch.
+
+# Project overview
+
+**Goal:** reconstruct a Gene Regulatory Network (GRN) — which genes regulate which other
+genes — by combining the outputs of many different existing GRN-inference algorithms
+through a Graph Convolutional Network Graph Autoencoder (GCN-GAE), rather than trusting
+any single algorithm alone.
+
+**Core idea:** each individual inference algorithm (correlation-based, mutual-information-
+based, tree-ensemble-based, etc.) captures a different, partial view of the true
+regulatory structure, and each has its own blind spots and false positives. Feeding each
+algorithm's output through its own trained GCN encoder, then combining (fusing) all of
+the encoders' reconstructions together, recovers a more accurate, more complete network
+than any single algorithm — including edges no single algorithm proposed on its own (the
+GCN can "discover" links that weren't in its own input, because it's learning latent
+structure, not just copying the input graph).
+
+**Validated result:** on DREAM4 benchmark networks (100-gene synthetic networks with
+known ground truth), this approach beats both the best individual algorithm (GENIE3
+variants) and GENECI's own evolutionary-optimized ensemble method on AUPR (the priority
+metric, given the ~3.5% true-edge class imbalance in this kind of problem), and on AUROC
+for 2 of the 3 networks tested.
+
+# GENECI: what it is, and how we use it
+
+## What GENECI is
+
+[GENECI](https://github.com/AdrianSeguraOrtiz/GENECI) is an open-source tool
+(Segura-Ortiz et al.) that runs a large collection of established GRN-inference
+algorithms against a gene expression dataset. It supports 26 total techniques, spanning
+several different methodological families:
+
+- **Mutual-information / correlation-based:** ARACNE, BC3NET, C3NET, CLR, MRNET, MRNETB,
+  PCIT
+- **Tree-ensemble / boosting-based:** GENIE3 (both Extra-Trees and Random-Forest
+  variants), GRNBOOST2, KBOOST
+- **Regression-based:** TIGRESS, INFERELATOR
+- **Other / distinct methodology:** LEAP, NONLINEARODES, MEOMI, JUMP3, NARROMI, CMI2NI,
+  RSNET, PCACMI, LOCPCACMI, PLSNET, PIDC, PUC, GRNVBEM
+
+GENECI also has its own downstream ensemble-optimization step
+(`geneci optimize-ensemble`), which uses an evolutionary algorithm to find optimal
+per-algorithm weights and produce one consensus network. **This project does not use that
+step.** Only the individual algorithm-inference step is used — see below.
+
+## How we actually use it
+
+We run **only** GENECI's `infer-network` command, which executes each requested
+algorithm independently against the expression data and writes out each algorithm's own
+raw, continuous confidence scores. We do not run `optimize-ensemble` — the combination
+of algorithm outputs is done entirely by our own GCN-GAE pipeline, not GENECI's built-in
+evolutionary method.
+
+Example command (16 of the 26 available techniques; the other 10 — JUMP3, NARROMI,
+CMI2NI, RSNET, PCACMI, LOCPCACMI, PLSNET, PIDC, PUC, GRNVBEM — are available but were not
+part of the original test set; they can be added the same way):
+
+```
+geneci infer-network --expression-data path/to/expression_data.csv \
+                     --technique ARACNE --technique BC3NET --technique C3NET \
+                     --technique CLR --technique GENIE3_RF --technique GRNBOOST2 \
+                     --technique GENIE3_ET --technique MRNET --technique MRNETB \
+                     --technique PCIT --technique TIGRESS --technique KBOOST \
+                     --technique MEOMI --technique LEAP --technique NONLINEARODES \
+                     --technique INFERELATOR \
+                     --output-dir inferred_networks
+```
+
+This produces one folder per dataset (e.g. `inferred_networks/<dataset_name>/`),
+containing a `lists/` subfolder with one file per algorithm:
+
+```
+inferred_networks/<dataset_name>/lists/GRN_ARACNE.csv
+inferred_networks/<dataset_name>/lists/GRN_CLR.csv
+inferred_networks/<dataset_name>/lists/GRN_GENIE3_ET.csv
+... (one per requested technique)
+```
+
+Each of these files is a **3-column edge list**, no header:
+`source_gene,target_gene,confidence_score` — continuous scores in `[0, 1]`, one row per
+gene pair the algorithm considered non-negligible (pairs it didn't list are implicitly
+zero).
+
+## Critical gotcha already discovered — do not repeat this mistake
+
+GENECI (or an earlier step in this project's original data-prep pipeline) also produces
+files named like `normalized_weight_matrix_all_GRN_<dataset>_<filter>.csv`, in a wide
+matrix format (one row/column block per algorithm). **These files are already
+pre-binarized** — every single value in them is exactly `0` or `1`, despite the
+"normalized_weight_matrix" name suggesting continuous values. This was discovered the
+hard way, after an entire day of threshold-sweep experiments produced suspiciously
+identical results across different threshold values (0.2, 0.4, 0.6, 0.8 all gave
+identical edge counts) — the values simply had no continuous gradation left to
+threshold.
+
+**Always use the raw `lists/GRN_<ALGORITHM>.csv` files from GENECI's `infer-network`
+output directly. Never use the `normalized_weight_matrix_*.csv` files as the continuous
+score source.**
+
+# Full pipeline, step by step
+
+## Step 1 — Load real continuous per-algorithm scores
+
+Read each `GRN_<ALGORITHM>.csv` edge list, reconstruct a full `(num_genes, num_genes)`
+matrix per algorithm (unlisted pairs = 0). This is implemented in
+`load_algorithm_matrices()` in the production scripts.
+
+## Step 2 — Build per-algorithm input topology (top-X% rank-based threshold)
+
+For each algorithm, independently: rank all gene pairs by that algorithm's own
+confidence score, and keep the **top 10%** as edges for that algorithm's graph. This
+decides the topology the GCN encoder trains on for that algorithm — nothing else about
+the raw scores is used at this stage (the actual confidence values are discarded once
+topology is decided, unless native-weight edge confidence is enabled — see below).
+
+### Why top-10%, and why rank-based rather than a fixed score cutoff
+
+A fixed absolute score cutoff (the original pipeline used `0.6`, later `0.15`) is
+fundamentally not comparable across 16 different algorithms, because each algorithm
+produces scores on a completely different internal scale. **Measured evidence:** at a
+fixed cutoff of `0.6`, `GRN_LEAP` alone kept ~67% of all possible gene pairs as edges,
+while several other algorithms kept under 0.3% — the same absolute number meant wildly
+different things per algorithm.
+
+Switching to a **rank-based** cutoff ("keep each algorithm's own top X%") fixes the
+cross-algorithm comparability problem. The specific value of X was chosen with the
+following logic, validated on DREAM4 (real evidence, not a guess):
+
+- A sweep across X in {5, 10, 15, 20, 30, ...}% showed a broad stable AUROC/AUPR plateau
+  in roughly the 5-20% range, with a sharp performance cliff beyond ~20-30%.
+- Reframed against each DREAM4 network's own *known* true regulatory density (3.5-5%
+  across the 3 networks tested), the validated 10% setting corresponds to roughly
+  **2-3x each network's own true density** — not an arbitrary percentage, but a
+  multiplier on expected network sparsity.
+- This mirrors the precedent set in the original GENIE3 paper (Huynh-Thu et al., 2010),
+  which explicitly could not find a principled absolute threshold and instead
+  recommended matching the predicted network's edge count to a known/expected true
+  count when one is available. We extend that logic with a 2-3x safety margin, since
+  this threshold controls *input topology* for further learning, not the final answer.
+- **For real biological data with no known ground truth** (e.g. a new organism), the
+  equivalent, defensible approach is to use an **independent, literature-based estimate**
+  of that organism's expected regulatory network density (e.g. RegulonDB's documented
+  TF-target statistics for E. coli), and apply the same validated 2-3x multiplier — never
+  tuning X against the actual unknown ground truth for the dataset being analyzed.
+- **Caveat:** the "10%" value itself, and the "2-3x" multiplier, have only been validated
+  across 3 DREAM4 networks from the same synthetic-network-generation family. Whether the
+  multiplier itself transfers to a different organism (E. coli) is an open, high-priority
+  validation item — see Open Items below.
+
+## Step 3 — Encode: 3-layer GCN
+
+```
+Encoder architecture (validated, do not change without re-testing):
+  Input (identity matrix, num_genes x num_genes) 
+    -> GCNConv -> 32 channels -> ReLU
+    -> GCNConv -> 32 channels -> BatchNorm -> ReLU -> Dropout(0.01) -> +residual
+    -> GCNConv -> 16 channels (final embedding) -> ReLU
+```
+
+Node features are the **identity matrix** (each gene is just a one-hot ID vector, no
+expression values). This was deliberately tested against using real gene expression
+values as node features, and identity clearly won — using expression values as node
+features made every metric worse, even with more training. The reasoning: identity
+features force the GCN to learn embeddings purely from graph topology, which turns out
+to be well-matched to what a graph-autoencoder reconstruction task rewards; injecting a
+different signal (expression) distracted from that rather than helping.
+
+Depth (3 layers) and width `(32, 32, 16)` were both validated against several
+alternatives — see the rejected-experiments table below. Nothing tested beat this shape.
+
+## Step 4 — Decode: bilinear + distance decoder ensemble
+
+The current best-validated decoder is actually **two decoders, trained separately, with
+their outputs averaged together**:
+
+**Bilinear decoder:** `score = sigmoid(z_i^T W z_j)`, where `W` is a learned matrix,
+initialized near the identity matrix. This is the key upgrade over a plain inner-product
+decoder (`z_i . z_j`), which is mathematically forced to be symmetric
+(`z_i.z_j == z_j.z_i`) and therefore cannot represent directional regulation (a
+transcription factor regulating a target gene is not the same relationship in reverse).
+With a learned `W`, `z_i^T W z_j != z_j^T W z_i` in general.
+
+**Distance decoder:** `score = sigmoid(-||z_i - z_j||^2)` — a completely different idea
+(proximity in embedding space, rather than a learned interaction matrix).
+
+**Why ensemble the two:** each decoder alone beat the original plain inner-product
+decoder, but neither was consistently the single best option across all 3 DREAM4
+networks tested. Averaging their outputs together beat *both* individual decoders on
+AUPR on every network tested, and beat both on AUROC on 2 of 3 networks — the most
+consistent result found across the whole architecture-testing process, more consistent
+than either decoder alone.
+
+## Step 5 — Train
+
+- 300 epochs (raised from an original 150 — every decoder alternative tested showed real
+  further gains with more training that 150 epochs was under-selling)
+- Adam optimizer, learning rate `0.01`, weight decay `1e-8`
+- Standard GAE reconstruction loss (binary cross-entropy between predicted edge
+  probability and actual edge/non-edge, with automatic random negative sampling from
+  non-edges)
+- 3 independent training runs ("iterations") per algorithm per decoder, to average out
+  random-initialization noise
+
+## Step 6 — Fuse
+
+**Continuous averaging** — take every trained model's raw `[0,1]`-normalized continuous
+reconstruction (16 algorithms x 3 iterations x 2 decoders = 96 individual reconstructions
+in the full ensemble pipeline) and average them all together, element-wise, into one
+final continuous adjacency matrix.
+
+**Do not binarize before combining.** The original pipeline binarized each individual
+run's output, then summed those binary matrices into a vote count, then thresholded the
+vote count. Continuous averaging was tested against this on identical trained models
+(same training runs, only the combination method differed) and produced a real ~0.02
+AUROC improvement — binarizing early throws away exactly how confident each prediction
+was, which continuous averaging preserves all the way through.
+
+## Optional Step 7 — Final network extraction (if a specific edge list is needed)
+
+The continuous fused matrix is a *ranking*, not a final yes/no answer. If a specific
+final list of predicted edges is needed (rather than a continuous score for every gene
+pair), a real, principled option was validated: **Tukey's IQR outlier rule (Tukey,
+1977)** — the same standard convention that draws the whiskers on a boxplot — applied
+per-gene:
+
+```
+for each gene's own row of connection scores:
+    Q1, Q3 = 25th and 75th percentile of that gene's own scores
+    IQR = Q3 - Q1
+    keep connections where score > Q3 + k*IQR
+```
+
+`k=1.5` ("mild outlier") or `k=3.0` ("extreme outlier") are both standard, citable
+values — no tuning against ground truth required. Which one to use depends on which
+decoder produced the continuous scores (see validated numbers below) — the right k is
+not universal across decoders, since it depends on the shape of that decoder's score
+distribution, not an arbitrary choice.
+
+**Important: never compute AUROC/AUPR on the post-cutoff binary network.** These metrics
+are computed on the continuous score, before any cutoff is applied, and will always look
+worse if computed after — that's not the method failing, it's what these metrics
+structurally measure (ranking quality across every possible cutoff, not one committed
+decision). Report AUROC/AUPR on the pre-cutoff continuous score, and report
+precision/recall/F1 separately for the actual final network the cutoff produces.
+
+# Validated design choices (reference table)
+
+| Component | Choice | Key validated evidence |
+|---|---|---|
+| Data source | GENECI's raw `lists/GRN_*.csv` | Pre-binarized `normalized_weight_matrix_*.csv` files invalidate any threshold sweep |
+| Input topology | Top-10% per algorithm, rank-based | Fixed cutoffs vary 0.3%-67% density across algorithms at the same value; 10% ~ 2-3x true density |
+| Node features | Identity matrix | Real expression as features tested and clearly worse |
+| Encoder | 3-layer GCN, widths (32,32,16) | 2-layer, 4-layer, GraphSAGE, Jumping Knowledge, 4 alternative width shapes all tested, none won |
+| Decoder | Bilinear + distance, averaged | Each alone beat plain inner-product; ensemble beat both individually on AUPR, all 3 networks |
+| Fusion | Continuous averaging | ~0.02 AUROC gain over binarize-then-count, on identical trained models |
+| Epochs | 300 | Every decoder alternative showed further gains beyond the original 150 |
+| Final cutoff (optional) | Tukey's IQR rule, k depends on decoder | Near-oracle F1 achieved on plain decoder (k=3.0); bilinear needs looser k=1.5 |
+
+# Things tested and rejected — full log
+
+This is the most important section for avoiding wasted effort. Everything below was
+implemented and empirically tested (not just considered), and did not make it into the
+production pipeline. Re-testing any of these without new evidence would be repeating
+already-done work.
+
+| Idea | Result | Why rejected |
+|---|---|---|
+| Real gene expression as node features (replacing identity) | Clearly worse on all metrics | Identity lets GCN learn pure topology, which better matches the reconstruction task |
+| Joint/shared encoder training across all algorithms (one model, not 17) | Inconclusive, roughly tied with independent training | Independent per-algorithm training holds its own; joint training needed more epochs just to reach parity |
+| Correlation-weighted edges (expression correlation as edge-confidence multiplier) | No improvement | Tied or slightly worse than unweighted |
+| "Native-weight" edge confidence (each algorithm's own raw score as edge weight, vs. binary presence) | Inconclusive on real continuous data | Initially looked promising, but that was on a pre-binarized file (invalid test); on real data, roughly a wash |
+| Binarize-then-vote-count fusion (original method) | Beaten by continuous averaging | ~0.02 AUROC worse than continuous averaging, controlled test |
+| Borda-count / rank-based fusion | Clearly worse | Discards confidence magnitude, keeps only rank order |
+| Similarity Network Fusion (SNF) | Mixed trade-off (worse AUROC, better AUPR) | Not adopted as default; may be worth revisiting if AUPR is the only priority |
+| NMF-based fusion, entropy-weighted fusion, Jaccard-based algorithm filtering | No improvement (tied with simple averaging) | -- |
+| Entropy-weighted fusion + Jaccard-filtering combined | Catastrophic failure (AUROC ~0.61, near-random) | The entropy formula's actual math rewards single-algorithm-confident edges, not genuine cross-algorithm agreement -- contrary to its own inline documentation's stated intent |
+| GAT (attention) encoder | Clearly worse, and ~67% slower | Each gene has too few neighbors at this topology density for attention to add value over uniform GCN averaging |
+| GraphSAGE encoder (tested alone, and paired with bilinear decoder) | Clearly worse both times | -- |
+| Jumping Knowledge (concatenating all 3 GCN layers before decoding) | Worse, and did not improve with more training | Genuine underperformer, not just undertrained |
+| MLP decoder | Needed more epochs to show gains; eventually beat baseline AUPR at 450 epochs | Promising but never beat bilinear or the bilinear+distance ensemble; not adopted as primary |
+| Focal Loss (gamma=2, alpha=0.25) | Mixed across networks -- won on 1, lost on 1, split on 1 | Not a consistent win |
+| Hard-negative mining using the model's own confidence scores | Catastrophic failure (near-random on all networks) | Model was punished for confidently proposing real hidden links -- directly undermines the GCN's intended "discover hidden edges" behavior |
+| Structural hard-negative mining (common-neighbors based, not model-score based) | Small positive signal on 1 network, clearly worse on 2 others | Does not generalize |
+| Alternative encoder widths (funnel, wide-middle, bottleneck, constant-wide) | None beat (32,32,16) at any epoch count tested | -- |
+| Deeper 4-layer width (32,32,16,8) | Clearly worse | Consistent with width-sweep finding that current shape is already good |
+| Algorithm ablation (remove 3/6/9 of 16 algorithms, averaged over repeats) | Non-monotonic; going below 8 algorithms clearly hurts, but partial removal (down to ~10) is sometimes neutral or even slightly better | Confirms real redundancy exists among the 16, but doesn't cleanly prove "more is strictly always better" |
+| Grouping/clustering redundant algorithms before fusion (hand-guessed methodology families, and real Jaccard-similarity-based unsupervised clustering) | Wash or slightly worse on both tested groupings | Flat averaging already implicitly handles redundancy reasonably well; explicit grouping removes reinforcement rather than fixing a real problem |
+| Max (instead of mean) within algorithm groups | Clearly worse on all networks/metrics tested | Max is far more sensitive to single-algorithm noise spikes than mean |
+| Top-20% or higher input topology density (re-tested specifically with the bilinear decoder) | Clearly worse, and gets worse the higher the density | The "5-20% stable" finding was specific to the old decoder and did not transfer; 10% is closer to the real peak for bilinear |
+
+# Benchmark comparison
+
+Comparison against the published GENECI benchmark table (best individual algorithm and
+GENECI's own best evolutionary-optimized ensemble), same DREAM4 networks:
+
+| Network | Best single algorithm | Best GENECI (their ensemble) | This pipeline (bilinear, no pruning) |
+|---|---|---|---|
+| D4_100_1 | GENIE3_ET: AUROC 0.7733, AUPR 0.0756 | AUROC 0.7623, AUPR 0.0676 | **AUROC 0.7975, AUPR 0.1073** |
+| D4_100_2 | GENIE3_GBM: AUROC 0.6929, AUPR 0.0624 | AUROC 0.665, AUPR 0.0691 | **AUROC 0.6944 (narrow), AUPR 0.1025** (at 450 epochs) |
+| D4_100_3 | GENIE3_RF: AUROC 0.7411, AUPR 0.1182 | AUROC 0.7396, AUPR 0.1265 | AUROC 0.7091 (below), **AUPR 0.1337** |
+
+**Honest summary:** wins AUPR on all 3 networks tested (no exceptions) -- the priority
+metric given the class imbalance in this problem. Wins AUROC on 2 of 3; GENIE3_RF
+specifically holds a real AUROC edge on network 3. Not an unqualified sweep, but a
+genuine, defensible result on the metric that matters most.
+
+# Open items / not yet done
+
+These are real, identified next steps, not vague ideas:
+
+1. **E. coli / DREAM5 validation is the single highest-priority item.** Every result
+   above is from the DREAM4 synthetic-network family. A real biological organism test
+   (E. coli, DREAM5 Network 3, which has genuine curated regulatory ground truth via
+   RegulonDB) is the actual test of whether any of this generalizes beyond DREAM4's
+   specific synthetic quirks.
+2. Whether the validated "2-3x expected density" input-topology multiplier transfers to
+   E. coli's real density (computable from RegulonDB's documented TF-target statistics)
+   is unverified.
+3. Network 2 (of the 3 DREAM4 networks) consistently resisted almost every improvement
+   that helped on networks 1 and 3 -- the underlying reason was never identified. Worth
+   investigating if time allows, since it may reveal something structural about when
+   this method does/doesn't work.
+4. PPI-filtered high-order (2-hop) neighbor construction (inspired by a related published
+   method, CaHoT-GRN) -- cannot be tested on DREAM4 (synthetic genes have no real protein
+   identity to check against a PPI database), but is directly testable once E. coli data
+   is available (STRING database), and would specifically test whether PPI-based
+   filtering recovers genuine regulatory relationships or conflates them with general
+   pathway co-membership -- a real, flagged concern, not yet resolved either way.
+5. Tukey final-cutoff k value has only been tuned/checked against the plain decoder
+   (k=3.0) and the bilinear decoder alone (k=1.5) -- never validated for the bilinear+
+   distance ensemble output specifically.
+6. A proper, formal held-out validation split (as opposed to the principled-but-informal
+   validation approach used throughout, e.g. testing on multiple networks, using
+   ground-truth-blind cutoff rules) has not been built. Recommended before any final
+   paper-ready numbers are reported, to fully rule out any remaining leakage concerns.
+
+# Existing reference implementations
+
+Three working Python scripts already exist in `models/`, each a complete, runnable
+pipeline (not just a sketch):
+
+- **`gcn_gae_improved_model.py`** -- first validated version: real continuous data,
+  top-X% input threshold, continuous-averaging fusion, plain inner-product decoder.
+- **`gcn_gae_bilinear_model.py`** -- adds the bilinear decoder (single decoder, not yet
+  the ensemble).
+- **`gcn_gae_ensemble_best_model.py`** -- current best: bilinear + distance decoders,
+  averaged together. This is the one to build the package around.
+
+Each file's own docstring contains the same validated-choices reasoning as this
+document, scoped to what that specific file implements.
+
+# Suggested package structure (for the next development session)
+
+A reasonable module breakdown, based on the pipeline's natural stages:
+
+```
+package_name/
+  data/
+    loaders.py        # load_algorithm_matrices() and related I/O
+  topology/
+    threshold.py       # top-X% rank-based edge construction
+  models/
+    encoders.py         # GCNEncoder (and any future alternatives)
+    decoders.py         # BilinearDecoder, DistanceDecoder
+  training/
+    train.py            # train_gae(), iteration/epoch loop
+  fusion/
+    combine.py           # continuous averaging across algorithms/iterations/decoders
+  postprocessing/
+    tukey_cutoff.py       # optional final network extraction
+  evaluation/
+    metrics.py             # AUROC/AUPR/F1 helpers
+  cli.py                    # command-line entry point, argument parsing
+tests/
+  (one test module per pipeline stage, using a small synthetic fixture dataset)
+```
+
+This mirrors the six pipeline steps above directly, which should make it straightforward
+to hand each module's responsibility to a fresh development session with this document
+as its full specification.

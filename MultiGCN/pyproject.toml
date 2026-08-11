@@ -16,14 +16,21 @@ dependencies = [
     "numpy>=1.23",
     "pandas>=1.5",
     "scikit-learn>=1.2",
+    "joblib>=1.2",
     "torch>=2.0",
     "torch-geometric>=2.4",
     "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
-# Python-runtime algorithms that can share MultiGCN's interpreter
-inference = ["arboreto>=0.1.6", "inferelator>=0.6"]
+# Python-runtime algorithms that can share MultiGCN's interpreter.
+#
+# arboreto is deliberately NOT here. It requires dask+distributed and calls
+# LocalCluster(diagnostics_port=...), removed from modern distributed; pinning
+# back to dask 2023 pulls numpy<2 (numpy.compat), which conflicts with the
+# numpy 2.x torch needs. GENIE3/GRNBOOST2 are implemented natively on
+# scikit-learn instead - same algorithm, no dependency conflict.
+inference = ["inferelator>=0.6"]
 dev = ["pytest>=7.0", "pytest-cov"]
 
 [project.scripts]

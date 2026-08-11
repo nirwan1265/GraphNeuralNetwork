@@ -1,0 +1,32 @@
+# MultiGCN configuration. Every value here is the validated production default;
+# override deliberately, not by habit.
+
+# --- input topology ---
+# Fraction of gene pairs kept per algorithm, rank-based. 0.10 corresponds to
+# roughly 2-3x the true regulatory density of the DREAM4 networks (3.5-5%).
+# For a new organism, estimate that organism's density independently and apply
+# the same multiplier. Never tune this against the ground truth you evaluate on.
+top_x: 0.10
+keep_weights: false
+
+# --- architecture ---
+hidden: 32
+embedding_dim: 16
+dropout: 0.01
+decoders: [bilinear, distance]
+
+# --- training ---
+epochs: 300
+iterations: 3
+lr: 0.01
+weight_decay: 1.0e-8
+seed: 0
+
+# --- execution ---
+device: null          # null = auto (cuda if available)
+prefer_docker: false
+overwrite_inference: false
+
+# --- output ---
+output_dir: multigcn_output
+verbose: true

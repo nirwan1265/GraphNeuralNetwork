@@ -1,0 +1,21 @@
+Condition	source	term_id	term_name	N_thresholds_significant	Thresholds	Best_FDR
+CTL	KEGG	KEGG:00270	Cysteine and methionine metabolism	1	0.05	0.040087572788161524
+LIN	GO:CC	GO:0005789	endoplasmic reticulum membrane	2	0.05;0.1	2.952863998938797e-4
+LIN	GO:CC	GO:0042175	nuclear outer membrane-endoplasmic reticulum membrane network	2	0.05;0.1	2.952863998938797e-4
+LIN	GO:CC	GO:0098827	endoplasmic reticulum subcompartment	2	0.05;0.1	2.952863998938797e-4
+LIN	KEGG	KEGG:00460	Cyanoamino acid metabolism	2	0.1;0.2	0.0018311163835513394
+LIN	GO:CC	GO:0031984	organelle subcompartment	1	0.05	0.0013018979948789485
+LIN	GO:CC	GO:0016020	membrane	1	0.05	0.022772999278635096
+LIN	GO:MF	GO:0005345	purine nucleobase transmembrane transporter activity	1	0.05	0.023603911886906352
+LIN	GO:MF	GO:0015211	purine nucleoside transmembrane transporter activity	1	0.05	0.023603911886906352
+LIN	GO:MF	GO:0015932	nucleobase-containing compound transmembrane transporter activity	1	0.05	0.023603911886906352
+LIN	GO:MF	GO:0042284	sphingolipid delta-4 desaturase activity	1	0.05	0.023603911886906352
+LIN	GO:CC	GO:0005783	endoplasmic reticulum	1	0.05	0.025276484803674615
+LIN	GO:MF	GO:0005337	nucleoside transmembrane transporter activity	1	0.05	0.03315463651464009
+LIN	GO:MF	GO:0005506	iron ion binding	1	0.05	0.03315463651464009
+LIN	GO:MF	GO:0016705	oxidoreductase activity, acting on paired donors, with incorporation or reduction of molecular oxygen	1	0.05	0.03315463651464009
+LIN	GO:CC	GO:0071006	U2-type catalytic step 1 spliceosome	1	0.1	0.037412919229555336
+LIN	GO:BP	GO:0006863	purine nucleobase transport	1	0.05	0.04944550349397814
+LIN	GO:BP	GO:0015860	purine nucleoside transmembrane transport	1	0.05	0.04944550349397814
+LIN	GO:BP	GO:0072530	purine-containing compound transmembrane transport	1	0.05	0.04944550349397814
+LIN	GO:BP	GO:1904823	purine nucleobase transmembrane transport	1	0.05	0.04944550349397814

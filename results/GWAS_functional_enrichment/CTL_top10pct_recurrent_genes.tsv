@@ -1,0 +1,118 @@
+GeneID	Condition	GeneName	Family_SubFamily	Protein_class	Best_P_Value	Max_N_Phenotypes	TraitLayers
+SORBI_3003G318650	CTL	Uncharacterized protein	NA	NA	3.37063e-12	64	sumratio
+SORBI_3002G371500	CTL	RRM domain-containing protein	TRANSFORMER-2 SEX-DETERMINING PROTEIN (PTHR48034:SF6)	RNA metabolism protein(PC00031)	1.590391e-11	56	sumratio
+SORBI_3002G373700	CTL	NGR2	PROTEIN LAZY 4 (PTHR34045:SF3)	NA	1.590391e-11	56	sumratio
+SORBI_3002G373800	CTL	Translation elongation factor EF1B beta_delta subunit guanine nucleotide exchange domain-containing protein	ELONGATION FACTOR 1-BETA (PTHR11595:SF21)	translation elongation factor(PC00222)	1.590391e-11	56	sumratio
+SORBI_3002G373900	CTL	Uncharacterized protein	OS07G0614600 PROTEIN (PTHR21229:SF20)	G-protein coupled receptor(PC00021)	1.590391e-11	56	sumratio
+SORBI_3002G374200	CTL	DNA-directed RNA polymerase subunit	DNA-DIRECTED RNA POLYMERASE SUBUNIT (PTHR11239:SF16)	DNA-directed RNA polymerase(PC00019)	1.590391e-11	56	sumratio
+SORBI_3002G375200	CTL	DPL2 protein	OS01G0258600 PROTEIN (PTHR36797:SF3)	NA	1.590391e-11	56	sumratio
+SORBI_3009G152800	CTL	Major facilitator superfamily (MFS) profile domain-containing protein	OS07G0131250 PROTEIN (PTHR23500:SF478)	secondary carrier transporter(PC00258)	1.946785e-10	53	sumratio
+SORBI_3009G153366	CTL	Uncharacterized protein	NA	NA	1.946785e-10	53	sumratio
+SORBI_3009G153400	CTL	Dof zinc finger protein	DOF ZINC FINGER PROTEIN (PTHR31992:SF321)	NA	1.946785e-10	53	sumratio
+SORBI_3010G136200	CTL	SLH domain-containing protein	SLH DOMAIN PROTEIN (PTHR33740:SF1)	NA	4.284987e-23	34	sumratio
+SORBI_3010G136300	CTL	Uncharacterized protein	PHOSPHATIDYLETHANOLAMINE-BINDING PROTEIN 4 (PTHR11362:SF82)	protease inhibitor(PC00191)	4.284987e-23	34	sumratio
+SORBI_3010G136400	CTL	Uncharacterized protein	NA	NA	4.284987e-23	34	sumratio
+SORBI_3010G136450	CTL	CCHC-type domain-containing protein	OS11G0296500 PROTEIN (PTHR23002:SF89)	RNA metabolism protein(PC00031)	4.284987e-23	34	sumratio
+SORBI_3010G136500	CTL	Uncharacterized protein	NA	NA	4.284987e-23	34	sumratio
+SORBI_3010G136600	CTL	Uncharacterized protein	NA	NA	4.284987e-23	34	sumratio
+SORBI_3010G136601	CTL	Uncharacterized protein	NA	NA	4.284987e-23	34	sumratio
+SORBI_3010G144500	CTL	Uncharacterized protein	NA	NA	1.30833e-21	34	sumratio
+SORBI_3010G140600	CTL	BolA-like protein	PROTEIN BOLA4, CHLOROPLASTIC_MITOCHONDRIAL (PTHR46230:SF4)	NA	4.460071e-15	34	individual;sumratio
+SORBI_3010G150325	CTL	F-box domain-containing protein	F-BOX DOMAIN-CONTAINING PROTEIN (PTHR34591:SF23)	NA	1.414634e-13	34	individual;sumratio
+SORBI_3010G150575	CTL	Small ribosomal subunit protein uS5 C-terminal domain-containing protein	RIBOSOMAL PROTEIN S2, PUTATIVE, EXPRESSED-RELATED (PTHR13718:SF118)	ribosomal protein(PC00202)	1.414634e-13	34	individual;sumratio
+SORBI_3010G150600	CTL	Uncharacterized protein	NA	NA	1.414634e-13	34	individual;sumratio
+SORBI_3010G150700	CTL	PABC domain-containing protein	NA	NA	1.414634e-13	34	individual;sumratio
+SORBI_3010G150701	CTL	Uncharacterized protein	NA	NA	1.414634e-13	34	individual;sumratio
+SORBI_3010G150800	CTL	Cytoplasmic tRNA 2-thiolation protein 1 C-terminal domain-containing protein	CYTOPLASMIC TRNA 2-THIOLATION PROTEIN (PTHR33513:SF45)	NA	1.414634e-13	34	sumratio
+SORBI_3010G150900	CTL	Uncharacterized protein	OS06G0523300 PROTEIN (PTHR33513:SF43)	NA	1.414634e-13	34	individual;sumratio
+SORBI_3010G151000	CTL	CMP-sialic acid transporter 1	UDP-SUGAR TRANSPORTER PROTEIN SLC35A4-RELATED (PTHR10231:SF43)	transporter(PC00227)	1.414634e-13	34	individual;sumratio
+SORBI_3010G151200	CTL	GRF-type domain-containing protein	NA	NA	1.414634e-13	34	individual;sumratio
+SORBI_3010G151325	CTL	Protein FAR1-RELATED SEQUENCE	PROTEIN FAR1-RELATED SEQUENCE (PTHR31669:SF168)	NA	1.414634e-13	34	individual;sumratio
+SORBI_3006G040500	CTL	Phospholipid-transporting ATPase	PHOSPHOLIPID-TRANSPORTING ATPASE (PTHR24092:SF199)	primary active transporter(PC00068)	1.0056489999999999e-26	27	individual
+SORBI_3002G218600	CTL	BRX domain-containing protein	PROTEIN BREVIS RADIX-LIKE 3 (PTHR46058:SF2)	NA	1.913455e-11	22	sumratio
+SORBI_3002G218700	CTL	Mitochondrial carrier protein	OS09G0444700 PROTEIN (PTHR46080:SF21)	secondary carrier transporter(PC00258)	1.913455e-11	22	sumratio
+SORBI_3002G218800	CTL	Glycosyltransferase	OS01G0865400 PROTEIN (PTHR48048:SF29)	glycosyltransferase(PC00111)	1.913455e-11	22	sumratio
+SORBI_3002G219000	CTL	Uncharacterized protein	PROTEINASE INHIBITOR I4, SERPIN (DUF716) (PTHR46285:SF3)	NA	1.913455e-11	22	sumratio
+SORBI_3002G219100	CTL	Uncharacterized protein	NA	NA	1.913455e-11	22	sumratio
+SORBI_3002G219200	CTL	Uncharacterized protein	PROTEINASE INHIBITOR I4, SERPIN (DUF716) (PTHR46285:SF3)	NA	1.913455e-11	22	sumratio
+SORBI_3002G220100	CTL	Uncharacterized protein	SUBFAMILY NOT NAMED (PTHR36478:SF23)	NA	1.913455e-11	22	sumratio
+SORBI_3002G220200	CTL	formate--tetrahydrofolate ligase	NA	NA	1.913455e-11	22	sumratio
+SORBI_3002G221400	CTL	C2H2-type domain-containing protein	PROTEIN SHOOT GRAVITROPISM 5 (PTHR10593:SF168)	non-receptor serine/threonine protein kinase(PC00167)	1.913455e-11	22	sumratio
+SORBI_3002G221900	CTL	NA	NA	NA	1.913455e-11	22	sumratio
+SORBI_3005G148500	CTL	FBD domain-containing protein	NA	NA	1.551627e-16	13	individual
+SORBI_3005G149000	CTL	Saccharopine dehydrogenase NADP binding domain-containing protein	NA	NA	1.551627e-16	13	individual
+SORBI_3010G140800	CTL	Uncharacterized protein	NA	NA	1.235556e-14	13	individual
+SORBI_3009G092100	CTL	NA	NA	NA	1.337362e-17	12	individual;sumratio
+SORBI_3005G110120	CTL	Uncharacterized protein	NA	NA	8.186128e-15	12	individual
+SORBI_3005G110160	CTL	Uncharacterized protein	NA	NA	8.186128e-15	12	individual
+SORBI_3005G110517	CTL	CASP-like protein	CASP-LIKE PROTEIN 4U1 (PTHR33573:SF35)	NA	1.432429e-9	12	sumratio
+SORBI_3005G110520	CTL	Uncharacterized protein	NA	NA	1.432429e-9	12	sumratio
+SORBI_3005G110523	CTL	Uncharacterized protein	NA	NA	1.432429e-9	12	sumratio
+SORBI_3005G110535	CTL	DNA replication licensing factor MCM2	DNA REPLICATION LICENSING FACTOR MCM2 (PTHR11630:SF44)	DNA metabolism protein(PC00009)	1.432429e-9	12	sumratio
+SORBI_3005G110538	CTL	Protein kinase domain-containing protein	PROTEIN KINASE DOMAIN CONTAINING PROTEIN (PTHR24055:SF347)	non-receptor serine/threonine protein kinase(PC00167)	1.432429e-9	12	sumratio
+SORBI_3005G110541	CTL	Probable bifunctional methylthioribulose-1-phosphate dehydratase_enolase-phosphatase E1	METHYLTHIORIBULOSE-1-PHOSPHATE DEHYDRATASE (PTHR10640:SF7)	dehydratase(PC00091)	1.432429e-9	12	sumratio
+SORBI_3005G110544	CTL	CR-type domain-containing protein	CHAPERONE PROTEIN DNAJ-LIKE PROTEIN (PTHR15852:SF57)	NA	1.432429e-9	12	sumratio
+SORBI_3005G110553	CTL	Uncharacterized protein	ELMO_CED-12 FAMILY PROTEIN (PTHR12771:SF49)	scaffold/adaptor protein(PC00226)	1.432429e-9	12	sumratio
+SORBI_3001G318000	CTL	glutathione transferase	GLUTATHIONE S-TRANSFERASE (PTHR11260:SF501)	transferase(PC00220)	3.053225e-16	11	individual
+SORBI_3001G318100	CTL	Uncharacterized protein	NA	NA	3.053225e-16	11	individual
+SORBI_3001G320500	CTL	DUF4378 domain-containing protein	OS10G0524000 PROTEIN (PTHR33623:SF14)	NA	3.053225e-16	11	individual
+SORBI_3006G049666	CTL	NA	NA	NA	1.18068e-14	11	individual
+SORBI_3008G105500	CTL	Ureide permease 4	OS12G0503000 PROTEIN (PTHR31081:SF3)	NA	4.627337e-14	11	individual
+SORBI_3008G105600	CTL	Uncharacterized protein	NA	NA	4.627337e-14	11	individual
+SORBI_3008G105800	CTL	Cytochrome P450	OS06G0497350 PROTEIN (PTHR47956:SF84)	oxygenase(PC00177)	4.627337e-14	11	individual
+SORBI_3008G105850	CTL	Uncharacterized protein	NA	NA	4.627337e-14	11	individual
+SORBI_3008G105900	CTL	Uncharacterized protein	NA	NA	4.627337e-14	11	individual
+SORBI_3008G106200	CTL	Cytochrome P450	OS06G0497350 PROTEIN (PTHR47956:SF84)	oxygenase(PC00177)	4.627337e-14	11	individual
+SORBI_3008G106301	CTL	Uncharacterized protein	NA	NA	4.627337e-14	11	individual
+SORBI_3008G106500	CTL	DUF1618 domain-containing protein	DUF1618 DOMAIN-CONTAINING PROTEIN (PTHR33165:SF54)	NA	4.627337e-14	11	individual
+SORBI_3008G106550	CTL	DUF295 domain-containing protein	DUF295 DOMAIN-CONTAINING PROTEIN (PTHR33165:SF33)	NA	4.627337e-14	11	individual
+SORBI_3006G044466	CTL	Uncharacterized protein	NA	NA	9.34374e-14	11	individual
+SORBI_3006G044532	CTL	NA	NA	NA	9.34374e-14	11	individual
+SORBI_3006G044600	CTL	NA	NA	NA	9.34374e-14	11	individual
+SORBI_3007G111800	CTL	Storage protein	STORAGE PROTEIN (PTHR31210:SF95)	NA	1.799445e-13	11	individual
+SORBI_3007G111901	CTL	Uncharacterized protein	NA	NA	1.799445e-13	11	individual
+SORBI_3007G112000	CTL	Uncharacterized protein	NA	NA	1.799445e-13	11	individual
+SORBI_3007G112100	CTL	NA	NA	NA	1.799445e-13	11	individual
+SORBI_3007G112200	CTL	ENT domain-containing protein	PROTEIN EMSY-LIKE 3 (PTHR33432:SF27)	NA	1.799445e-13	11	individual
+SORBI_3002G148100	CTL	CRAL-TRIO domain-containing protein	OS09G0258000 PROTEIN (PTHR46226:SF13)	NA	2.17296e-13	11	individual
+SORBI_3002G148166	CTL	50S ribosomal protein L32, chloroplastic	NA	NA	2.17296e-13	11	individual
+SORBI_3002G148232	CTL	NA	NA	NA	2.17296e-13	11	individual
+SORBI_3005G208275	CTL	Uncharacterized protein	NA	NA	5.863299e-13	11	individual
+SORBI_3001G206100	CTL	Wings apart-like protein C-terminal domain-containing protein	WINGS APART-LIKE PROTEIN HOMOLOG (PTHR22100:SF13)	NA	2.556959e-12	11	individual
+SORBI_3004G134900	CTL	Uncharacterized protein	NA	NA	7.769472e-12	11	individual
+SORBI_3006G049700	CTL	SAM domain-containing protein	NA	NA	6.595057e-15	10	individual
+SORBI_3006G049900	CTL	J domain-containing protein	DNAJ HOMOLOG SUBFAMILY C MEMBER 2 (PTHR43999:SF1)	chaperone(PC00072)	6.595057e-15	10	individual
+SORBI_3006G050000	CTL	Rab-GAP TBC domain-containing protein	RAB-GAP TBC DOMAIN-CONTAINING PROTEIN (PTHR22957:SF690)	GTPase-activating protein(PC00257)	6.595057e-15	10	individual
+SORBI_3006G050050	CTL	Uncharacterized protein	NA	NA	6.595057e-15	10	individual
+SORBI_3006G049600	CTL	Methyltransferase type 11 domain-containing protein	EEF1A LYSINE AND N-TERMINAL METHYLTRANSFERASE (PTHR12176:SF78)	methyltransferase(PC00155)	1.18068e-14	10	individual
+SORBI_3004G130001	CTL	Uncharacterized protein	NA	NA	3.199565e-14	10	individual
+SORBI_3008G131200	CTL	Uncharacterized protein	EXPRESSED PROTEIN (PTHR31676:SF10)	NA	6.204077e-14	10	individual
+SORBI_3008G131300	CTL	Pectinesterase	PECTINESTERASE (PTHR31321:SF81)	hydrolase(PC00121)	6.204077e-14	10	individual
+SORBI_3008G131400	CTL	Uncharacterized protein	MYB TRANSCRIPTION FACTOR (PTHR45675:SF49)	homeodomain transcription factor(PC00119)	6.204077e-14	10	individual
+SORBI_3008G131500	CTL	Ubiquitin-like protease family profile domain-containing protein	UBIQUITIN-LIKE PROTEASE FAMILY PROFILE DOMAIN-CONTAINING PROTEIN (PTHR12606:SF150)	protease(PC00190)	6.204077e-14	10	individual
+SORBI_3008G131550	CTL	Myb_SANT-like domain-containing protein	NA	NA	6.204077e-14	10	individual
+SORBI_3008G131601	CTL	Ubiquitin-like protease family profile domain-containing protein	NA	NA	6.204077e-14	10	individual
+SORBI_3008G131651	CTL	Ubiquitin-like protease family profile domain-containing protein	NA	NA	6.204077e-14	10	individual
+SORBI_3008G131700	CTL	PsbP C-terminal domain-containing protein	PSBP DOMAIN-CONTAINING PROTEIN 1, CHLOROPLASTIC (PTHR31407:SF15)	NA	6.204077e-14	10	individual
+SORBI_3008G131800	CTL	CCHC-type domain-containing protein	RIBOSOME QUALITY CONTROL COMPLEX SUBUNIT NEMF (PTHR15239:SF6)	NA	6.204077e-14	10	individual
+SORBI_3008G131900	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132000	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132200	CTL	Calmodulin-binding protein MPCBP	PROTEIN NPG1 (PTHR44102:SF5)	NA	6.204077e-14	10	individual
+SORBI_3008G132250	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132300	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132400	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132500	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132550	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132600	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132700	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132800	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G132900	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G133000	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G133100	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3008G133200	CTL	NA	NA	NA	6.204077e-14	10	individual
+SORBI_3006G044800	CTL	Uncharacterized protein	CHAPERONE PROTEIN DNAJ-RELATED (PTHR34687:SF3)	chaperone(PC00072)	9.34374e-14	10	individual
+SORBI_3005G086650	CTL	NA	NA	NA	1.174296e-13	10	individual
+SORBI_3006G048775	CTL	Nucleoplasmin-like domain-containing protein	NA	NA	3.126946e-13	10	individual
+SORBI_3007G070700	CTL	NA	NA	NA	4.30794e-13	10	individual
+SORBI_3007G070900	CTL	Uncharacterized protein	NA	NA	4.30794e-13	10	individual
+SORBI_3007G071000	CTL	NAC domain-containing protein	OS08G0200600 PROTEIN (PTHR31744:SF21)	NA	4.30794e-13	10	individual
