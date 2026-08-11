@@ -1,0 +1,57 @@
+# --- Generated pipeline output ------------------------------------------
+# GRN edge lists are dense: a 100-gene network is ~10k rows, but the DREAM5
+# / E. coli runs produce hundreds of MB per algorithm. These are reproducible
+# artefacts - regenerate them, never commit them.
+tmp-*/
+tmp/
+GCN_output/
+multigcn_output/
+dream4_net3_out/
+results/**/GRN_*.csv
+**/GRN_*.csv
+**/normalized_weight_matrix*.csv
+**/fused_network.csv
+**/matrices/
+inferred_networks/
+
+# --- Data --------------------------------------------------------------
+# Benchmark data is downloadable and large. Keep the loaders in git, not the
+# datasets. Comment these out if you specifically want DREAM4 versioned.
+data/**/*.csv
+!data/**/README*
+*.npy
+*.pkl
+*.h5
+*.hdf5
+
+# --- Python ------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# --- R -----------------------------------------------------------------
+.Rhistory
+.RData
+.Rproj.user/
+
+# --- Editors / OS ------------------------------------------------------
+.DS_Store
+.idea/
+.vscode/
+
+# --- Latex -------------------------------------------------------------
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+*.fdb_latexmk
+*.fls

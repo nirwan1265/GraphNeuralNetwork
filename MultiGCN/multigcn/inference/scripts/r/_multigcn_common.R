@@ -1,13 +1,24 @@
-# Shared helpers for MultiGCN-owned R wrappers.
-# Written for MultiGCN (MIT) - not vendored from GENECI.
+# Shared helpers for MultiGCN's R wrappers.
+#
+# Adapted from GENECI's components/infer_network/functions.R
+# (https://github.com/AdrianSeguraOrtiz/GENECI), Copyright (c) 2022 Adrian
+# Segura Ortiz, MIT License. See THIRD_PARTY_NOTICES.md.
+#
+# Changes from the original:
+#   - GetConfList/ProcessList kept behaviourally identical so results match
+#     the previously validated DREAM4 runs.
+#   - added JSON parameter parsing, so algorithms are tunable rather than
+#     hardcoded.
+#   - dropped the gdata dependency, which was loaded but never used.
+#   - output path no longer prefixed with "./", which broke absolute paths.
 
 suppressMessages({
   if (!requireNamespace("jsonlite", quietly = TRUE))
-    install.packages("jsonlite", repos = "http://cran.us.r-project.org")
+    install.packages("jsonlite", repos = "https://cloud.r-project.org")
   library(jsonlite)
 })
 
-# Parse: <in_file> <output_folder> <json_params> [<time_series_file>]
+# Parse: <in_file> <output_folder> [<json_params>] [<time_series_file>]
 ParseArgs <- function() {
   a <- commandArgs(trailingOnly = TRUE)
   if (length(a) < 2)
@@ -29,8 +40,14 @@ ReadExpression <- function(path, samples_as_rows = TRUE) {
   if (samples_as_rows) t(as.matrix(m)) else as.matrix(m)
 }
 
-# Rescale to [0,1] and drop zero-confidence rows, matching the convention every
-# other algorithm in the pipeline follows.
+# Square matrix -> long (source, target, confidence), sorted descending.
+GetConfList <- function(network) {
+  df <- data.frame(as.table(as.matrix(network)))
+  df[order(df$Freq, decreasing = TRUE), ]
+}
+
+# Rescale to [0,1] and drop zero-confidence rows. Matches the convention every
+# algorithm in the pipeline follows, so scores stay comparable across methods.
 ProcessList <- function(df) {
   colnames(df) <- c("source", "target", "conf")
   df <- df[!is.na(df$conf), ]
@@ -42,6 +59,7 @@ ProcessList <- function(df) {
 }
 
 WriteList <- function(df, output_folder, algorithm) {
+  dir.create(output_folder, showWarnings = FALSE, recursive = TRUE)
   path <- file.path(output_folder, paste0("GRN_", algorithm, ".csv"))
   write.table(df, path, sep = ",", col.names = FALSE, row.names = FALSE,
               quote = FALSE)
@@ -52,4 +70,21 @@ RequirePackage <- function(pkg, how) {
   if (!requireNamespace(pkg, quietly = TRUE))
     stop(sprintf("Package '%s' is not installed. Install it with:\n  %s", pkg, how),
          call. = FALSE)
+}
+
+# Only forward a parameter to the underlying package when the user actually set
+# it. Keeping unset parameters absent means every algorithm runs on its own
+# library defaults - identical to the previously validated GENECI behaviour -
+# and a wrong argument name can only surface for someone who opted in.
+AddIfSet <- function(arglist, params, name, target = name, cast = identity) {
+  if (!is.null(params[[name]])) arglist[[target]] <- cast(params[[name]])
+  arglist
+}
+
+# Resolve a sibling script regardless of the working directory Rscript was
+# invoked from.
+SourceSibling <- function(filename) {
+  a <- commandArgs(trailingOnly = FALSE)
+  self <- sub("^--file=", "", a[grep("^--file=", a)])
+  source(file.path(dirname(self), filename))
 }

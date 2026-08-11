@@ -103,6 +103,21 @@ def register(spec: AlgorithmSpec) -> AlgorithmSpec:
 
 
 # --- Mutual information / correlation, all via Bioconductor `minet` --------
+# Wrappers are MultiGCN's own (adapted from GENECI, MIT). All four share one
+# implementation in r/_minet_core.R and one parameter namespace.
+_MINET_PARAMS = {
+    "estimator": ParamSpec("estimator", "spearman", str,
+                           choices=["spearman", "pearson", "kendall",
+                                    "mi.empirical", "mi.mm", "mi.shrink",
+                                    "mi.sg"],
+                           help="Mutual-information / correlation estimator."),
+    "disc": ParamSpec("disc", "none", str,
+                      choices=["none", "equalfreq", "equalwidth", "globalequalwidth"],
+                      help="Discretisation applied before MI estimation."),
+    "nbins": ParamSpec("nbins", 0, int, minimum=0,
+                       help="Bins for discretisation; 0 = package default."),
+}
+
 for _name, _method in [
     ("ARACNE", "aracne"),
     ("CLR", "clr"),
@@ -117,27 +132,58 @@ for _name, _method in [
         install="BiocManager::install('minet')",
         orientation=_SR,
         family="mutual_information",
+        param_prefix="minet", params=dict(_MINET_PARAMS), vendored=False,
+        notes="Defaults reproduce GENECI's hardcoded call exactly, so previously "
+              "validated DREAM4 results are unchanged.",
     ))
 
 register(AlgorithmSpec(
     name="BC3NET", runtime=_R, script="r/BC3NET.R",
     library="bc3net", install="install.packages('bc3net')",
     orientation=_GR, family="mutual_information",
-    notes="Runs 11 bootstrap replicates internally and takes the median. Slow.",
+    param_prefix="bc3net", vendored=False,
+    params={
+        "replicates": ParamSpec("replicates", 11, int, minimum=1,
+                                help="Outer repeats whose per-edge median is "
+                                     "taken. GENECI used 11; bc3net already "
+                                     "bootstraps internally, so 1 is much "
+                                     "faster and may be equivalent."),
+        "boot": ParamSpec("boot", 100, int, minimum=1,
+                          help="bc3net's own internal bootstrap count."),
+        "estimator": ParamSpec("estimator", "spearman", str,
+                               choices=["spearman", "pearson", "kendall"]),
+    },
+    notes="Slowest of the minet-family methods by a wide margin: replicates x "
+          "boot model fits.",
 ))
 
 register(AlgorithmSpec(
     name="C3NET", runtime=_R, script="r/C3NET.R",
     library="c3net", install="install.packages('c3net')",
     orientation=_GR, family="mutual_information",
+    param_prefix="c3net", vendored=False,
+    params={
+        "alpha": ParamSpec("alpha", 0.01, float, minimum=0.0, maximum=1.0,
+                           help="Significance level for edge retention."),
+        "cutoffMI": ParamSpec("cutoffMI", 0.0, float, minimum=0.0,
+                              help="Hard mutual-information floor."),
+    },
+    notes="Keeps only each gene's single strongest mutual-information partner, "
+          "so output is very sparse by construction - roughly one edge per gene.",
 ))
 
 register(AlgorithmSpec(
     name="PCIT", runtime=_R, script="r/PCIT.R",
     library="CeTF", install="BiocManager::install('CeTF')",
     orientation=_GR, family="correlation",
+    param_prefix="pcit", vendored=False,
+    params={
+        "tolType": ParamSpec("tolType", "mean", str,
+                             choices=["mean", "min", "max"],
+                             help="How the local tolerance is aggregated."),
+    },
     notes="Uses CeTF::PCIT, not a package named 'pcit'. Takes |correlation|; "
-          "regulation direction is discarded upstream.",
+          "regulation direction is discarded.",
 ))
 
 # --- Tree ensemble / boosting ---------------------------------------------
@@ -171,6 +217,15 @@ register(AlgorithmSpec(
     name="KBOOST", runtime=_R, script="r/KBOOST.R",
     library="KBoost", install="BiocManager::install('KBoost')",
     orientation=_SR, family="tree_ensemble",
+    param_prefix="kboost", vendored=False,
+    params={
+        "g": ParamSpec("g", 60.0, float, minimum=0.0,
+                       help="Kernel width parameter."),
+        "v": ParamSpec("v", 0.1, float, minimum=0.0, maximum=1.0,
+                       help="Shrinkage / learning rate."),
+        "ite": ParamSpec("ite", 5, int, minimum=1,
+                         help="Boosting iterations."),
+    },
 ))
 
 # --- Regression ------------------------------------------------------------
@@ -193,8 +248,17 @@ register(AlgorithmSpec(
     name="LEAP", runtime=_R, script="r/LEAP.R",
     library="LEAP", install="install.packages('LEAP')",
     orientation=_GR, family="other",
-    notes="Designed for pseudotime-ordered data. On unordered steady-state data "
-          "it is very permissive - historically the densest output of the 16.",
+    param_prefix="leap", vendored=False,
+    params={
+        "max_lag_prop": ParamSpec("max_lag_prop", 0.3333, float,
+                                  minimum=0.0, maximum=1.0,
+                                  help="Largest lag as a fraction of the series."),
+        "MAC_cutoff": ParamSpec("MAC_cutoff", 0.0, float, minimum=0.0,
+                                help="Minimum max-absolute-correlation kept."),
+    },
+    notes="Assumes columns are ordered in time. On unordered steady-state data "
+          "the lag is meaningless and it becomes very permissive - historically "
+          "the densest output of the original 16.",
 ))
 
 register(AlgorithmSpec(

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: refuse to commit files larger than MAX_MB.
+#
+# Why this exists: GitHub hard-rejects files over 100 MB and warns over 50 MB,
+# but it only tells you at push time - by which point the blob is already in
+# your history, and removing it means rewriting commits. Catching it at commit
+# time is the difference between "unstage a file" and "rewrite the branch".
+#
+# Install:
+#   cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+# Bypass for a commit you really do want:  git commit --no-verify
+
+set -euo pipefail
+
+MAX_MB=50
+MAX_BYTES=$((MAX_MB * 1024 * 1024))
+
+# Only what is staged, and only added/copied/modified - deletions have no blob.
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$staged" ] && exit 0
+
+oversized=""
+while IFS= read -r file; do
+    [ -f "$file" ] || continue
+    size=$(wc -c < "$file" | tr -d ' ')
+    if [ "$size" -gt "$MAX_BYTES" ]; then
+        mb=$(awk "BEGIN {printf \"%.1f\", $size/1048576}")
+        oversized="${oversized}  ${mb} MB  ${file}\n"
+    fi
+done <<< "$staged"
+
+if [ -n "$oversized" ]; then
+    echo ""
+    echo "COMMIT BLOCKED: file(s) over ${MAX_MB} MB are staged."
+    echo ""
+    printf "%b" "$oversized"
+    echo "GitHub warns above 50 MB and rejects above 100 MB."
+    echo ""
+    echo "If these are generated outputs (GRN_*.csv, matrices/, tmp-*/),"
+    echo "add them to .gitignore and unstage:"
+    echo "    git rm --cached <file>"
+    echo ""
+    echo "If you genuinely need them versioned, use Git LFS:"
+    echo "    git lfs track \"<pattern>\""
+    echo ""
+    echo "To override for this commit only:  git commit --no-verify"
+    echo ""
+    exit 1
+fi
+
+exit 0
