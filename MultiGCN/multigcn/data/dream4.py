@@ -87,3 +87,56 @@ def summarise(exp_path) -> str:
     return (f"{len(df)} genes x {df.shape[1]} samples = "
             f"{len(exps)} experiments x {len(times)} time points "
             f"(t{times[0]}..t{times[-1]})")
+
+
+def prepare_insilico(folder, out_dir=None, include=("wildtype", "knockdowns",
+                                                     "timeseries")) -> dict:
+    """
+    Turn one DREAM4 *In Silico Size 100* network folder (as downloaded from
+    Synapse: *_wildtype.tsv, *_knockouts.tsv, *_knockdowns.tsv,
+    *_timeseries.tsv) into MultiGCN's three inputs:
+
+        expression.csv   genes x samples: every non-knockout sample in
+                         `include` (steady-state view, as PORTIA uses it)
+        timeseries.csv   'time' + genes, experiments concatenated
+        knockouts.tsv    the knockout experiments, row k = knockout of gene k
+
+    Knockouts are kept out of expression.csv on purpose: they are passed
+    separately (infer(knockouts=...)) so the algorithms that use them know
+    which gene was knocked out.
+
+    Returns {"expression": path, "time_series": path, "knockouts": path}.
+    """
+    import shutil
+    folder = Path(folder)
+    out_dir = Path(out_dir or folder)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    def find(kind):
+        hits = sorted(folder.glob(f"*_{kind}.tsv"))
+        if not hits:
+            raise FileNotFoundError(f"no *_{kind}.tsv in {folder}")
+        return hits[0]
+
+    blocks = []
+    for kind in include:
+        df = pd.read_csv(find(kind), sep="\t")
+        df.columns = [str(c).strip('"') for c in df.columns]
+        if kind == "timeseries":
+            df = df.drop(columns=[c for c in df.columns if c.lower() == "time"])
+        df = df.dropna(how="all")
+        df.index = [f"{kind}.{k + 1}" for k in range(len(df))]
+        blocks.append(df)
+    expr = pd.concat(blocks).T
+    paths = {"expression": out_dir / "expression.csv",
+             "time_series": out_dir / "timeseries.csv",
+             "knockouts": out_dir / "knockouts.tsv"}
+    expr.to_csv(paths["expression"])
+
+    ts = pd.read_csv(find("timeseries"), sep="\t").dropna(how="all")
+    ts.columns = [str(c).strip('"') for c in ts.columns]
+    ts = ts.rename(columns={c: "time" for c in ts.columns if c.lower() == "time"})
+    ts.to_csv(paths["time_series"], index=False)
+
+    shutil.copyfile(find("knockouts"), paths["knockouts"])
+    return paths

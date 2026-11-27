@@ -206,7 +206,7 @@ def cmd_run(args, extras):
 
     if not args.use_cached:
         model.infer(args.expression, time_series=ts_path,
-                    skip_failures=not args.strict)
+                    knockouts=args.knockouts, skip_failures=not args.strict)
 
     model.load(lists_dir, expression_file=args.expression)
     print(f"\n{len(model.matrices)} algorithm matrices: "
@@ -271,6 +271,10 @@ def main():
     p.add_argument("--time-series", type=Path,
                    help="Explicit time-series CSV (first column 'time'). "
                         "Auto-generated for DREAM4 input when needed.")
+    p.add_argument("--knockouts", type=Path,
+                   help="Single-gene knockout experiments (one row each; DREAM "
+                        "layout or a first column 'knockout'). Needed by "
+                        "KO_ZSCORE, used by PORTIA.")
     p.add_argument("--no-fuse", action="store_true",
                    help="Run inference only; skip the GCN and fusion")
     p.add_argument("--use-cached", action="store_true",

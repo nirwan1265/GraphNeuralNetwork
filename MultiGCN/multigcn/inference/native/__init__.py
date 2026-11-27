@@ -18,11 +18,12 @@ from typing import Callable, Dict, NamedTuple, Optional
 
 import pandas as pd
 
-from ._io import read_expression, read_time_series, write_edge_list
+from ._io import read_expression, read_knockouts, read_time_series, write_edge_list
 from .correlation import pearson, wgcna
 from .dynamics import scode, sincerities
 from .graphical import glasso
 from .information import pidc, puc
+from .perturbation import ko_zscore, portia
 from .regression import elasticnet, plsnet
 from .trees import nonlinearodes
 
@@ -30,6 +31,7 @@ from .trees import nonlinearodes
 class NativeAlgorithm(NamedTuple):
     func: Callable
     time_series: bool       # True -> called as func(X, times, ...) on time-series input
+    knockouts: str = "no"   # "no", "optional" or "required": passed as X_ko, ko_index
 
 
 NATIVE: Dict[str, NativeAlgorithm] = {
@@ -43,14 +45,19 @@ NATIVE: Dict[str, NativeAlgorithm] = {
     "PUC": NativeAlgorithm(puc, False),
     "SINCERITIES": NativeAlgorithm(sincerities, True),
     "SCODE": NativeAlgorithm(scode, True),
+    "PORTIA": NativeAlgorithm(portia, False, "optional"),
+    "KO_ZSCORE": NativeAlgorithm(ko_zscore, False, "required"),
 }
 
 
-def infer(name: str, expression=None, time_series=None,
+def infer(name: str, expression=None, time_series=None, knockouts=None,
           **params) -> pd.DataFrame:
     """
     Run one native algorithm and return its genes x genes score matrix
     (row = regulator, column = target).
+
+    knockouts: single-gene knockout experiments (see _io.read_knockouts);
+    used by PORTIA (optional) and KO_ZSCORE (required), ignored otherwise.
     """
     if name not in NATIVE:
         raise ValueError(f"Unknown native algorithm {name!r}. "
@@ -65,14 +72,20 @@ def infer(name: str, expression=None, time_series=None,
         if expression is None:
             raise ValueError(f"{name} requires an expression file.")
         X, genes = read_expression(expression)
+        if algo.knockouts != "no" and knockouts is not None:
+            X_ko, ko_index = read_knockouts(knockouts, genes)
+            params = {**params, "X_ko": X_ko, "ko_index": ko_index}
+        elif algo.knockouts == "required":
+            raise ValueError(f"{name} requires knockout experiments: pass knockouts=.")
         S = algo.func(X, **params)
     return pd.DataFrame(S, index=genes, columns=genes)
 
 
 def run_to_file(name: str, out_dir, expression=None, time_series=None,
-                **params):
+                knockouts=None, **params):
     """Run one algorithm and write GRN_<name>.csv in the package's edge-list format."""
-    S = infer(name, expression=expression, time_series=time_series, **params)
+    S = infer(name, expression=expression, time_series=time_series,
+              knockouts=knockouts, **params)
     return write_edge_list(S.to_numpy(), list(S.index), out_dir, name)
 
 

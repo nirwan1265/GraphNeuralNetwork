@@ -220,6 +220,21 @@ model.infer("expression.csv", time_series="timeseries.csv")
 DREAM4 users: `multigcn.data.dream4.to_time_series()` converts the standard
 `*_exp.csv` layout.
 
+**Knockout experiments** — one row per single-gene knockout, genes as
+columns; either DREAM layout (row k = knockout of gene k) or a first column
+`knockout` naming the gene. Kept separate from the expression file so the
+algorithms that use them know which gene was knocked out. Required by
+KO_ZSCORE (null-mutant Z-score), used by PORTIA:
+
+```python
+model = MultiGCN(methods=["PORTIA", "KO_ZSCORE", ...])
+model.infer("expression.csv", knockouts="knockouts.tsv")
+```
+
+DREAM4 users: `multigcn.data.dream4.prepare_insilico(folder)` turns an
+*In Silico Size 100* download into `expression.csv` (wild type, knockdowns,
+time points), `timeseries.csv` and `knockouts.tsv`.
+
 **Gold standard** — genes × genes matrix or 3-column edge list. Auto-detected.
 
 **Edge lists** — headerless `source,target,confidence` with *continuous*

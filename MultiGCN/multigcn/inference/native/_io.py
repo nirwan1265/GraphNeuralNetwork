@@ -49,6 +49,45 @@ def read_time_series(path) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[str
     return X, times, exp, genes
 
 
+def read_knockouts(path, genes: List[str]) -> Tuple[np.ndarray, List[int]]:
+    """
+    Single-gene knockout experiments, one row per experiment, genes as columns
+    (tab- or comma-separated).
+
+    Which gene was knocked out in each row is given either by a first column
+    named 'knockout' (gene ids), or - DREAM layout, no such column - by row
+    order: row k is the knockout of the k-th gene in the header.
+
+    Returns (X_ko, ko_index): X_ko is EXPERIMENTS x GENES with columns in the
+    order of `genes`; ko_index[k] is the 0-based index (into `genes`) of the
+    gene knocked out in row k.
+    """
+    sep = "\t" if str(path).endswith((".tsv", ".txt")) else ","
+    df = pd.read_csv(path, sep=sep)
+    df.columns = [str(c).strip().strip('"') for c in df.columns]
+    pos = {g: i for i, g in enumerate(genes)}
+    if df.columns[0].lower() == "knockout":
+        ko_genes = [str(g).strip().strip('"') for g in df.iloc[:, 0]]
+        df = df.iloc[:, 1:]
+    else:
+        if len(df) != df.shape[1]:
+            raise ValueError(
+                f"{path}: {len(df)} rows for {df.shape[1]} genes. Without a "
+                f"'knockout' column, row k must be the knockout of the k-th "
+                f"gene (DREAM layout), so rows and genes must match.")
+        ko_genes = list(df.columns)
+    missing = [g for g in genes if g not in df.columns]
+    if missing:
+        raise ValueError(f"{path}: {len(missing)} expression gene(s) missing, "
+                         f"e.g. {missing[:3]}")
+    unknown = [g for g in ko_genes if g not in pos]
+    if unknown:
+        raise ValueError(f"{path}: knocked-out gene(s) not in the expression "
+                         f"data, e.g. {unknown[:3]}")
+    X = df[genes].to_numpy(dtype=np.float64)
+    return X, [pos[g] for g in ko_genes]
+
+
 def zscore(X: np.ndarray, ddof: int = 0) -> np.ndarray:
     """Column-wise z-score. Constant columns become zeros instead of NaN."""
     mu = X.mean(axis=0)

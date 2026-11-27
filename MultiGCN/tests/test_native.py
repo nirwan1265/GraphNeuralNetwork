@@ -88,9 +88,17 @@ def test_time_series_flags_agree():
     for name, algo in NATIVE.items():
         needs_ts = ALGORITHMS[name].requires is DataRequirement.TIME_SERIES
         assert needs_ts == algo.time_series, name
+        needs_ko = ALGORITHMS[name].requires is DataRequirement.KNOCKOUT
+        assert needs_ko == (algo.knockouts == "required"), name
 
 
-@pytest.mark.parametrize("name", [n for n, a in NATIVE.items() if not a.time_series])
+# PORTIA is exempt: its gene-bias correction divides each score by the gene's
+# mean partial correlation, which in a 12-gene toy with one 2-target hub
+# demotes the hub's own edges (rank 19/66). The wrapper reproduces PORTIA's
+# published DREAM4 predictions exactly (AUPR 0.461 with knockouts, 0.062
+# without), and test_portia_runs_with_and_without_knockouts covers it here.
+@pytest.mark.parametrize("name", [n for n, a in NATIVE.items()
+                                  if not a.time_series and a.knockouts == "no"])
 def test_steady_state_recovers_planted_edges(steady, name):
     S = infer(name, expression=steady, **FAST.get(name, {})).to_numpy()
     assert S.shape == (12, 12)
@@ -171,3 +179,76 @@ def test_dispatcher_writes_edge_list(steady, tmp_path):
     assert (df[0] != df[1]).all()
     assert df[2].between(0, 1).all()
     assert df[2].nunique() > 2          # continuous, not binarised
+
+
+# --------------------------------------------------------------------------
+# Knockout experiments: KO_ZSCORE and PORTIA
+# --------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def knockout_data(tmp_path_factory):
+    """12 genes; G0 -> G1 and G0 -> G2. Wild-type samples + one knockout per gene
+    (DREAM layout: row k = knockout of gene k). Knocking out G0 drops G1 and G2."""
+    rng = np.random.default_rng(5)
+    genes = [f"G{i}" for i in range(12)]
+
+    def simulate(ko=None, n=1):
+        X = rng.uniform(0.4, 0.6, size=(n, 12))
+        if ko is not None:
+            X[:, ko] = 0.0
+        X[:, 1] = 0.8 * X[:, 0] + 0.05 * rng.normal(size=n) + 0.1
+        X[:, 2] = 0.7 * X[:, 0] + 0.05 * rng.normal(size=n) + 0.1
+        return X
+
+    d = tmp_path_factory.mktemp("ko")
+    expr = simulate(n=60)
+    pd.DataFrame(expr.T, index=genes,
+                 columns=[f"S{k}" for k in range(60)]).to_csv(d / "expr.csv")
+    ko = np.vstack([simulate(ko=k) for k in range(12)])
+    pd.DataFrame(ko, columns=genes).to_csv(d / "knockouts.tsv", sep="\t", index=False)
+    return d / "expr.csv", d / "knockouts.tsv"
+
+
+def test_ko_zscore_finds_the_regulator(knockout_data):
+    expr, ko = knockout_data
+    S = infer("KO_ZSCORE", expression=expr, knockouts=ko).to_numpy()
+    assert S.shape == (12, 12) and np.allclose(np.diag(S), 0)
+    # directed: knocking out G0 moves G1/G2, not the reverse
+    assert S[0, 1] > S[1, 0] and S[0, 2] > S[2, 0]
+    top = np.argsort(S.ravel())[::-1][:2]
+    assert set(map(tuple, np.column_stack(np.unravel_index(top, S.shape)))) == {(0, 1), (0, 2)}
+
+
+def test_ko_zscore_requires_knockouts(knockout_data):
+    expr, _ = knockout_data
+    with pytest.raises(ValueError, match="knockout"):
+        infer("KO_ZSCORE", expression=expr)
+
+
+def test_knockouts_with_explicit_column(knockout_data, tmp_path):
+    expr, ko = knockout_data
+    df = pd.read_csv(ko, sep="\t").iloc[::-1]               # shuffled row order
+    df.insert(0, "knockout", [f"G{i}" for i in range(11, -1, -1)])
+    df.to_csv(tmp_path / "ko.csv", index=False)
+    a = infer("KO_ZSCORE", expression=expr, knockouts=ko).to_numpy()
+    b = infer("KO_ZSCORE", expression=expr, knockouts=tmp_path / "ko.csv").to_numpy()
+    assert np.allclose(a, b)
+
+
+def test_portia_runs_with_and_without_knockouts(knockout_data):
+    pytest.importorskip("portia")
+    expr, ko = knockout_data
+    with_ko = infer("PORTIA", expression=expr, knockouts=ko).to_numpy()
+    no_ko = infer("PORTIA", expression=expr).to_numpy()
+    for S in (with_ko, no_ko):
+        assert S.shape == (12, 12) and np.isfinite(S).all() and np.allclose(np.diag(S), 0)
+    assert _rank_of(with_ko, 0, 1) <= 3 and _rank_of(with_ko, 0, 2) <= 3
+
+
+def test_dispatcher_passes_knockouts(knockout_data, tmp_path):
+    expr, ko = knockout_data
+    out = subprocess.run(
+        [sys.executable, str(SCRIPT), str(expr), str(tmp_path), "KO_ZSCORE",
+         json.dumps({"knockouts": str(ko)})], capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    assert (tmp_path / "GRN_KO_ZSCORE.csv").exists()

@@ -38,6 +38,7 @@ class DataRequirement(str, Enum):
     STEADY_STATE = "steady_state"
     TIME_SERIES = "time_series"
     EITHER = "either"
+    KNOCKOUT = "knockout"           # single-gene knockout experiments
 
 
 class Orientation(str, Enum):

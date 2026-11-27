@@ -34,7 +34,8 @@ class BaseRunner(abc.ABC):
         # path shifts the params JSON out of position and it fails parsing
         # something that is not JSON at all.
         self.time_series = (
-            ts if ts and spec.requires is not DataRequirement.STEADY_STATE
+            ts if ts and spec.requires in (DataRequirement.TIME_SERIES,
+                                           DataRequirement.EITHER)
             else None
         )
 

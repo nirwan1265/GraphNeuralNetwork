@@ -55,6 +55,7 @@ class MultiGCN:
             setattr(self.config, k, v)
 
         self.time_series: Optional[Path] = None
+        self.knockouts: Optional[Path] = None
         self.priors: Dict[str, np.ndarray] = {}
 
         self.genes: Optional[List[str]] = None
@@ -107,7 +108,7 @@ class MultiGCN:
         return "\n".join(lines)
 
     # -- step 1: inference -------------------------------------------------
-    def infer(self, expression_file, time_series=None,
+    def infer(self, expression_file, time_series=None, knockouts=None,
               skip_failures: bool = False) -> Path:
         """
         Run each selected algorithm, writing GRN_<NAME>.csv into lists/.
@@ -115,9 +116,24 @@ class MultiGCN:
         time_series: optional CSV whose first column is 'time'. Required by
         DYNGENIE3 and NETWORKBMA; optional for DYNUGENE (switches it from
         steady-state to time-series mode).
+
+        knockouts: optional single-gene knockout experiments, one row per
+        experiment (DREAM layout, or a first column 'knockout' naming the gene).
+        Required by KO_ZSCORE; used by PORTIA when given. Keep knockout samples
+        OUT of expression_file - they are passed separately so the algorithms
+        that understand them know which gene was knocked out.
         """
+        from .inference.native import NATIVE
         expression_file = Path(expression_file)
         self.time_series = Path(time_series) if time_series else None
+        self.knockouts = Path(knockouts).resolve() if knockouts else None
+
+        needs_ko = [s.name for s in self.specs
+                    if s.requires is DataRequirement.KNOCKOUT]
+        if needs_ko and not self.knockouts:
+            raise ValueError(
+                f"{', '.join(needs_ko)} require knockout experiments. Pass "
+                f"knockouts='...tsv', or drop them from the method list.")
 
         needs_ts = [s.name for s in self.specs
                     if s.requires is DataRequirement.TIME_SERIES]
@@ -134,9 +150,13 @@ class MultiGCN:
 
         failures = {}
         for spec in self.specs:
+            params = resolved_for(spec, self.algorithm_params)
+            native = NATIVE.get(spec.name)
+            if self.knockouts and native is not None and native.knockouts != "no":
+                params = {**params, "knockouts": str(self.knockouts)}
             runner = get_runner(
                 spec, self.config.prefer_docker,
-                params=resolved_for(spec, self.algorithm_params),
+                params=params,
                 time_series=self.time_series,
                 docker_platform=self.config.docker_platform,
             )

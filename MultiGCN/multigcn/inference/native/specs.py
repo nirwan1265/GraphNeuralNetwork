@@ -130,5 +130,25 @@ _native("SCODE", "ode", _TS, "scode", {
 }, "numpy", "Linear ODE through a latent trajectory, averaged over runs.")
 
 
+# --- knockout experiments ----------------------------------------------------
+_native("PORTIA", "precision_matrix", _SS, "portia", {
+    "method": ParamSpec("method", "fast", str, choices=["fast", "no-transform"],
+                        help="fast = Box-Cox power transform (the paper's PORTIA)."),
+    "lambda1": ParamSpec("lambda1", 0.8, float, minimum=0.0, maximum=1.0,
+                         help="Covariance shrinkage (paper: 0.8)."),
+    "normalize": ParamSpec("normalize", True, bool),
+}, "portia-grn", "Robust precision-matrix estimation (Passemiers et al. 2022). "
+                 "Uses knockout experiments when infer(knockouts=...) is given; "
+                 "runs on expression alone otherwise.")
+
+_native("KO_ZSCORE", "perturbation", DataRequirement.KNOCKOUT, "ko_zscore", {
+    "signed": ParamSpec("signed", False, bool,
+                        help="Average signed shifts before taking |.|; "
+                             "default |shift| per experiment."),
+}, "numpy", "Null-mutant Z-score: how far knocking out gene i moves gene j. "
+            "Needs infer(knockouts=...).")
+
+
 NATIVE_NAMES = ["PEARSON", "WGCNA", "GLASSO", "ELASTICNET", "PLSNET",
-                "NONLINEARODES", "PIDC", "PUC", "SINCERITIES", "SCODE"]
+                "NONLINEARODES", "PIDC", "PUC", "SINCERITIES", "SCODE",
+                "PORTIA", "KO_ZSCORE"]
