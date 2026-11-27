@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 470" width="1180" height="470" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="1180" height="470" fill="#ffffff"/>
+
+  <!-- ============ 1. Input graph ============ -->
+  <text x="110" y="52" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Input graph</text>
+  <g stroke="#94a3b8" stroke-width="2.5">
+    <line x1="62" y1="110" x2="155" y2="98"/>
+    <line x1="62" y1="110" x2="110" y2="172"/>
+    <line x1="155" y1="98" x2="110" y2="172"/>
+    <line x1="110" y1="172" x2="58" y2="236"/>
+    <line x1="110" y1="172" x2="165" y2="234"/>
+  </g>
+  <g fill="#334155" stroke="#ffffff" stroke-width="2">
+    <circle cx="62" cy="110" r="13"/><circle cx="155" cy="98" r="13"/>
+    <circle cx="110" cy="172" r="13"/><circle cx="58" cy="236" r="13"/>
+    <circle cx="165" cy="234" r="13"/>
+  </g>
+  <g font-size="11" fill="#ffffff" text-anchor="middle" font-weight="700">
+    <text x="62" y="114">g1</text><text x="155" y="102">g2</text><text x="110" y="176">g3</text>
+    <text x="58" y="240">g4</text><text x="165" y="238">g5</text>
+  </g>
+  <text x="110" y="282" text-anchor="middle" font-size="13" fill="#334155">nodes = genes</text>
+  <text x="110" y="300" text-anchor="middle" font-size="13" fill="#334155">edges = A (top 10% of pairs)</text>
+  <text x="110" y="318" text-anchor="middle" font-size="13" fill="#334155">features X = I (one-hot)</text>
+
+  <line x1="200" y1="190" x2="244" y2="190" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ============ 2. GCN encoder ============ -->
+  <rect x="252" y="66" width="330" height="290" rx="12" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="417" y="52" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">GCN encoder</text>
+
+  <rect x="282" y="84" width="250" height="56" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="407" y="107" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">GCNConv  n → 32</text>
+  <text x="407" y="127" text-anchor="middle" font-size="12" fill="#1e3a8a">ReLU</text>
+
+  <line x1="407" y1="140" x2="407" y2="164" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <rect x="282" y="168" width="250" height="56" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="407" y="191" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">GCNConv  32 → 32</text>
+  <text x="407" y="211" text-anchor="middle" font-size="12" fill="#1e3a8a">BatchNorm · ReLU · Dropout</text>
+
+  <line x1="407" y1="224" x2="407" y2="242" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <circle cx="407" cy="256" r="13" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="407" y="262" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">+</text>
+  <!-- residual skip -->
+  <path d="M532,112 L558,112 L558,256 L424,256" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="566" y="190" font-size="12" fill="#2563eb" transform="rotate(90 566 190)" text-anchor="middle">residual</text>
+
+  <line x1="407" y1="269" x2="407" y2="284" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="282" y="288" width="250" height="56" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="407" y="311" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">GCNConv  32 → 16</text>
+  <text x="407" y="331" text-anchor="middle" font-size="12" fill="#1e3a8a">ReLU</text>
+
+  <line x1="586" y1="190" x2="618" y2="190" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ============ 3. Embeddings ============ -->
+  <text x="680" y="52" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Embeddings Z</text>
+  <g stroke="#ffffff" stroke-width="1.5">
+    <g transform="translate(626,124)">
+      <rect x="0" y="0" width="13" height="18" fill="#1d4ed8"/><rect x="13" y="0" width="13" height="18" fill="#93c5fd"/><rect x="26" y="0" width="13" height="18" fill="#3b82f6"/><rect x="39" y="0" width="13" height="18" fill="#bfdbfe"/><rect x="52" y="0" width="13" height="18" fill="#60a5fa"/><rect x="65" y="0" width="13" height="18" fill="#1e40af"/><rect x="78" y="0" width="13" height="18" fill="#dbeafe"/><rect x="91" y="0" width="13" height="18" fill="#2563eb"/>
+      <rect x="0" y="22" width="13" height="18" fill="#93c5fd"/><rect x="13" y="22" width="13" height="18" fill="#1d4ed8"/><rect x="26" y="22" width="13" height="18" fill="#bfdbfe"/><rect x="39" y="22" width="13" height="18" fill="#2563eb"/><rect x="52" y="22" width="13" height="18" fill="#dbeafe"/><rect x="65" y="22" width="13" height="18" fill="#60a5fa"/><rect x="78" y="22" width="13" height="18" fill="#1e40af"/><rect x="91" y="22" width="13" height="18" fill="#93c5fd"/>
+      <rect x="0" y="44" width="13" height="18" fill="#2563eb"/><rect x="13" y="44" width="13" height="18" fill="#60a5fa"/><rect x="26" y="44" width="13" height="18" fill="#1e40af"/><rect x="39" y="44" width="13" height="18" fill="#93c5fd"/><rect x="52" y="44" width="13" height="18" fill="#3b82f6"/><rect x="65" y="44" width="13" height="18" fill="#dbeafe"/><rect x="78" y="44" width="13" height="18" fill="#2563eb"/><rect x="91" y="44" width="13" height="18" fill="#bfdbfe"/>
+      <rect x="0" y="66" width="13" height="18" fill="#bfdbfe"/><rect x="13" y="66" width="13" height="18" fill="#3b82f6"/><rect x="26" y="66" width="13" height="18" fill="#93c5fd"/><rect x="39" y="66" width="13" height="18" fill="#1d4ed8"/><rect x="52" y="66" width="13" height="18" fill="#bfdbfe"/><rect x="65" y="66" width="13" height="18" fill="#2563eb"/><rect x="78" y="66" width="13" height="18" fill="#60a5fa"/><rect x="91" y="66" width="13" height="18" fill="#1e40af"/>
+      <rect x="0" y="88" width="13" height="18" fill="#1e40af"/><rect x="13" y="88" width="13" height="18" fill="#dbeafe"/><rect x="26" y="88" width="13" height="18" fill="#60a5fa"/><rect x="39" y="88" width="13" height="18" fill="#3b82f6"/><rect x="52" y="88" width="13" height="18" fill="#1d4ed8"/><rect x="65" y="88" width="13" height="18" fill="#93c5fd"/><rect x="78" y="88" width="13" height="18" fill="#bfdbfe"/><rect x="91" y="88" width="13" height="18" fill="#3b82f6"/>
+    </g>
+  </g>
+  <g font-size="11" fill="#334155" text-anchor="end">
+    <text x="621" y="137">g1</text><text x="621" y="159">g2</text><text x="621" y="181">g3</text><text x="621" y="203">g4</text><text x="621" y="225">g5</text>
+  </g>
+  <text x="680" y="254" text-anchor="middle" font-size="13" fill="#334155">16 numbers per gene</text>
+
+  <!-- arrows to decoders -->
+  <path d="M736,170 C760,170 760,128 784,128" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+  <path d="M736,210 C760,210 760,252 784,252" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ============ 4. Decoders ============ -->
+  <text x="890" y="52" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Decoders</text>
+  <rect x="788" y="92" width="206" height="74" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+  <text x="891" y="115" text-anchor="middle" font-size="14" font-weight="700" fill="#134e4a">Bilinear</text>
+  <text x="891" y="137" text-anchor="middle" font-size="14" fill="#134e4a">σ( zᵢᵀ W zⱼ )</text>
+  <text x="891" y="156" text-anchor="middle" font-size="11" fill="#134e4a">learned W, can be directional</text>
+
+  <rect x="788" y="216" width="206" height="74" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+  <text x="891" y="239" text-anchor="middle" font-size="14" font-weight="700" fill="#134e4a">Distance</text>
+  <text x="891" y="261" text-anchor="middle" font-size="14" fill="#134e4a">σ( −‖zᵢ − zⱼ‖² )</text>
+  <text x="891" y="280" text-anchor="middle" font-size="11" fill="#134e4a">close in Z ⇒ linked</text>
+
+  <path d="M994,129 C1010,129 1010,190 1022,190" fill="none" stroke="#475569" stroke-width="2"/>
+  <path d="M994,253 C1010,253 1010,190 1022,190" fill="none" stroke="#475569" stroke-width="2"/>
+  <circle cx="1034" cy="190" r="13" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+  <text x="1034" y="195" text-anchor="middle" font-size="12" font-weight="700" fill="#0d9488">avg</text>
+  <line x1="1047" y1="190" x2="1066" y2="190" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ============ 5. Output ============ -->
+  <text x="1118" y="52" text-anchor="middle" font-size="16" font-weight="700" fill="#0f172a">Output</text>
+  <g transform="translate(1074,112) scale(0.5)">
+    <g stroke="#94a3b8" stroke-width="5">
+      <line x1="12" y1="20" x2="105" y2="8"/><line x1="12" y1="20" x2="60" y2="82"/>
+      <line x1="105" y1="8" x2="60" y2="82"/><line x1="60" y1="82" x2="8" y2="146"/>
+      <line x1="60" y1="82" x2="115" y2="144"/>
+    </g>
+    <line x1="105" y1="8" x2="115" y2="144" stroke="#ea580c" stroke-width="5" stroke-dasharray="10 7"/>
+    <g fill="#334155" stroke="#ffffff" stroke-width="3">
+      <circle cx="12" cy="20" r="14"/><circle cx="105" cy="8" r="14"/><circle cx="60" cy="82" r="14"/>
+      <circle cx="8" cy="146" r="14"/><circle cx="115" cy="144" r="14"/>
+    </g>
+  </g>
+  <text x="1118" y="210" text-anchor="middle" font-size="12" fill="#ea580c" font-weight="700">- - new edge</text>
+  <text x="1118" y="254" text-anchor="middle" font-size="12" fill="#334155">score for</text>
+  <text x="1118" y="270" text-anchor="middle" font-size="12" fill="#334155">every gene pair</text>
+
+  <!-- ============ Training strip ============ -->
+  <rect x="20" y="380" width="1140" height="70" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="40" y="408" font-size="14" font-weight="700" fill="#0f172a">Training</text>
+  <text x="40" y="432" font-size="13" fill="#334155">Positives: edges in A  ·  Negatives: an equal number of random non-edges, redrawn each epoch  ·  Loss: binary cross-entropy  ·  Adam (lr 0.01), 300 epochs</text>
+</svg>

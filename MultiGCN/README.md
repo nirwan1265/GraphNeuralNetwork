@@ -22,6 +22,64 @@ print(model.evaluate("goldstandard.csv"))
 
 ---
 
+## The model: a graph convolutional autoencoder
+
+![GCN graph autoencoder](docs/figures/gcn_gae.svg)
+
+The core of MultiGCN is a **graph autoencoder (GAE)** whose encoder is a
+**graph convolutional network (GCN)**. It takes a gene network, compresses every
+gene into a short vector that summarises its position in the network, and then
+rebuilds the network from those vectors. Pairs of genes that the rebuilt network
+scores highly but the input lacked are the model's predicted new edges.
+
+**Input graph.** Each node is a gene. Edges are the strongest gene–gene
+relationships in the input (the top 10% of pairs). Every gene starts with a
+one-hot identity vector as its feature, rather than its expression values — this
+forces the model to learn from the shape of the network itself. Using expression
+values as features was tested and performed worse.
+
+**Encoder.** Three graph convolution layers. In each one, every gene updates its
+vector by combining it with its neighbours' vectors, so after three layers a
+gene's vector reflects its neighbourhood up to three steps away.
+
+| Layer | Size | Extras |
+|---|---|---|
+| GCNConv 1 | n genes → 32 | ReLU |
+| GCNConv 2 | 32 → 32 | BatchNorm, ReLU, dropout; output added to layer 1's (residual) |
+| GCNConv 3 | 32 → 16 | ReLU |
+
+The residual connection lets layer 1's information pass straight through, which
+keeps deeper layers from washing out local structure.
+
+**Embeddings.** The encoder's output is a 16-number vector `z` for every gene.
+Genes with similar network roles end up with similar vectors.
+
+**Decoders.** Two decoders score every pair of genes `(i, j)` from their
+vectors, and their outputs are averaged:
+
+- **Bilinear** — `σ(zᵢᵀ W zⱼ)` with a learned 16×16 matrix `W`. Because `W` is
+  not forced to be symmetric, the score for i → j can differ from j → i, so this
+  decoder can represent the direction of regulation.
+- **Distance** — `σ(−‖zᵢ − zⱼ‖²)`. Genes that sit close together in embedding
+  space are scored as linked. It has no parameters and makes a different
+  assumption from the bilinear decoder, which is why averaging the two helps.
+
+**Training.** The model learns to reconstruct the input graph. Each epoch it
+scores every observed edge (positives) and an equal number of randomly drawn
+non-edges (negatives, redrawn each epoch), and minimises binary cross-entropy.
+Adam optimiser, learning rate 0.01, 300 epochs. Each model is trained 3 times
+with different random seeds and the results averaged.
+
+**Output.** A continuous score for every gene pair, scaled to [0, 1]. The
+network is never forced into a yes/no answer inside the model; a cutoff is only
+applied afterwards if a binary network is needed.
+
+These settings were chosen by comparison, not by default — see
+[`docs/REJECTED.md`](docs/REJECTED.md) for the alternatives that were tested
+and did worse (GAT, GraphSAGE, deeper encoders, other decoders and losses).
+
+---
+
 ## Install
 
 ```bash
@@ -188,6 +246,47 @@ concluding the method underperforms is a common mistake. Use a spread of
 families.
 
 Report AUROC and AUPR on the continuous output, before any cutoff.
+
+---
+
+## Future work: transcription factor (TF) information
+
+For datasets that come with a TF list — the DREAM5 networks do — every true
+regulatory edge starts at a TF. In DREAM5 *E. coli* (network 3), 334 of 4,511
+genes are TFs and all 141 regulators in the gold standard are on the list, which
+shrinks the candidate pairs from ~20 million to ~1.5 million. That makes the TF
+list a hard constraint worth using at two levels.
+
+### Level 1 — in each algorithm
+
+- **Natively supports a regulator list:** GENIE3 / GENIE3_ET / GRNBOOST2 (our
+  code), DYNGENIE3, TIGRESS, INFERELATOR, plus our ELASTICNET, PLSNET and
+  NONLINEARODES — easy, just restrict the predictors. KBOOST and SWING may
+  support it; to be checked.
+- **No concept of a regulator** (ARACNE, CLR, MRNET, PEARSON, WGCNA, PIDC,
+  PUC): these are symmetric, so just keep the TF → gene rows afterwards.
+
+### Level 2 — in the GCN
+
+Three options, ranked by how easy they are to explain:
+
+1. **Constrain training and output to TF → gene pairs.** Right now negative
+   sampling draws random pairs, most of which are gene → gene pairs that are
+   trivially false in DREAM5 — so the model learns from easy, uninformative
+   negatives. Drawing negatives only from TF → gene pairs makes the training
+   objective match the actual task. This is the most promising option, and it
+   is a one-sentence explanation in a methods section.
+2. **Directionality comes for free.** The GCN graph is undirected, which is a
+   known weakness. With a TF list, any edge between a TF and a non-TF must point
+   from the TF. Only TF ↔ TF pairs stay ambiguous.
+3. **A TF flag as a node feature.** The model learns *something* about TFs, but
+   it is hard to say what. Keep as an ablation only.
+
+**Planned test:** a 2×2 ablation on DREAM5 — TF information at inference
+(yes / no) × in the GCN (yes / no) — to show where the gain comes from. Planned
+API: `MultiGCN(methods=[...], regulators="transcription_factors.tsv")`.
+Use the TF *list* only; feeding known edges (e.g. from RegulonDB) into the model
+would leak the answer into the evaluation.
 
 ---
 
