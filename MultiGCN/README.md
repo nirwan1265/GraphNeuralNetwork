@@ -78,7 +78,7 @@ for every gene pair; a cutoff is applied only if a binary network is needed.
 | | AUPR | AUROC |
 |---|---|---|
 | Rank-average of raw scores, no model | 0.149 | 0.719 |
-| One GCN autoencoder per algorithm (previous model) | 0.159 | 0.694 |
+| One GCN autoencoder per algorithm (previous model) | 0.158 | 0.701 |
 | **Joint model (default)** | **0.171** | **0.722** |
 
 The joint model beat the per-algorithm model on all five networks, including
