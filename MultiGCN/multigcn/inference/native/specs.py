@@ -84,7 +84,10 @@ _native("NONLINEARODES", "tree_ensemble", _SS, "nonlinearodes", {
     "n_estimators": ParamSpec("n_estimators", 0, int, minimum=0,
                               help="0 = GENECI rule round(10 n / log10 n)."),
     "max_depth": ParamSpec("max_depth", 5, int, minimum=1),
-    "learning_rate": ParamSpec("learning_rate", 0.3, float, minimum=1e-4, maximum=1.0),
+    "learning_rate": ParamSpec("learning_rate", 0.1, float, minimum=1e-4, maximum=1.0,
+                               help="0.1 = xgboost 0.82 default, as GENECI pinned."),
+    "tree_method": ParamSpec("tree_method", "exact", str,
+                             choices=["exact", "approx", "hist"]),
     "seed": _SEED, "n_jobs": _JOBS,
 }, "xgboost if installed, else scikit-learn",
    "Boosted-tree split-count importance, as GENECI ran it (no ODE fitting). "
@@ -92,14 +95,17 @@ _native("NONLINEARODES", "tree_ensemble", _SS, "nonlinearodes", {
 
 # --- information decomposition ----------------------------------------------
 _PID = {
-    "discretizer": ParamSpec("discretizer", "bayesian_blocks", str,
-                             choices=["bayesian_blocks", "uniform_count"]),
+    "discretizer": ParamSpec("discretizer", "uniform_count", str,
+                             choices=["uniform_count", "bayesian_blocks"],
+                             help="uniform_count (equal-frequency bins) is the "
+                                  "default; bayesian_blocks is NetworkInference.jl's "
+                                  "default, see information.py for why it was not kept."),
     "n_bins": ParamSpec("n_bins", 0, int, minimum=0,
                         help="uniform_count only; 0 = N^(1/3)."),
 }
 _native("PIDC", "information_decomposition", _SS, "pidc", dict(_PID),
         "numpy (Williams-Beer PID)",
-        "PUC in per-gene CDF context, NetworkInference.jl defaults. "
+        "PUC in per-gene CDF context (Williams-Beer PID). "
         "Previously container-only (Julia).")
 _native("PUC", "information_decomposition", _SS, "pidc", dict(_PID),
         "numpy (Williams-Beer PID)",

@@ -92,14 +92,7 @@ def test_time_series_flags_agree():
 
 @pytest.mark.parametrize("name", [n for n, a in NATIVE.items() if not a.time_series])
 def test_steady_state_recovers_planted_edges(steady, name):
-    params = dict(FAST.get(name, {}))
-    if name in ("PIDC", "PUC"):
-        # Bayesian blocks (the faithful default) models density *shape*: on the
-        # smooth bimodal G2 it puts 294 of 300 samples in one bin and erases
-        # the signal. That is a property of the method, checked separately in
-        # test_bayesian_blocks_matches_astropy; here we test the PID itself.
-        params["discretizer"] = "uniform_count"
-    S = infer(name, expression=steady, **params).to_numpy()
+    S = infer(name, expression=steady, **FAST.get(name, {})).to_numpy()
     assert S.shape == (12, 12)
     assert np.isfinite(S).all() and (S >= 0).all()
     assert np.allclose(np.diag(S), 0)

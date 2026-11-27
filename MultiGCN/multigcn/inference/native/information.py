@@ -1,9 +1,17 @@
 """
 Partial information decomposition: PUC and PIDC (Chan, Stumpf & Babtie 2017).
 
-Faithful to NetworkInference.jl's defaults, which GENECI ran: Bayesian-blocks
-discretisation, maximum-likelihood (plug-in) probabilities, log base 2, and
-Williams-Beer I_min redundancy.
+Follows NetworkInference.jl (which GENECI ran): maximum-likelihood (plug-in)
+probabilities, log base 2, Williams-Beer I_min redundancy. Its default
+Bayesian-blocks discretiser is implemented (and verified identical to
+astropy's), but the package default is equal-frequency binning instead:
+
+Bayesian blocks models the *shape* of each gene's density, not information.
+On a smooth, broad distribution it can put nearly every sample in one bin -
+on a synthetic gene with a strong planted regulator it put 294 of 300 samples
+in a single bin and drove the mutual information to ~0. On the five DREAM4
+100-gene networks, equal-frequency bins gave higher AUPR on 4 of 5 for both
+PUC and PIDC. Pass discretizer="bayesian_blocks" to reproduce the original.
 
 The key observation that makes this fast: I_min redundancy only needs the
 *specific information* I(T=t; S) of each source about each target state, and
@@ -55,7 +63,7 @@ def bayesian_blocks_edges(x: np.ndarray, p0: float = 0.05) -> np.ndarray:
     return edges[np.array(cps[::-1])]
 
 
-def discretize(X: np.ndarray, method: str = "bayesian_blocks",
+def discretize(X: np.ndarray, method: str = "uniform_count",
                n_bins: int = 0) -> np.ndarray:
     """Per-gene integer codes 0..b-1. Bins may differ in number between genes."""
     N, n = X.shape
@@ -146,13 +154,13 @@ def _empirical_cdf_rows(S: np.ndarray) -> np.ndarray:
     return F
 
 
-def puc(X: np.ndarray, discretizer: str = "bayesian_blocks", n_bins: int = 0,
+def puc(X: np.ndarray, discretizer: str = "uniform_count", n_bins: int = 0,
         **_) -> np.ndarray:
     """PUC network: the raw proportional unique contribution."""
     return puc_scores(discretize(X, discretizer, n_bins))
 
 
-def pidc(X: np.ndarray, discretizer: str = "bayesian_blocks", n_bins: int = 0,
+def pidc(X: np.ndarray, discretizer: str = "uniform_count", n_bins: int = 0,
          **_) -> np.ndarray:
     """
     PIDC: PUC put in each gene's own context.
