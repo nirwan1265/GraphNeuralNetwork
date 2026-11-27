@@ -179,6 +179,9 @@ def cmd_run(args, extras):
     cfg.iterations = args.iterations
     if args.device:
         cfg.device = args.device
+    for key in ("model", "fusion_weights", "input_blend"):
+        if getattr(args, key) is not None:
+            setattr(cfg, key, getattr(args, key))
 
     model = MultiGCN(methods=methods, config=cfg, **algo_params)
     print(model.plan(), "\n")
@@ -280,6 +283,13 @@ def main():
     p.add_argument("--epochs", type=int, default=300)
     p.add_argument("--iterations", type=int, default=3)
     p.add_argument("--device")
+    p.add_argument("--model", choices=["joint", "separate"],
+                   help="joint (default): one GAE over all algorithms; "
+                        "separate: one GAE per algorithm")
+    p.add_argument("--fusion-weights", choices=["agreement", "flat"])
+    p.add_argument("--input-blend", type=float,
+                   help="share of the raw-score rank-average in the output "
+                        "(default 0.5; 0 = model only)")
     p.set_defaults(func=cmd_run)
 
     args, extras = ap.parse_known_args()

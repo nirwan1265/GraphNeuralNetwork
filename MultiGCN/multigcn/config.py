@@ -19,10 +19,24 @@ class Config:
     undirected_eval: bool = True    # score the upper triangle only
 
     # --- architecture ---
+    # "joint": one multi-relational GAE over all algorithms (R-GCN encoder,
+    #          DistMult decoder per algorithm) - the default since it beat the
+    #          per-algorithm model on all five DREAM4 networks, held-out
+    #          networks included.
+    # "separate": the original one-GAE-per-algorithm model.
+    model: str = "joint"
+    joint_bases: int = 8            # relations share this many weight bases
     hidden: int = 16
     embedding_dim: int = 16
     dropout: float = 0.01
     decoders: List[str] = field(default_factory=lambda: ["bilinear", "distance"])
+                                    # separate model only
+
+    # --- fusion ---
+    fusion_weights: str = "agreement"   # "agreement" or "flat"
+    agreement_power: float = 2.0
+    input_blend: float = 0.5        # share of the rank-average of the raw
+                                    # scores in the final output; 0 = model only
 
     # --- training ---
     epochs: int = 300

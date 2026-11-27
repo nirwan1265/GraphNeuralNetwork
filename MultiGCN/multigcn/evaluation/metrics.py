@@ -28,9 +28,13 @@ def _flat(pred: np.ndarray, truth: np.ndarray, exclude_diagonal: bool = True,
     if undirected:
         # A directed gold standard has to be collapsed too, or a true edge
         # recorded only as j->i would be counted as a negative at (i, j).
+        # The prediction must be collapsed the same way: reading only the upper
+        # triangle of an asymmetric prediction (GENIE3, the bilinear decoder)
+        # silently discards every score the model put on (j, i).
         triu = np.triu_indices(pred.shape[0], k=1)
         truth_sym = np.maximum(truth, truth.T)
-        return pred[triu], truth_sym[triu]
+        pred_sym = np.maximum(pred, pred.T)
+        return pred_sym[triu], truth_sym[triu]
 
     if exclude_diagonal:
         mask = ~np.eye(pred.shape[0], dtype=bool)

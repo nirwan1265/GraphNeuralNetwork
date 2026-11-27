@@ -10,7 +10,7 @@ from .config import Config
 from .data.loaders import (DataError, load_algorithm_matrices, load_edge_list,
                            load_prior_network, read_expression)
 from .evaluation.metrics import binary_metrics, ranking_metrics
-from .fusion.combine import fuse
+from .fusion.combine import agreement_weights, blend_with_inputs, fuse
 from .inference.runners import get_runner
 from .postprocessing.tukey import tukey_cutoff
 from .params import ParamError, describe, resolved_for, route
@@ -61,6 +61,8 @@ class MultiGCN:
         self.matrices: Dict[str, np.ndarray] = {}
         self.reconstructions: Dict[str, Dict[str, List[np.ndarray]]] = {}
         self.fused: Optional[np.ndarray] = None
+        self.model_output: Optional[np.ndarray] = None   # before the input blend
+        self.weights: Optional[Dict[str, float]] = None
 
         self.output_dir = Path(self.config.output_dir)
         self.lists_dir = self.output_dir / "lists"
@@ -217,35 +219,73 @@ class MultiGCN:
 
     # -- steps 3-6: train and fuse ----------------------------------------
     def fit_predict(self) -> np.ndarray:
-        from .training.train import train_gae  # lazy: torch only needed here
+        """
+        Train and fuse.
+
+        model="joint" (default): one multi-relational GAE over every
+        algorithm's top-x graph. model="separate": one GAE per algorithm.
+        Reconstructions are combined with agreement weights (or flat), then
+        blended with the rank-average of the raw scores (input_blend).
+        """
+        from .training.train import train_gae, train_joint  # lazy: torch only
 
         if not self.matrices:
             self.load()
         cfg = self.config
+        if cfg.model not in ("joint", "separate"):
+            raise ValueError(f"model must be 'joint' or 'separate', got {cfg.model!r}")
+        if cfg.fusion_weights not in ("agreement", "flat"):
+            raise ValueError("fusion_weights must be 'agreement' or 'flat'")
         n = len(self.genes)
 
+        adjs = {}
         for name, mat in self.matrices.items():
-            adj = top_x_percent_edges(mat, cfg.top_x, cfg.keep_weights,
-                                      symmetric=cfg.symmetric)
-            self._log(f"  {name:<14} input density {density(adj)*100:5.2f}%")
-            edge_index = (normalized_laplacian_edge_index(adj) if cfg.laplacian
-                          else edge_index_from_adj(adj))
+            adjs[name] = top_x_percent_edges(mat, cfg.top_x, cfg.keep_weights,
+                                             symmetric=cfg.symmetric)
+            self._log(f"  {name:<14} input density {density(adjs[name])*100:5.2f}%")
 
-            self.reconstructions[name] = {}
-            for dec in cfg.decoders:
-                runs = []
-                for it in range(cfg.iterations):
-                    seed = None if cfg.seed is None else cfg.seed + it
-                    runs.append(train_gae(
-                        edge_index, n, decoder=dec, epochs=cfg.epochs,
-                        lr=cfg.lr, weight_decay=cfg.weight_decay,
-                        hidden=cfg.hidden, out_channels=cfg.embedding_dim,
-                        dropout=cfg.dropout, seed=seed, device=cfg.device))
-                self.reconstructions[name][dec] = runs
+        self.reconstructions = {}
+        if cfg.model == "joint":
+            if not cfg.symmetric:
+                raise ValueError("model='joint' scores undirected pairs; "
+                                 "use symmetric=True or model='separate'.")
+            self._log(f"  training one joint model over {len(adjs)} algorithms "
+                      f"x {cfg.iterations} seed(s)")
+            runs = []
+            for it in range(cfg.iterations):
+                seed = None if cfg.seed is None else cfg.seed + it
+                runs.append(train_joint(
+                    adjs, epochs=cfg.epochs, lr=cfg.lr,
+                    weight_decay=cfg.weight_decay, dim=cfg.embedding_dim,
+                    num_bases=cfg.joint_bases, dropout=cfg.dropout,
+                    seed=seed, device=cfg.device))
+            self.reconstructions = {a: {"joint": [r[a] for r in runs]} for a in adjs}
+        else:
+            for name, adj in adjs.items():
+                edge_index = (normalized_laplacian_edge_index(adj) if cfg.laplacian
+                              else edge_index_from_adj(adj))
+                self.reconstructions[name] = {}
+                for dec in cfg.decoders:
+                    runs = []
+                    for it in range(cfg.iterations):
+                        seed = None if cfg.seed is None else cfg.seed + it
+                        runs.append(train_gae(
+                            edge_index, n, decoder=dec, epochs=cfg.epochs,
+                            lr=cfg.lr, weight_decay=cfg.weight_decay,
+                            hidden=cfg.hidden, out_channels=cfg.embedding_dim,
+                            dropout=cfg.dropout, seed=seed, device=cfg.device))
+                    self.reconstructions[name][dec] = runs
 
+        self.weights = (agreement_weights(self.matrices, cfg.agreement_power,
+                                          symmetric=cfg.symmetric)
+                        if cfg.fusion_weights == "agreement" else None)
         total = sum(len(r) for d in self.reconstructions.values() for r in d.values())
-        self._log(f"  fusing {total} reconstructions (continuous averaging)")
-        self.fused = fuse(self.reconstructions)
+        self._log(f"  fusing {total} reconstructions ({cfg.fusion_weights} weights"
+                  f"{f', {cfg.input_blend:.0%} rank-average blend' if cfg.input_blend else ''})")
+        self.model_output = fuse(self.reconstructions, self.weights)
+        self.fused = blend_with_inputs(self.model_output, self.matrices,
+                                       cfg.input_blend, self.weights,
+                                       symmetric=cfg.symmetric)
         return self.fused
 
     # -- step 7: optional extraction --------------------------------------
@@ -351,6 +391,9 @@ class MultiGCN:
                 r = ranking_metrics(avg, truth, undirected=und)
                 rows.append({"method": f"{name}__{decoder}",
                              "stage": "reconstructed", **r})
+        if self.model_output is not None and self.config.input_blend:
+            rows.append({"method": "MultiGCN_model_only", "stage": "fused",
+                         **ranking_metrics(self.model_output, truth, undirected=und)})
         if self.fused is not None:
             rows.append({"method": "MultiGCN_fused", "stage": "fused",
                          **ranking_metrics(self.fused, truth, undirected=und)})

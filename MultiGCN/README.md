@@ -22,61 +22,77 @@ print(model.evaluate("goldstandard.csv"))
 
 ---
 
-## The model: a graph convolutional autoencoder
+## The model: a joint multi-relational graph autoencoder
 
-![GCN graph autoencoder](docs/figures/gcn_gae.svg)
+The core of MultiGCN is a **graph autoencoder (GAE)**: it compresses every gene
+into a short vector that summarises its position in the network, then rebuilds
+the network from those vectors. Pairs of genes that the rebuilt network scores
+highly but the input lacked are the model's predicted new edges.
 
-The core of MultiGCN is a **graph autoencoder (GAE)** whose encoder is a
-**graph convolutional network (GCN)**. It takes a gene network, compresses every
-gene into a short vector that summarises its position in the network, and then
-rebuilds the network from those vectors. Pairs of genes that the rebuilt network
-scores highly but the input lacked are the model's predicted new edges.
+**One model, many graphs.** Every inference algorithm gives its own graph over
+the same genes. MultiGCN does not train one model per graph. It puts them all
+into a single graph with one *edge type per algorithm* and trains one model on
+it. Each gene gets **one** vector that has to explain every algorithm's graph at
+once, so the model is forced to keep the structure the algorithms share - which
+is where the new edges come from.
 
-**Input graph.** Each node is a gene. Edges are the strongest gene–gene
-relationships in the input (the top 10% of pairs). Every gene starts with a
-one-hot identity vector as its feature, rather than its expression values — this
-forces the model to learn from the shape of the network itself. Using expression
-values as features was tested and performed worse.
+**Input graphs.** Each node is a gene. For each algorithm, edges are its own
+strongest gene-gene pairs (top 10% of pairs, ranked within that algorithm, so
+algorithms on different score scales get graphs of the same size). Every gene
+starts with a one-hot identity vector as its feature, so the model learns from
+network structure alone.
 
-**Encoder.** Three graph convolution layers. In each one, every gene updates its
-vector by combining it with its neighbours' vectors, so after three layers a
-gene's vector reflects its neighbourhood up to three steps away.
+**Encoder.** Two relational graph convolution layers (R-GCN). In each one,
+every gene updates its vector from its neighbours, with separate weights for
+each edge type. Those weights are built from 8 shared *bases*, so the edge
+types share parameters instead of each learning in isolation.
 
 | Layer | Size | Extras |
 |---|---|---|
-| GCNConv 1 | n genes → 32 | ReLU |
-| GCNConv 2 | 32 → 32 | BatchNorm, ReLU, dropout; output added to layer 1's (residual) |
-| GCNConv 3 | 32 → 16 | ReLU |
-
-The residual connection lets layer 1's information pass straight through, which
-keeps deeper layers from washing out local structure.
+| RGCNConv 1 | n genes -> 32 | ReLU, dropout |
+| RGCNConv 2 | 32 -> 16 | - |
 
 **Embeddings.** The encoder's output is a 16-number vector `z` for every gene.
-Genes with similar network roles end up with similar vectors.
 
-**Decoders.** Two decoders score every pair of genes `(i, j)` from their
-vectors, and their outputs are averaged:
+**Decoder.** One DistMult decoder per algorithm scores every gene pair:
+`s_r(i, j) = sigma(sum_k z_ik * R_rk * z_jk)`, where `R_r` is a learned 16-number
+vector for algorithm `r`. The gene vectors are shared; `R_r` captures how
+algorithm `r` reads them.
 
-- **Bilinear** — `σ(zᵢᵀ W zⱼ)` with a learned 16×16 matrix `W`. Because `W` is
-  not forced to be symmetric, the score for i → j can differ from j → i, so this
-  decoder can represent the direction of regulation.
-- **Distance** — `σ(−‖zᵢ − zⱼ‖²)`. Genes that sit close together in embedding
-  space are scored as linked. It has no parameters and makes a different
-  assumption from the bilinear decoder, which is why averaging the two helps.
+**Training.** For every algorithm, its edges are positives and an equal number
+of randomly drawn gene pairs (redrawn each epoch) are negatives; binary
+cross-entropy, averaged over algorithms. Adam, learning rate 0.01, 300 epochs,
+3 random seeds averaged. Do not train longer or widen the embedding: both lower
+the training loss and lower accuracy, because a model that can rebuild every
+graph exactly has memorised them instead of keeping what they share.
 
-**Training.** The model learns to reconstruct the input graph. Each epoch it
-scores every observed edge (positives) and an equal number of randomly drawn
-non-edges (negatives, redrawn each epoch), and minimises binary cross-entropy.
-Adam optimiser, learning rate 0.01, 300 epochs. Each model is trained 3 times
-with different random seeds and the results averaged.
+**Output.** Each algorithm's reconstruction is scaled to [0, 1] and combined,
+weighting each algorithm by how well it agrees with the others (no gold
+standard used). That is blended 50/50, by rank, with the rank-average of the
+algorithms' raw scores: the model is strongest at the top of the ranking, the
+raw-score average across the whole ranking. The result is a continuous score
+for every gene pair; a cutoff is applied only if a binary network is needed.
 
-**Output.** A continuous score for every gene pair, scaled to [0, 1]. The
-network is never forced into a yes/no answer inside the model; a cutoff is only
-applied afterwards if a binary network is needed.
+**On DREAM4** (5 networks of 100 genes, 23 algorithms):
 
-These settings were chosen by comparison, not by default — see
-[`docs/REJECTED.md`](docs/REJECTED.md) for the alternatives that were tested
-and did worse (GAT, GraphSAGE, deeper encoders, other decoders and losses).
+| | AUPR | AUROC |
+|---|---|---|
+| Rank-average of raw scores, no model | 0.149 | 0.719 |
+| One GCN autoencoder per algorithm (previous model) | 0.159 | 0.694 |
+| **Joint model (default)** | **0.171** | **0.722** |
+
+The joint model beat the per-algorithm model on all five networks, including
+two held out from tuning. The previous model is still available as
+`model="separate"`; its 3-layer GCN encoder and bilinear + distance decoders
+are documented in `multigcn/models/`.
+
+```python
+MultiGCN(model="joint")              # default
+MultiGCN(model="separate", fusion_weights="flat", input_blend=0)   # previous
+```
+
+See [`docs/REJECTED.md`](docs/REJECTED.md) for every alternative that was
+tested and did worse.
 
 ---
 

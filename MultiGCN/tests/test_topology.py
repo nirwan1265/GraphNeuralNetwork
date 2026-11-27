@@ -14,7 +14,8 @@ def test_zero_scores_never_become_edges():
     m = np.zeros((50, 50))
     m[0, 1] = 0.9
     adj = top_x_percent_edges(m, top_x=0.50)
-    assert adj.sum() == 1
+    # one undirected pair, mirrored: (0, 1) and (1, 0)
+    assert adj.sum() == 2 and adj[0, 1] == adj[1, 0] == 1
 
 
 def test_rank_based_is_scale_invariant():
