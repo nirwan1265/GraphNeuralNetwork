@@ -45,11 +45,25 @@ if (delta >= ncol(mat))
                delta, ncol(mat)), call. = FALSE)
 
 eset <- ExpressionSet(assayData = mat)
+# adj = FALSE returns the weighted network. adj = TRUE returns a binary
+# adjacency matrix, which is useless here: the pipeline ranks pairs by
+# continuous confidence, so a 0/1 matrix carries no ranking information and
+# the loader rejects it outright.
 net <- TDARACNE(eset, N = length(genes), delta = delta,
                 likehood = likelihood, norm = norm, thresh = thresh,
-                ksd = 0, tolerance = 0, adj = TRUE)
+                ksd = 0, tolerance = 0, adj = FALSE)
 
-score <- if (is.list(net) && !is.null(net$net)) as.matrix(net$net) else as.matrix(net)
+# TDARACNE returns a graphNEL (S4), not a matrix, so as.matrix() fails with
+# "no method for coercing this S4 class to a vector". Convert via the graph
+# package's adjacency-matrix accessor, which preserves edge weights.
+if (inherits(net, "graphNEL")) {
+  RequirePackage("graph", "BiocManager::install('graph')")
+  score <- as(net, "matrix")
+} else if (is.list(net) && !is.null(net$net)) {
+  score <- as.matrix(net$net)
+} else {
+  score <- as.matrix(net)
+}
 dimnames(score) <- list(genes, genes)
 
 conf <- expand.grid(source = genes, target = genes, stringsAsFactors = FALSE)

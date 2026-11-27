@@ -47,7 +47,11 @@ def install_pandas_compat_shim():
 
 
 def load_swing(explicit=None):
-    for candidate in filter(None, [explicit, os.environ.get("SWING_PATH")]):
+    # Explicit setting, env var, then common clone locations - same rationale
+    # as DYNGENIE3: do not demand a flag for something findable.
+    candidates = [explicit, os.environ.get("SWING_PATH"),
+                  "~/Documents/Github/SWING", "~/Github/SWING", "~/SWING"]
+    for candidate in filter(None, candidates):
         p = Path(candidate).expanduser()
         if (p / "Swing").is_dir():
             sys.path.insert(0, str(p))
@@ -58,7 +62,7 @@ def load_swing(explicit=None):
         sys.exit(
             "Could not import Swing. It is not a PyPI package - clone it from "
             "github.com/bagherilab/SWING and pass\n"
-            "  swing_source_path=/path/to/SWING\n"
+            "  --swing-source-path /path/to/SWING\n"
             "or set SWING_PATH."
         )
     return Swing

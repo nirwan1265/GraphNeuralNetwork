@@ -24,7 +24,15 @@ import pandas as pd
 
 
 def load_dyngenie3(explicit=None):
-    for candidate in filter(None, [explicit, os.environ.get("DYNGENIE3_PATH")]):
+    # Try the explicit setting, the environment variable, then the handful of
+    # places a clone realistically lives. Requiring a flag for something the
+    # code can find on its own is a papercut that recurs on every run.
+    candidates = [explicit, os.environ.get("DYNGENIE3_PATH")]
+    for base in ["~/Documents/Github/dynGENIE3", "~/Github/dynGENIE3",
+                 "~/dynGENIE3"]:
+        candidates += [base + "/dynGENIE3_python", base]
+
+    for candidate in filter(None, candidates):
         p = Path(candidate).expanduser()
         if (p / "dynGENIE3.py").exists():
             sys.path.insert(0, str(p))
@@ -35,7 +43,7 @@ def load_dyngenie3(explicit=None):
         sys.exit(
             "Could not import dynGENIE3. It is not a PyPI package - clone it "
             "from github.com/vahuynh/dynGENIE3 and pass\n"
-            "  dyngenie3_source_path=/path/to/dynGENIE3/dynGENIE3_python\n"
+            "  --dyngenie3-source-path /path/to/dynGENIE3/dynGENIE3_python\n"
             "or set DYNGENIE3_PATH."
         )
     return dynGENIE3, get_link_list

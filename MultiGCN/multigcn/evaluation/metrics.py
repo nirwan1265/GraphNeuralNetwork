@@ -8,18 +8,38 @@ from sklearn.metrics import (average_precision_score, f1_score,
                              precision_score, recall_score, roc_auc_score)
 
 
-def _flat(pred: np.ndarray, truth: np.ndarray, exclude_diagonal: bool = True):
+def _flat(pred: np.ndarray, truth: np.ndarray, exclude_diagonal: bool = True,
+          undirected: bool = True):
+    """
+    Flatten a prediction/truth pair for scoring.
+
+    undirected=True (the validated default) scores the UPPER TRIANGLE only:
+    each gene pair counted once, direction ignored. This is not cosmetic - it
+    changes both the number of samples and the class balance, so AUPR computed
+    over the full n^2-n ordered pairs is NOT comparable to AUPR over the
+    n(n-1)/2 unordered ones. Mixing the two silently makes results look worse
+    or better for no methodological reason.
+    """
     pred = np.asarray(pred, dtype=np.float64)
     truth = (np.asarray(truth) > 0).astype(np.int8)
     if pred.shape != truth.shape:
         raise ValueError(f"Shape mismatch: pred {pred.shape} vs truth {truth.shape}")
+
+    if undirected:
+        # A directed gold standard has to be collapsed too, or a true edge
+        # recorded only as j->i would be counted as a negative at (i, j).
+        triu = np.triu_indices(pred.shape[0], k=1)
+        truth_sym = np.maximum(truth, truth.T)
+        return pred[triu], truth_sym[triu]
+
     if exclude_diagonal:
         mask = ~np.eye(pred.shape[0], dtype=bool)
         return pred[mask], truth[mask]
     return pred.ravel(), truth.ravel()
 
 
-def ranking_metrics(scores: np.ndarray, truth: np.ndarray) -> Dict[str, float]:
+def ranking_metrics(scores: np.ndarray, truth: np.ndarray,
+                    undirected: bool = True) -> Dict[str, float]:
     """
     AUROC and AUPR on the CONTINUOUS score, before any cutoff.
 
@@ -28,16 +48,18 @@ def ranking_metrics(scores: np.ndarray, truth: np.ndarray) -> Dict[str, float]:
     will always look worse, and that is a property of the metric, not a failure
     of the method.
 
-    AUPR is the priority metric here given the ~3.5% true-edge class imbalance.
+    AUPR is the priority metric here given the class imbalance (DREAM4 net3 is
+    1.94% true edges).
     """
-    p, t = _flat(scores, truth)
+    p, t = _flat(scores, truth, undirected=undirected)
     return {"auroc": float(roc_auc_score(t, p)),
             "aupr": float(average_precision_score(t, p))}
 
 
-def binary_metrics(predicted: np.ndarray, truth: np.ndarray) -> Dict[str, float]:
+def binary_metrics(predicted: np.ndarray, truth: np.ndarray,
+                   undirected: bool = True) -> Dict[str, float]:
     """Precision/recall/F1 for the actual final network a cutoff produced."""
-    p, t = _flat(predicted, truth)
+    p, t = _flat(predicted, truth, undirected=undirected)
     p = (p > 0).astype(np.int8)
     return {
         "precision": float(precision_score(t, p, zero_division=0)),

@@ -5,26 +5,16 @@ from typing import Optional
 
 import numpy as np
 import torch
-import torch.nn.functional as F
 
-from ..models.encoders import GCNEncoder, identity_features
 from ..models.decoders import build_decoder
+from ..models.encoders import GCNEncoder, identity_features
 
 
-def negative_sample(edge_index: torch.Tensor, num_nodes: int,
-                    num_neg: int, device) -> torch.Tensor:
-    """
-    Uniform random negative sampling from non-edges.
-
-    Deliberately uniform. Model-score-based hard-negative mining failed
-    catastrophically (near-random on every network) because it punishes the
-    encoder for confidently proposing genuine hidden links - which is exactly
-    the behaviour the method depends on. Structural (common-neighbour) mining
-    did not generalise either.
-    """
-    src = torch.randint(0, num_nodes, (num_neg,), device=device)
-    dst = torch.randint(0, num_nodes, (num_neg,), device=device)
-    return torch.stack([src, dst], dim=0)
+def set_seed(seed: int) -> None:
+    import random
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
 
 
 def train_gae(
@@ -34,58 +24,57 @@ def train_gae(
     epochs: int = 300,
     lr: float = 0.01,
     weight_decay: float = 1e-8,
-    hidden: int = 32,
+    hidden: int = 16,
     out_channels: int = 16,
     dropout: float = 0.01,
     seed: Optional[int] = None,
     device: Optional[str] = None,
+    x: Optional[torch.Tensor] = None,
     verbose: bool = False,
 ) -> np.ndarray:
     """
-    Train one GAE and return its dense reconstruction as a numpy array.
+    Train one GAE and return its dense reconstruction, min-max scaled to [0,1].
 
-    Defaults are the validated production settings. 300 epochs (not the
-    original 150) because every decoder variant tested showed real further
-    gains past 150.
+    Uses torch_geometric's GAE.recon_loss, which scores the observed edges as
+    positives and draws an equal number of uniform random non-edges as
+    negatives each epoch. Deliberately uniform: model-score-based hard-negative
+    mining failed catastrophically, because it punishes the encoder for
+    confidently proposing genuine hidden links - exactly the behaviour the
+    method depends on.
+
+    Defaults are the validated production settings. 300 epochs (not 150)
+    because every decoder variant tested still improved past 150.
     """
+    from torch_geometric.nn import GAE
+
     device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
     if seed is not None:
-        torch.manual_seed(seed)
+        set_seed(seed)
 
     edge_index = edge_index.to(device)
-    x = identity_features(num_nodes, device=device)
+    if x is None:
+        x = identity_features(num_nodes, device=device)
+    else:
+        x = x.to(device)
 
-    encoder = GCNEncoder(num_nodes, hidden, out_channels, dropout).to(device)
-    dec = build_decoder(decoder, out_channels).to(device)
+    encoder = GCNEncoder(num_nodes, hidden, out_channels, dropout)
+    model = GAE(encoder, build_decoder(decoder, out_channels)).to(device)
+    opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
-    params = list(encoder.parameters()) + list(dec.parameters())
-    opt = torch.optim.Adam(params, lr=lr, weight_decay=weight_decay)
-
-    num_pos = edge_index.size(1)
-    encoder.train(); dec.train()
-
+    model.train()
     for epoch in range(epochs):
         opt.zero_grad()
-        z = encoder(x, edge_index)
-
-        pos_logits = dec(z, edge_index)
-        neg_index = negative_sample(edge_index, num_nodes, num_pos, device)
-        neg_logits = dec(z, neg_index)
-
-        loss = (
-            F.binary_cross_entropy_with_logits(
-                pos_logits, torch.ones_like(pos_logits))
-            + F.binary_cross_entropy_with_logits(
-                neg_logits, torch.zeros_like(neg_logits))
-        )
+        z = model.encode(x, edge_index)
+        loss = model.recon_loss(z, edge_index)
         loss.backward()
         opt.step()
-
         if verbose and (epoch + 1) % 50 == 0:
-            print(f"    epoch {epoch+1:4d}/{epochs}  loss {loss.item():.4f}")
+            print(f"    epoch {epoch + 1:4d}/{epochs}  loss {loss.item():.4f}")
 
-    encoder.eval(); dec.eval()
+    model.eval()
     with torch.no_grad():
-        z = encoder(x, edge_index)
-        recon = torch.sigmoid(dec(z)).cpu().numpy()
-    return recon.astype(np.float32)
+        z = model.encode(x, edge_index)
+        recon = model.decoder.forward_all(z).cpu().numpy()
+
+    span = recon.max() - recon.min()
+    return ((recon - recon.min()) / (span + 1e-12)).astype(np.float32)

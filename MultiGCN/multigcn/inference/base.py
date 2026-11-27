@@ -21,14 +21,22 @@ class BaseRunner(abc.ABC):
 
     def __init__(self, spec: AlgorithmSpec, params: Optional[dict] = None,
                  time_series: Optional[Path] = None):
+        from ..registry import DataRequirement
+
         self.spec = spec
         self.params = params or {}
         # Resolve to absolute. RScriptRunner executes with cwd set to the
         # scripts directory so wrappers can source their siblings, which means
         # a relative path handed in here resolves against the wrong directory.
-        # Python runners inherit the caller's cwd, so this failed for R
-        # algorithms only - a confusing asymmetry.
-        self.time_series = Path(time_series).resolve() if time_series else None
+        ts = Path(time_series).resolve() if time_series else None
+        # Only hand the time-series file to algorithms that can use it. A
+        # steady-state wrapper takes fixed positional arguments, so an extra
+        # path shifts the params JSON out of position and it fails parsing
+        # something that is not JSON at all.
+        self.time_series = (
+            ts if ts and spec.requires is not DataRequirement.STEADY_STATE
+            else None
+        )
 
     @property
     def params_json(self) -> str:

@@ -12,9 +12,14 @@ class Config:
     # --- topology ---
     top_x: float = 0.10
     keep_weights: bool = False
+    symmetric: bool = True          # rank the upper triangle, mirror edges
+    laplacian: bool = True          # feed the normalised Laplacian to GCNConv
+
+    # --- evaluation ---
+    undirected_eval: bool = True    # score the upper triangle only
 
     # --- architecture ---
-    hidden: int = 32
+    hidden: int = 16
     embedding_dim: int = 16
     dropout: float = 0.01
     decoders: List[str] = field(default_factory=lambda: ["bilinear", "distance"])

@@ -233,14 +233,35 @@ register(AlgorithmSpec(
     name="TIGRESS", runtime=_R, script="r/TIGRESS.R",
     library="tigress", install="devtools::install_github('jpvert/tigress')",
     orientation=_SR, family="regression",
-    notes="Not on CRAN. Needs devtools + a working compiler toolchain. "
-          "Runs 5 replicates internally and takes the median. Slowest R method.",
+    param_prefix="tigress", vendored=False,
+    docker_image="adriansegura99/geneci_infer-network_tigress:4.0.0",
+    params={
+        "replicates": ParamSpec("replicates", 5, int, minimum=1,
+                                help="Runs whose per-edge median is taken. "
+                                     "TIGRESS is unstable run-to-run; 5 is the "
+                                     "validated default, 1 is much faster."),
+        "nstepsLARS": ParamSpec("nstepsLARS", 5, int, minimum=1),
+        "nsplit": ParamSpec("nsplit", 100, int, minimum=1,
+                            help="Stability-selection resamples."),
+        "alpha": ParamSpec("alpha", 0.2, float, minimum=0.0, maximum=1.0),
+    },
+    notes="Not on CRAN - needs devtools and a compiler toolchain. If that is "
+          "impractical, set prefer_docker=True and it runs from the image.",
 ))
 
 register(AlgorithmSpec(
     name="INFERELATOR", runtime=_PY, script="python/INFERELATOR.py",
     library="inferelator", install="pip install inferelator",
     orientation=_GR, family="regression",
+    param_prefix="inferelator", vendored=False,
+    docker_image="adriansegura99/geneci_infer-network_inferelator:4.0.0",
+    params={
+        "num_bootstraps": ParamSpec("num_bootstraps", 50, int, minimum=1),
+        "regression": ParamSpec("regression", "bbsr", str,
+                                choices=["bbsr", "elasticnet", "stars"]),
+        "workflow": ParamSpec("workflow", "tfa", str, choices=["tfa", "base"]),
+        "seed": ParamSpec("seed", 100, int),
+    },
 ))
 
 # --- Other -----------------------------------------------------------------
@@ -262,21 +283,24 @@ register(AlgorithmSpec(
 ))
 
 register(AlgorithmSpec(
-    name="MEOMI", runtime=_R, script="r/MEOMI.R",
-    library="MEOMI (vendored source)", install="see THIRD_PARTY_NOTICES.md",
+    name="MEOMI", runtime=Runtime.DOCKER, script=None,
+    library="GENECI container",
+    install="automatic - the image is pulled on first use",
     orientation=_GR, family="other",
-    notes="Ships its own src/ tree rather than a packaged library. Heaviest "
-          "dependency set of any R method (sqldf, igraph, Rgraphviz, ...).",
+    docker_image="adriansegura99/geneci_infer-network_meomi:4.0.0",
+    notes="Container-only. MEOMI ships an entire src/ tree plus the heaviest R "
+          "stack of any method here (sqldf, igraph, Rgraphviz), so reproducing "
+          "it locally buys nothing over the prebuilt image.",
 ))
 
 register(AlgorithmSpec(
-    name="NONLINEARODES", runtime=_ISO, script="python/NONLINEARODES.py",
-    library="xgboost==0.82 + scikit-learn==0.24.2 + numpy==1.16.3",
-    install="isolated env only - see notes",
+    name="NONLINEARODES", runtime=_ISO, script=None,
+    library="GENECI container",
+    install="automatic - the image is pulled on first use",
     orientation=_GR, family="other",
     docker_image="adriansegura99/geneci_infer-network_nonlinearodes:4.0.0",
-    notes="HARD CONSTRAINT: pinned to Python 3.6 with numpy 1.16.3. This cannot "
-          "share an interpreter with PyTorch/PyG. Always runs isolated.",
+    notes="Container-only. Pinned to Python 3.6 with numpy 1.16.3, which can "
+          "never share an interpreter with PyTorch. Always runs isolated.",
 ))
 
 
@@ -459,9 +483,13 @@ register(AlgorithmSpec(
                                 help="Occam window width for model pruning."),
         "nvar": ParamSpec("nvar", 50, int, minimum=1),
     },
-    notes="Free to add: ships in networkBMA, already a dependency. Searches model "
-          "space directly rather than the iterative BMA path NETWORKBMA uses, so "
-          "the two give genuinely different edge sets from one install.",
+    notes="UNAVAILABLE IN PRACTICE. Requires networkBMA 2.x, but networkBMA was "
+          "removed from Bioconductor entirely - only the archived 1.0.0 is "
+          "obtainable and it has no ScanBMA. The 2.30.0 source tarball can be "
+          "built from the 3.16 archive, but needs Rcpp/RcppArmadillo/RcppEigen "
+          "compiled from source. Kept registered so it works for anyone who "
+          "does have 2.x; excluded from the default tiers. NETWORKBMA is the "
+          "working alternative and runs fine on 1.0.0.",
 ))
 
 register(AlgorithmSpec(
@@ -579,7 +607,7 @@ for _name, _family, _orient, _req, _note in [
         runtime=Runtime.DOCKER,
         script=None,
         library="GENECI container",
-        install=f"docker pull {_geneci_image(_name)}",
+        install=f"automatic - {_geneci_image(_name)} is pulled on first use",
         orientation=_orient,
         family=_family,
         requires=_req,
@@ -590,6 +618,8 @@ for _name, _family, _orient, _req, _note in [
 
 # --------------------------------------------------------------------------
 # Convenience accessors
+from .inference.native import specs as _native_specs  # noqa: E402,F401
+
 # --------------------------------------------------------------------------
 
 DEFAULT_METHODS: List[str] = list(ALGORITHMS.keys())

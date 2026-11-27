@@ -1,4 +1,11 @@
-"""Decoders. The validated production setting is the bilinear+distance ensemble."""
+"""
+Decoders. The validated production setting is the bilinear+distance ensemble.
+
+Each decoder exposes the interface torch_geometric's GAE expects:
+    forward(z, edge_index, sigmoid=True)  -> score per edge
+    forward_all(z, sigmoid=True)          -> dense score matrix
+so they can be dropped straight into GAE(encoder, decoder).
+"""
 from __future__ import annotations
 
 import torch
@@ -12,26 +19,38 @@ class InnerProductDecoder(nn.Module):
     Structurally symmetric, so it cannot represent direction - a TF regulating
     a target is not the same relation reversed. Kept for comparison only.
     """
-    def forward(self, z, edge_index=None):
-        logits = z @ z.t()
-        return logits if edge_index is None else logits[edge_index[0], edge_index[1]]
+
+    def forward(self, z, edge_index, sigmoid=True):
+        src, dst = edge_index
+        value = (z[src] * z[dst]).sum(dim=-1)
+        return torch.sigmoid(value) if sigmoid else value
+
+    def forward_all(self, z, sigmoid=True):
+        value = z @ z.t()
+        return torch.sigmoid(value) if sigmoid else value
 
 
 class BilinearDecoder(nn.Module):
     """
-    sigmoid(z_i^T W z_j) with learned W, initialised near identity.
+    sigmoid(z_i^T W z_j), W learned and initialised near identity.
 
     Because W is unconstrained, z_i^T W z_j != z_j^T W z_i in general, so this
-    can represent directed regulation. Beats inner-product on AUPR consistently.
+    can represent directed regulation. Best single decoder in testing.
     """
-    def __init__(self, dim: int = 16, init_noise: float = 0.01):
-        super().__init__()
-        w = torch.eye(dim) + init_noise * torch.randn(dim, dim)
-        self.W = nn.Parameter(w)
 
-    def forward(self, z, edge_index=None):
-        logits = z @ self.W @ z.t()
-        return logits if edge_index is None else logits[edge_index[0], edge_index[1]]
+    def __init__(self, embed_dim: int = 16, init_noise: float = 0.01):
+        super().__init__()
+        self.W = nn.Parameter(
+            torch.eye(embed_dim) + init_noise * torch.randn(embed_dim, embed_dim))
+
+    def forward(self, z, edge_index, sigmoid=True):
+        src, dst = edge_index
+        value = torch.sum((z[src] @ self.W) * z[dst], dim=-1)
+        return torch.sigmoid(value) if sigmoid else value
+
+    def forward_all(self, z, sigmoid=True):
+        value = (z @ self.W) @ z.t()
+        return torch.sigmoid(value) if sigmoid else value
 
 
 class DistanceDecoder(nn.Module):
@@ -40,13 +59,15 @@ class DistanceDecoder(nn.Module):
     learned interaction matrix - a genuinely different inductive bias, which is
     why ensembling it with the bilinear decoder helps.
     """
-    def forward(self, z, edge_index=None):
-        if edge_index is None:
-            sq = (z * z).sum(dim=1, keepdim=True)
-            logits = -(sq + sq.t() - 2 * (z @ z.t()))
-            return logits
-        diff = z[edge_index[0]] - z[edge_index[1]]
-        return -(diff * diff).sum(dim=1)
+
+    def forward(self, z, edge_index, sigmoid=True):
+        src, dst = edge_index
+        value = -((z[src] - z[dst]) ** 2).sum(dim=-1)
+        return torch.sigmoid(value) if sigmoid else value
+
+    def forward_all(self, z, sigmoid=True):
+        value = -(torch.cdist(z, z) ** 2)
+        return torch.sigmoid(value) if sigmoid else value
 
 
 DECODERS = {

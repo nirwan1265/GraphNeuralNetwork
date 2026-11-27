@@ -1,289 +1,259 @@
 # MultiGCN — project handoff
 
 **Read this first if you are a new assistant session picking up this work.**
+Then read `docs/REJECTED.md` before proposing any change to the method.
 
-> ⚠️ **This file contains unpublished methodology.** The combination approach is
-> novel and not yet published. Keep it out of public-facing material (README,
-> repo description, conference abstracts) until the paper is out. `README.md` is
-> deliberately vaguer than this file — that is intentional, not an oversight.
+> ⚠️ **Contains unpublished methodology.** The combination approach is novel and
+> not yet published. Keep it out of public material until the paper is out.
+> `README.md` is deliberately vaguer than this file — that is intentional.
 
 ---
 
-## 1. What this project is
+## 1. What this is
 
-Two parallel goals, sharing one codebase:
+Two goals, one codebase:
 
-1. **A publishable method.** A GCN graph-autoencoder ensemble for gene
-   regulatory network (GRN) reconstruction that outperforms existing ensemble
-   methods on benchmark data.
-2. **A pip-installable package** (`MultiGCN`) that packages the method so
-   others can use it, with no dependency on GENECI or any other external tool.
+1. **A publishable method** — a GCN graph-autoencoder ensemble for gene
+   regulatory network (GRN) inference that beats existing ensemble methods.
+2. **A pip-installable package** (`MultiGCN`) with no dependency on GENECI or
+   any other external orchestration tool.
 
-Owner: Nirwan Tandukar, PhD student in computational biology. Also applying to
-industry roles (e.g. NVIDIA), so repo quality and README presentation matter.
+Owner: Nirwan Tandukar, PhD student, computational biology. Also applying to
+industry roles, so repo presentation matters.
 
-### The core idea
+### The method
 
-Every GRN inference algorithm captures a different partial view of the
-regulatory structure, with its own blind spots. Instead of picking one, or
-naively averaging them:
-
-1. Run **N different inference algorithms** on the same expression data. Each
-   produces a continuous confidence score for every gene pair.
-2. For each algorithm independently, keep its **top 10% of gene pairs** as a
-   graph topology (rank-based, not an absolute cutoff).
-3. Train a **separate GCN graph autoencoder** on each of those topologies.
-   Node features are the identity matrix — no expression values.
-4. Decode with **two decoders** (bilinear + distance) and run **3 iterations**
-   each.
-5. **Average all reconstructions continuously** into one final network.
-
-The output recovers edges that no individual algorithm proposed.
+1. Run **N inference algorithms** on the same expression data; each gives a
+   continuous confidence for every gene pair.
+2. Per algorithm, keep its **top 10% of pairs** as a graph (rank-based, not an
+   absolute cutoff).
+3. Train a **separate GCN autoencoder** on each graph. Node features are the
+   identity matrix — no expression values.
+4. Decode with **two decoders** (bilinear + distance), **3 iterations** each.
+5. **Average all reconstructions continuously** into one network.
 
 ---
 
 ## 2. Current state
 
-### Working and verified
+### Working
+- 38 tests pass. `pip install -e ".[dev]"`.
+- **36 algorithms registered**, 10 families. **23–25 actually runnable** (§4).
+- Full pipeline verified end to end on DREAM4 100-gene network 3.
+- GENIE3/GRNBOOST2 reimplemented natively on scikit-learn (no arboreto).
+  Verified: `GENIE3_RF` ntrees=1000 → AUROC 0.742 / AUPR 0.125.
+- **All 9 GENECI R wrappers rewritten as MultiGCN's own code.** `vendor.py` is
+  no longer needed for anything.
+- **One CLI.** Four overlapping example scripts were consolidated into
+  `multigcn/cli.py`.
 
-- Package installs (`pip install -e ".[dev]"`), 38 tests pass.
-- **36 algorithms registered** across 10 methodological families.
-- Full pipeline runs end to end on DREAM4 100-gene network 3: inference →
-  topology → GCN training → fusion → scoring.
-- GENIE3/GRNBOOST2 reimplemented natively on scikit-learn. Verified against the
-  real gold standard: `GENIE3_RF` ntrees=1000 → AUROC 0.742 / AUPR 0.125
-  (random baseline AUPR 0.0196).
-- The 9 GENECI-derived R wrappers were rewritten as MultiGCN-owned code.
-  **`--tier r` no longer needs GENECI at all.**
+### The open problem — read before "fixing" anything
+On the full 18-algorithm run, **the fused network scored below its best single
+input**: fused AUPR 0.135 vs SWING 0.244. **Every one of 34 reconstructions
+scored below its own input.** A topology sweep (`top_x` ∈ {0.02, 0.03, 0.05,
+0.10} × `keep_weights` ∈ {False, True}) moved fused AUPR only between 0.125 and
+0.135 — so topology density is *not* the cause.
 
-### Not yet verified
+Two live hypotheses:
 
-- **No R wrapper has actually been executed successfully end to end** at the
-  time of writing (BNLEARN was mid-run). Defaults reproduce GENECI's original
-  calls, but the parameter pass-through is untested.
-- Docker algorithms: images never pulled or run.
-- SWING, dynGENIE3, dynUGENE, networkBMA, ScanBMA, G1DBN, TDARACNE wrappers are
-  structure-checked only.
-- Some R package argument names (`c3net` alpha/cutoffMI, `kboost` ite,
-  `TDARACNE`, `ScanBMAcontrol` gCtrl) were written from memory. The `AddIfSet`
-  design means an unset parameter is never passed, so these can only break for
-  someone who explicitly overrides them.
+1. **Flat averaging dilutes a strong outlier.** SWING is 2× the next best; the
+   mean of 18 drags it toward the pack. Test: fuse only 6–8 strong,
+   family-diverse algorithms.
+2. **`keep_weights` does nothing — confirmed bug.** `edge_index_from_adj()`
+   calls `np.nonzero(adj)` and discards weights; `train_gae` never passes
+   `edge_weight` to `GCNConv`. So the GCN *always* sees a binary graph and the
+   option cannot have an effect. This is why both sweep columns were identical
+   to six decimals. **Not yet fixed** — it changes validated architecture, so
+   ask before touching.
 
-### Known outstanding issue
-
-The parent repo (`GraphNeuralNetwork`) had >100 MB generated files
-(`tmp-*/GRN_*.csv`) committed, which GitHub rejects. A `.gitignore` and a
-`scripts/pre-commit` size guard now exist. History may still need
-`git filter-repo` cleanup.
-
----
-
-## 3. Repository layout
-
-```
-GraphNeuralNetwork/                 <- outer repo (research, papers, data)
-├── data/Database.DREAM4/
-│   ├── EXP/dream4_100_0N_exp.csv   <- expression (genes x samples)
-│   └── GS/dream4_100_0N_gs.csv     <- gold standard (genes x genes matrix)
-├── scripts/pre-commit              <- blocks >50 MB commits
-└── MultiGCN/                       <- the package (NOT a separate git repo)
-    ├── multigcn/
-    │   ├── registry.py             <- SINGLE SOURCE OF TRUTH for all 36 algorithms
-    │   ├── params.py               <- <package>_<param> namespacing + validation
-    │   ├── pipeline.py             <- the MultiGCN class
-    │   ├── config.py               <- Config dataclass, all validated defaults
-    │   ├── cli.py
-    │   ├── inference/
-    │   │   ├── base.py             <- runner ABC, data-requirement gate
-    │   │   ├── runners.py          <- R / Python / Docker runners
-    │   │   ├── vendor.py           <- pulls the 4 remaining GENECI scripts
-    │   │   └── scripts/
-    │   │       ├── r/              <- 17 R wrappers (13 ours, 4 vendored)
-    │   │       └── python/         <- GENIE3, DYNGENIE3, SWING
-    │   ├── data/
-    │   │   ├── loaders.py
-    │   │   └── dream4.py           <- DREAM4 time-series conversion
-    │   ├── topology/threshold.py   <- rank-based top-X%
-    │   ├── models/                 <- encoders.py, decoders.py
-    │   ├── training/train.py
-    │   ├── fusion/combine.py
-    │   ├── postprocessing/tukey.py
-    │   └── evaluation/metrics.py
-    ├── docs/REJECTED.md            <- READ THIS BEFORE PROPOSING CHANGES
-    ├── docs/HANDOFF.md             <- this file
-    ├── examples/run_dream4_net3.py
-    └── tests/                      <- 38 tests
-```
+### Not verified
+- Docker algorithms have never run (see §4).
+- Several R argument names written from memory (`c3net` alpha/cutoffMI,
+  `kboost` ite, `TDARACNE`). The `AddIfSet` helper only forwards a parameter
+  when explicitly set, so defaults are safe.
 
 ---
 
-## 4. Validated design decisions — do not change casually
+## 3. Usage — one command
 
-Every row below was tested experimentally. Changing one means re-running the
-full DREAM4 benchmark.
+```bash
+multigcn list                                     # algorithms + keywords
+multigcn run <exp.csv> --algorithms all --dry-run # show plan, don't run
+multigcn run <exp.csv> --algorithms all -g <gs.csv>
+multigcn run <exp.csv> --algorithms all --no-fuse # inference only
+multigcn run <exp.csv> --algorithms cached --use-cached -g <gs.csv>
+```
+
+`--algorithms` takes keywords, explicit names, or a mix (`r,SWING,PIDC`). All
+keyword groups are **derived from the registry**, never hardcoded:
+
+| keyword | n | meaning |
+|---|---|---|
+| `all` | 25 | everything not needing Docker |
+| `everything` | 36 | including Docker |
+| `r` / `python` / `docker` | 19 / 6 / 11 | by runtime |
+| `timeseries` / `steadystate` | 8 / 27 | by data requirement |
+| `cached` | varies | whatever has an edge list already |
+| family name | varies | `tree_ensemble`, `bayesian`, … |
+
+Parameters are `--<package>-<param>`, prefixed by **package** not algorithm
+(GENIE3_RF/ET/GRNBOOST2 share `genie3_`):
+
+```bash
+multigcn run <exp.csv> --algorithms all --genie3-ntrees 500 --bnlearn-R 20
+```
+
+Everything is validated before any algorithm runs.
+
+Python API mirrors this: `MultiGCN(methods=[...], genie3_ntrees=500,
+top_x=0.10)` — unprefixed kwargs go to `Config`.
+
+---
+
+## 4. What runs and what doesn't
+
+**23 working** (edge lists exist in `dream4_net3_out/lists/`):
+ARACNE, BC3NET, BNLEARN, C3NET, CLR, DYNGENIE3, G1DBN, GENENET, GENIE3_ET,
+GENIE3_RF, GRNBOOST2, INFERELATOR, KBOOST, LEAP, MEOMI, MRNET, MRNETB,
+NETWORKBMA, NONLINEARODES, PCIT, PPCOR, SWING, TIGRESS
+
+**Pending**: DYNUGENE (fix applied, needs retest), TDARACNE (`BiocManager::install('TDARACNE')`).
+
+**Blocked — environment, not bugs. Do not try to "fix" these:**
+
+- **10 Docker algorithms** (JUMP3, NARROMI, GRNVBEM, PLSNET, CMI2NI, PCACMI,
+  LOCPCACMI, RSNET, PIDC, PUC). GENECI's images fail with
+  `cannot enable executable stack as shared object requires`. Old shared
+  libraries request an executable stack; kernels ≥5.8 refuse. Affects Julia and
+  MATLAB images alike. They *used* to work on this Mac — a Docker Desktop
+  update broke them. Untried: setting `useVirtualizationFrameworkRosetta:false`
+  in `~/Library/Group Containers/group.com.docker/settings.json`.
+- **SCANBMA** — needs networkBMA 2.x, but networkBMA was **removed from
+  Bioconductor**. Only the archived 1.0.0 is obtainable and it has no ScanBMA.
+  NETWORKBMA works on 1.0.0 and is unaffected.
+
+**Recovering blocked algorithms:** GENECI's historical output is on disk and
+importable — this is how MEOMI, NONLINEARODES, INFERELATOR and TIGRESS became
+available despite Docker being broken:
+
+```bash
+python examples/import_lists.py \
+  --from ../data/inferred_networks/dream4_100_03_exp/lists \
+  --output dream4_net3_out
+```
+
+---
+
+## 5. Validated design — do not change casually
 
 | Component | Setting | Why |
 |---|---|---|
-| Input topology | top 10%, rank-based | Fixed cutoffs gave 0.3%–67% density across algorithms at the same threshold value |
-| Node features | identity matrix | Real expression values as features tested, clearly worse |
-| Encoder | 3-layer GCN (32, 32, 16), residual on layer 2 | 2-layer, 4-layer, GraphSAGE, GAT, Jumping Knowledge and 4 width shapes all lost |
-| Decoder | bilinear + distance, averaged | The ensemble beat either alone on AUPR across all 3 networks — the most robust result found |
-| Fusion | continuous averaging | ~0.02 AUROC better than binarise-then-vote on identical models |
-| Epochs | 300 | Every decoder variant still improved past 150 |
-| Negative sampling | uniform | Hard-negative mining failed catastrophically |
-| Iterations | 3 per (algorithm, decoder) | — |
+| Input topology | top 10%, rank-based | fixed cutoffs gave 0.3%–67% density across algorithms |
+| Node features | identity matrix | expression-as-features tested, clearly worse |
+| Encoder | 3-layer GCN (32,32,16), residual on layer 2 | 2/4-layer, GraphSAGE, GAT, JK, 4 width shapes all lost |
+| Decoder | bilinear + distance, averaged | beat either alone on AUPR across all 3 networks |
+| Fusion | continuous averaging | ~0.02 AUROC over binarise-then-vote |
+| Epochs | 300 | all variants still improving past 150 |
+| Negative sampling | uniform | hard-negative mining failed catastrophically |
 
-**`docs/REJECTED.md` has the full log of failed experiments.** Read it before
-proposing anything — it exists specifically to stop dead ends being relitigated.
+**Biggest single finding: fusion method matters more than model tweaks.**
+Binarising early destroys confidence information.
 
-### The most important single finding
-
-**Fusion method matters more than model tweaks.** Switching from
-binarise-then-count to continuous averaging, with everything else identical,
-produced a real gain. Early binarisation throws away exactly how confident each
-prediction was.
-
-### Ensemble size is not monotonic
-
-Below ~8 algorithms the ensemble clearly degrades; partial removal down to ~10
-is sometimes neutral or slightly better. **This is why a 3-algorithm run looks
-bad** — see §7.
+**Ensemble size is not monotonic.** Below ~8 algorithms it clearly degrades.
+A 3-algorithm run scoring badly is expected, not a bug.
 
 ---
 
-## 5. Critical gotchas
+## 6. Gotchas that cost real time
 
-**Pre-binarised score files.** GENECI's `normalized_weight_matrix_*.csv` files
-are already binarised despite the name. Every threshold experiment run on them
-was invalid. Always use raw `GRN_<ALGO>.csv`. `loaders.py` now raises if a
-confidence column has ≤2 distinct values.
-
-**Matrix orientation.** Canonical on-disk format is **genes × samples**. Some R
-packages want the transpose. Each algorithm declares its `Orientation` in
-`registry.py`. Getting it wrong yields a plausible-looking, meaningless network.
-
-**DREAM4 `_exp.csv` files are time series, not steady state.** 100 genes × 210
-samples = 10 perturbation experiments × 21 time points (t0…t1000, step 50).
-Steady-state methods treat the 210 columns as independent conditions (this is
-what GENECI does and what the existing validated results used). Time-series
-methods need `multigcn/data/dream4.py::to_time_series()`.
-
-**Gold standards are genes × genes matrices**, not edge lists.
-`load_gold_standard()` auto-detects both.
-
-**Compute AUROC/AUPR on continuous scores, never post-cutoff.** They measure
-ranking across all thresholds; computed after committing to one they always
-look worse, and that is a property of the metric, not the method.
-
-**DREAM4 net3 density is 1.94%** (194 true edges), so top_x=0.10 is ~5× true
-density. Earlier notes claiming 3.5–5% were wrong.
+- **Pre-binarised files.** GENECI's `normalized_weight_matrix_*.csv` are binary
+  despite the name; every experiment run on them was invalid. Use raw
+  `GRN_*.csv`. The loader now raises on ≤2 distinct scores.
+- **Matrix orientation.** Canonical format is **genes × samples**; each
+  algorithm declares its `Orientation`. Wrong orientation gives a
+  plausible-looking meaningless network.
+- **DREAM4 `_exp.csv` are time series, not steady state.** 100 genes × 210
+  samples = 10 perturbation experiments × 21 time points (t0…t1000, step 50).
+  `multigcn/data/dream4.py::to_time_series()` reshapes; the CLI does it
+  automatically when a selected algorithm needs it.
+- **Gold standards are genes × genes matrices**, not edge lists. Auto-detected.
+- **AUROC/AUPR on continuous scores only**, never post-cutoff.
+- **DREAM4 net3 density is 1.94%** (194 edges). Earlier notes saying 3.5–5%
+  were wrong, so `top_x=0.10` is ~5× true density.
+- **R runners execute with `cwd` set to the scripts dir**, so any path passed
+  to them must be absolute.
+- **Two upstream bugs found in dynUGENE**, both worked around in the wrapper:
+  `estimateDecayRates` divides by `abs(tmin - tmax)` using *time values*, which
+  is zero when a gene's min and max share a timestamp across experiments →
+  `alpha = Inf`; and `inferNetwork` validates `length(alpha) != ngenes` where
+  `ngenes` still counts the time column, so a vector alpha can never pass.
 
 ---
 
-## 6. How to run
+## 7. Layout
 
-```bash
-cd MultiGCN
-pip install -e ".[dev]"
-python -m pytest tests/ -q                  # 38 pass
-
-python examples/run_dream4_net3.py --tier python   # 3 algos, pip only
-python examples/run_dream4_net3.py --tier r        # + 12 R algos
-python examples/run_dream4_net3.py --tier all
 ```
-
-```python
-from multigcn import MultiGCN
-
-model = MultiGCN(methods=["GENIE3_ET", "CLR", "ARACNE"], top_x=0.10)
-print(model.plan())                     # what can actually run here
-model.infer("expression.csv", time_series="ts.csv")   # ts optional
-model.fit_predict()
-model.save_matrices()                   # per-algorithm weight matrices
-print(model.per_algorithm_scores("gs.csv"))
+GraphNeuralNetwork/                  <- outer repo (research, data, papers)
+├── data/Database.DREAM4/EXP|GS/     <- expression / gold standards
+├── data/inferred_networks/          <- GENECI's historical output (importable)
+├── scripts/pre-commit               <- blocks >50 MB commits
+└── MultiGCN/                        <- the package (NOT a separate git repo)
+    ├── multigcn/
+    │   ├── registry.py              <- SINGLE SOURCE OF TRUTH, all 36 algorithms
+    │   ├── cli.py                   <- THE entry point
+    │   ├── params.py                <- <package>_<param> routing + validation
+    │   ├── pipeline.py              <- MultiGCN class
+    │   ├── config.py                <- validated defaults
+    │   ├── inference/
+    │   │   ├── runners.py           <- R / Python / Docker (auto-pulls images)
+    │   │   └── scripts/r|python/    <- 20 wrappers, all MultiGCN-owned
+    │   ├── data/dream4.py           <- time-series conversion
+    │   ├── topology/threshold.py    <- rank-based top-X%
+    │   ├── models/                  <- encoders.py, decoders.py
+    │   ├── training/train.py
+    │   ├── fusion/combine.py
+    │   └── evaluation/metrics.py
+    ├── docs/REJECTED.md             <- READ BEFORE PROPOSING CHANGES
+    ├── docs/HANDOFF.md              <- this file
+    ├── examples/import_lists.py     <- import precomputed edge lists
+    └── tests/                       <- 38 tests
 ```
-
-### Parameters
-
-Namespaced by **package**, not algorithm — GENIE3_RF/ET/GRNBOOST2 share
-`genie3_`:
-
-```python
-MultiGCN(methods=[...], genie3_ntrees=1000, minet_estimator="pearson",
-         bnlearn_R=200, top_x=0.10)     # unprefixed -> Config
-```
-
-Validated before anything runs. `model.describe_params()` lists everything.
-
-### Runtimes
-
-| Runtime | N | Needs |
-|---|---|---|
-| R | 19 | `Rscript` + CRAN/Bioconductor packages |
-| Docker | 10 | `docker pull` only — MATLAB tools via free MCR, plus Julia |
-| Python | 6 | nothing beyond core deps |
-| Isolated | 1 | Docker (NONLINEARODES pins numpy 1.16.3) |
-
-Time-series **required**: DYNGENIE3, NETWORKBMA, SCANBMA, G1DBN, TDARACNE,
-SWING, JUMP3, GRNVBEM. Either: DYNUGENE, BNLEARN, GENENET.
-
-**BNLEARN is by far the slowest** — `boot.strength` with R=200 is 200 complete
-structure searches. Defaults to cores−1. Time a small `bnlearn_R` first.
 
 ---
 
-## 7. Interpreting results
+## 8. Next steps, prioritised
 
-A tier-1 run (3 tree-ensemble algorithms) gives:
-
-```
-GENIE3_RF        input  AUROC 0.745  AUPR 0.118
-MultiGCN_fused   fused  AUROC 0.685  AUPR 0.092
-```
-
-**The fusion losing to its inputs here is expected, not a bug.** Three
-algorithms from one family are near-identical; the GCN has nothing to
-triangulate and can only lose information. This reproduces the known
-ensemble-size finding. Judge the method only with ≥10 algorithms spanning
-multiple families.
-
----
-
-## 8. Open work, roughly prioritised
-
-1. **Run `--tier r` to completion** and confirm the ensemble beats its best
-   input. Nothing else matters until this is verified.
-2. **DREAM5 / E. coli validation.** All results so far are DREAM4 synthetic.
-   Before this: make output sparse at write time (~4,500 genes → 20M rows →
-   250 MB files; this is what broke the git push).
+1. **Resolve the fusion problem** (§2). Test the subset hypothesis first — it
+   needs no code change: `--algorithms SWING,DYNGENIE3,GENIE3_RF,CLR,MRNETB,PCIT
+   --use-cached`. Then decide on the `edge_weight` bug.
+2. Retest DYNUGENE; install TDARACNE.
 3. **DREAM4 regression test** pinning current AUPR so refactors can't silently
    change results.
-4. Parallelism across algorithms (`n_jobs` is accepted but ignored).
-5. Pull and test the 10 Docker algorithms. PIDC is the most promising —
-   partial information decomposition is a distinct family and a strong BEELINE
-   performer.
-6. Density multiplier for E. coli: does the 2–3× rule transfer?
-7. Tukey `k` never validated for the bilinear+distance ensemble output.
-8. No held-out validation split yet. Build one before paper-ready numbers.
-9. DREAM4 network 2 resisted nearly every improvement that helped 1 and 3 —
-   cause never identified.
+4. **DREAM5 / E. coli.** First make output sparse at write time — 4,500 genes →
+   20M rows → 250 MB files, which is what broke a git push.
+5. Cross-check `to_time_series()` against networkBMA's built-in `dream4ts100`.
+   Eight algorithms depend on that reshape and it is only self-verified.
+6. Parallelism across algorithms (`n_jobs` accepted but ignored).
+7. No held-out validation split yet. Build one before paper-ready numbers.
+8. DREAM4 network 2 resisted every improvement that helped 1 and 3 — unexplained.
 
 ---
 
 ## 9. Working preferences
 
-- Direct, concise, practical. No preamble.
+- Direct and concise. No preamble.
 - **Edit files in place** with the filesystem tools. Do not deliver tarballs or
   rewrite whole files when a surgical edit will do.
-- Do not create new notebooks unless results beat the baseline.
-- Flag uncertainty explicitly — especially unverified library signatures.
+- **Do not add new scripts.** Everything belongs in `cli.py` behind one
+  command. Four overlapping example scripts were already deleted once for this.
+- Flag uncertainty explicitly, especially unverified library signatures.
 - `docs/REJECTED.md` is authoritative on what has already failed.
 
-## 10. Related paths (local machine)
+## 10. Local paths
 
 ```
-~/Documents/Github/GENECI       # source of the 4 remaining vendored scripts
-~/Documents/Github/SWING        # SWING clone (swing_source_path)
-~/Documents/Github/dynGENIE3    # dynGENIE3 clone (dyngenie3_source_path)
-~/Documents/Github/dynUGENE     # dynUGENE R package (devtools::install_local)
+~/Documents/Github/GENECI       # reference only; no longer a dependency
+~/Documents/Github/SWING        # --swing-source-path
+~/Documents/Github/dynGENIE3    # --dyngenie3-source-path
+~/Documents/Github/dynUGENE     # devtools::install_local
 ```

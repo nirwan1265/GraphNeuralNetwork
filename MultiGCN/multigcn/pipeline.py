@@ -7,15 +7,17 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 
 from .config import Config
-from .data.loaders import (load_algorithm_matrices, load_prior_network,
-                           read_expression)
+from .data.loaders import (DataError, load_algorithm_matrices, load_edge_list,
+                           load_prior_network, read_expression)
 from .evaluation.metrics import binary_metrics, ranking_metrics
 from .fusion.combine import fuse
 from .inference.runners import get_runner
 from .postprocessing.tukey import tukey_cutoff
 from .params import ParamError, describe, resolved_for, route
 from .registry import ALGORITHMS, AlgorithmSpec, DataRequirement, resolve
-from .topology.threshold import density, edge_index_from_adj, top_x_percent_edges
+from .topology.threshold import (density, edge_index_from_adj,
+                                normalized_laplacian_edge_index,
+                                top_x_percent_edges)
 
 
 class MultiGCN:
@@ -136,7 +138,14 @@ class MultiGCN:
                 time_series=self.time_series,
                 docker_platform=self.config.docker_platform,
             )
-            self._log(f"  running {spec.name} ({spec.runtime.value}) ...")
+            # Say plainly whether this is real work or a cache hit. Printing
+            # "running" for an instant cache reuse makes a 20-minute run and a
+            # 2-second one look identical in the log.
+            cached = (self.lists_dir / spec.output_filename).exists()
+            if cached and not self.config.overwrite_inference:
+                self._log(f"  {spec.name}: cached, reusing")
+            else:
+                self._log(f"  running {spec.name} ({spec.runtime.value}) ...")
             try:
                 runner.run(expression_file, self.lists_dir,
                            overwrite=self.config.overwrite_inference)
@@ -172,9 +181,37 @@ class MultiGCN:
             self.genes = list(read_expression(expression_file).index)
         if self.genes is None:
             raise RuntimeError("Gene order unknown - pass expression_file=.")
-        self.matrices = load_algorithm_matrices(
-            lists_dir or self.lists_dir, self.genes,
-            methods=[s.name for s in self.specs])
+
+        requested = [s.name for s in self.specs]
+        lists_dir = Path(lists_dir or self.lists_dir)
+
+        # Load one file at a time. A single malformed edge list must not
+        # discard an entire inference run that may have taken hours - but it
+        # must also never be swallowed silently, so each rejection is reported
+        # by name and reason.
+        self.matrices = {}
+        rejected = {}
+        for name in requested:
+            path = lists_dir / f"GRN_{name}.csv"
+            if not path.exists():
+                rejected[name] = "no edge list produced"
+                continue
+            try:
+                self.matrices[name] = load_edge_list(path, self.genes)
+            except DataError as exc:
+                rejected[name] = str(exc).split(". ")[0]
+
+        if rejected:
+            self._log("  excluded from fusion:")
+            for name, why in rejected.items():
+                self._log(f"    {name}: {why}")
+
+        if not self.matrices:
+            raise DataError(
+                f"No usable edge lists in {lists_dir}. "
+                f"Rejected: {', '.join(rejected) or 'none found'}"
+            )
+
         self.matrices.update(self.priors)
         return self.matrices
 
@@ -188,9 +225,11 @@ class MultiGCN:
         n = len(self.genes)
 
         for name, mat in self.matrices.items():
-            adj = top_x_percent_edges(mat, cfg.top_x, cfg.keep_weights)
+            adj = top_x_percent_edges(mat, cfg.top_x, cfg.keep_weights,
+                                      symmetric=cfg.symmetric)
             self._log(f"  {name:<14} input density {density(adj)*100:5.2f}%")
-            edge_index = edge_index_from_adj(adj)
+            edge_index = (normalized_laplacian_edge_index(adj) if cfg.laplacian
+                          else edge_index_from_adj(adj))
 
             self.reconstructions[name] = {}
             for dec in cfg.decoders:
@@ -221,9 +260,12 @@ class MultiGCN:
         if self.fused is None:
             raise RuntimeError("Call fit_predict() first.")
         truth = load_gold_standard(gold_standard, self.genes)
-        results = ranking_metrics(self.fused, truth)
+        results = ranking_metrics(self.fused, truth,
+                                  undirected=self.config.undirected_eval)
         if k is not None:
-            results.update(binary_metrics(self.extract_network(k), truth))
+            results.update(binary_metrics(
+                self.extract_network(k), truth,
+                undirected=self.config.undirected_eval))
         return results
 
     def save(self, path=None) -> Path:
@@ -297,18 +339,19 @@ class MultiGCN:
         from .evaluation.metrics import load_gold_standard, ranking_metrics
 
         truth = load_gold_standard(gold_standard, self.genes)
+        und = self.config.undirected_eval
         rows = []
         for name, mat in self.matrices.items():
-            r = ranking_metrics(mat, truth)
+            r = ranking_metrics(mat, truth, undirected=und)
             rows.append({"method": name, "stage": "input", **r})
         for name, per_decoder in self.reconstructions.items():
             import numpy as np
             for decoder, runs in per_decoder.items():
                 avg = np.mean(np.stack(runs, axis=0), axis=0)
-                r = ranking_metrics(avg, truth)
+                r = ranking_metrics(avg, truth, undirected=und)
                 rows.append({"method": f"{name}__{decoder}",
                              "stage": "reconstructed", **r})
         if self.fused is not None:
             rows.append({"method": "MultiGCN_fused", "stage": "fused",
-                         **ranking_metrics(self.fused, truth)})
+                         **ranking_metrics(self.fused, truth, undirected=und)})
         return pd.DataFrame(rows).sort_values("aupr", ascending=False)

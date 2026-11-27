@@ -20,6 +20,22 @@ p <- args$params
 RequirePackage("networkBMA", "BiocManager::install('networkBMA')")
 suppressMessages(library(networkBMA))
 
+# ScanBMA only exists in networkBMA 2.x. Version 1.0.0 exports iterateBMAlm and
+# networkBMA but no ScanBMA, so without this check the call silently falls
+# through to the iterative-BMA path and then dies on the missing control
+# function - which looks like a bug in this wrapper rather than a stale install.
+if (!exists("ScanBMAcontrol") || !is.function(try(get("ScanBMAcontrol"), silent = TRUE))) {
+  stop(paste0(
+    "ScanBMA is not available in the installed networkBMA ",
+    as.character(utils::packageVersion("networkBMA")), ".\n",
+    "ScanBMA requires networkBMA 2.x or later. Update with:\n",
+    "  BiocManager::install('networkBMA', force = TRUE)\n",
+    "If that still installs 1.x, your Bioconductor release is pinned old - ",
+    "check BiocManager::version().\n",
+    "NETWORKBMA (the iterative-BMA method) works on 1.x and is unaffected."
+  ), call. = FALSE)
+}
+
 ts_path <- if (!is.null(args$ts_file)) args$ts_file else args$in_file
 raw <- read.csv(ts_path, check.names = FALSE)
 tcol <- grep("^time$", tolower(names(raw)))
