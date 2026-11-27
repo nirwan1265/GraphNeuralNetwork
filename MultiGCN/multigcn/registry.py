@@ -588,6 +588,8 @@ for _name, _family, _orient, _req, _note in [
                       "only (input, output).",
     ))
 
+from .inference.native import specs as _native_specs  # noqa: E402,F401  native Python algorithms
+
 # --------------------------------------------------------------------------
 # Convenience accessors
 # --------------------------------------------------------------------------

@@ -50,10 +50,13 @@ def test_empty_selection_fails():
         resolve()
 
 
-def test_nonlinearodes_is_isolated():
-    """Its numpy 1.16.3 pin can never share MultiGCN's interpreter."""
-    assert ALGORITHMS["NONLINEARODES"].runtime == Runtime.PYTHON_ISOLATED
-    assert ALGORITHMS["NONLINEARODES"].docker_image
+def test_former_container_algorithms_now_native():
+    """PIDC, PUC, PLSNET, NONLINEARODES were reimplemented in Python."""
+    for name in ["NONLINEARODES", "PIDC", "PUC", "PLSNET"]:
+        spec = ALGORITHMS[name]
+        assert spec.runtime == Runtime.PYTHON, name
+        assert spec.script == "python/native.py", name
+        assert spec.extra_args == [name], name
 
 
 def test_genie3_variants_share_one_script():
@@ -63,8 +66,8 @@ def test_genie3_variants_share_one_script():
 
 
 DOCKER_ONLY = {
-    "JUMP3", "NARROMI", "GRNVBEM", "PLSNET", "CMI2NI",
-    "PCACMI", "LOCPCACMI", "RSNET", "PIDC", "PUC",
+    "JUMP3", "NARROMI", "GRNVBEM", "CMI2NI",
+    "PCACMI", "LOCPCACMI", "RSNET",
 }
 
 
