@@ -37,7 +37,8 @@ def test_added_algorithms_expose_parameters():
 
 
 def test_resolve_all():
-    assert len(resolve(all_methods=True)) == len(ALGORITHMS)
+    # all_methods = every algorithm that is not marked slow
+    assert len(resolve(all_methods=True)) == sum(not s.slow for s in ALGORITHMS.values())
 
 
 def test_unknown_method_fails_loudly():
@@ -91,3 +92,17 @@ def test_all_geneci_images_use_one_tag():
 def test_swing_is_the_only_granger_method():
     from multigcn.registry import by_family
     assert by_family()["granger_causality"] == ["SWING"]
+
+
+def test_slow_algorithms_are_never_selected_by_default():
+    from multigcn.registry import SLOW, DEFAULT_METHODS, resolve
+    from multigcn.cli import _keyword_groups
+    assert {"TIGRESS", "BC3NET", "BNLEARN"} <= SLOW
+    assert not SLOW & set(DEFAULT_METHODS)
+    groups = _keyword_groups()
+    for key, names in groups.items():
+        if key != "slow":
+            assert not SLOW & set(names), key
+    with pytest.raises(ValueError, match="allow_slow"):
+        resolve(["CLR", "TIGRESS"])
+    assert [s.name for s in resolve(["TIGRESS"], allow_slow=True)] == ["TIGRESS"]

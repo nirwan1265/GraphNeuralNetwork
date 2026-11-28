@@ -39,25 +39,28 @@ CONTAINER_RUNTIMES = (Runtime.DOCKER, Runtime.PYTHON_ISOLATED)
 
 def _keyword_groups(lists_dir: Path | None = None) -> dict:
     """Selection keywords, computed from the registry."""
+    fast = {n: s for n, s in ALGORITHMS.items() if not s.slow}
     groups = {
-        # 'all' means every registered algorithm, containers included. Use
+        # 'all' means every registered algorithm that is not slow, containers
+        # included. Use
         # 'local' for the host-only subset - 'all' previously excluded the
         # container runtimes, which silently dropped a third of the catalogue.
-        "all": list(ALGORITHMS),
-        "everything": list(ALGORITHMS),   # retained as an alias for 'all'
-        "local": [n for n, s in ALGORITHMS.items()
+        "all": list(fast),
+        "everything": list(fast),   # retained as an alias for 'all'
+        "local": [n for n, s in fast.items()
                   if s.runtime not in CONTAINER_RUNTIMES],
-        "python": [n for n, s in ALGORITHMS.items() if s.runtime is Runtime.PYTHON],
-        "r": [n for n, s in ALGORITHMS.items() if s.runtime is Runtime.R],
-        "docker": [n for n, s in ALGORITHMS.items()
+        "python": [n for n, s in fast.items() if s.runtime is Runtime.PYTHON],
+        "r": [n for n, s in fast.items() if s.runtime is Runtime.R],
+        "docker": [n for n, s in fast.items()
                    if s.runtime in CONTAINER_RUNTIMES],
-        "timeseries": [n for n, s in ALGORITHMS.items()
+        "timeseries": [n for n, s in fast.items()
                        if s.requires is DataRequirement.TIME_SERIES],
-        "steadystate": [n for n, s in ALGORITHMS.items()
+        "steadystate": [n for n, s in fast.items()
                         if s.requires is DataRequirement.STEADY_STATE],
     }
     for family, names in by_family().items():
-        groups[family] = names
+        groups[family] = [n for n in names if not ALGORITHMS[n].slow]
+    groups["slow"] = sorted(n for n, s in ALGORITHMS.items() if s.slow)
     if lists_dir and lists_dir.is_dir():
         groups["cached"] = sorted(p.stem[len("GRN_"):]
                                   for p in lists_dir.glob("GRN_*.csv"))
@@ -183,7 +186,11 @@ def cmd_run(args, extras):
         if getattr(args, key) is not None:
             setattr(cfg, key, getattr(args, key))
 
-    model = MultiGCN(methods=methods, config=cfg, **algo_params)
+    try:
+        model = MultiGCN(methods=methods, config=cfg, allow_slow=args.allow_slow,
+                         **algo_params)
+    except ValueError as e:
+        raise SystemExit(f"error: {e}")
     print(model.plan(), "\n")
     if args.dry_run:
         return
@@ -271,6 +278,9 @@ def main():
     p.add_argument("--time-series", type=Path,
                    help="Explicit time-series CSV (first column 'time'). "
                         "Auto-generated for DREAM4 input when needed.")
+    p.add_argument("--allow-slow", action="store_true",
+                   help="Allow algorithms marked slow (TIGRESS, BC3NET, BNLEARN, "
+                        "...; see 'multigcn list'). Refused otherwise.")
     p.add_argument("--knockouts", type=Path,
                    help="Single-gene knockout experiments (one row each; DREAM "
                         "layout or a first column 'knockout'). Needed by "

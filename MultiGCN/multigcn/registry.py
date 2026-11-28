@@ -73,6 +73,8 @@ class AlgorithmSpec:
     param_prefix: Optional[str] = None
     params: Dict[str, ParamSpec] = field(default_factory=dict)
     vendored: bool = True   # False = wrapper shipped by MultiGCN, not GENECI
+    slow: bool = False      # hours at thousands of genes: never picked by a
+                            # keyword, and refused unless allow_slow=True
 
     @property
     def tunable(self) -> bool:
@@ -623,10 +625,23 @@ from .inference.native import specs as _native_specs  # noqa: E402,F401
 
 # --------------------------------------------------------------------------
 
-DEFAULT_METHODS: List[str] = list(ALGORITHMS.keys())
+# Hours (or days) on a few thousand genes. TIGRESS ran > 8 h and BC3NET > 1 h on
+# DREAM5 E. coli (4,511 genes) without finishing; BNLEARN bootstraps a full
+# structure search; the rest are conditional-MI or per-target optimisation
+# methods that scale at least cubically. None of them was among the strong
+# algorithms on DREAM4. Excluded from every keyword and from all_methods, and
+# refused when named unless allow_slow=True (--allow-slow).
+SLOW = {"TIGRESS", "BC3NET", "BNLEARN", "MEOMI", "JUMP3", "SWING", "NARROMI",
+        "GRNVBEM", "CMI2NI", "PCACMI", "LOCPCACMI", "G1DBN"}
+for _n in SLOW & set(ALGORITHMS):
+    from dataclasses import replace as _replace
+    ALGORITHMS[_n] = _replace(ALGORITHMS[_n], slow=True)
+
+DEFAULT_METHODS: List[str] = [n for n, s in ALGORITHMS.items() if not s.slow]
 
 
-def resolve(methods=None, all_methods: bool = False) -> List[AlgorithmSpec]:
+def resolve(methods=None, all_methods: bool = False,
+            allow_slow: bool = False) -> List[AlgorithmSpec]:
     """
     Turn a user-supplied method selection into a list of specs.
 
@@ -649,6 +664,12 @@ def resolve(methods=None, all_methods: bool = False) -> List[AlgorithmSpec]:
             f"Unknown method(s): {', '.join(unknown)}. "
             f"Available: {', '.join(DEFAULT_METHODS)}"
         )
+    slow = [m for m in methods if ALGORITHMS[m].slow]
+    if slow and not allow_slow:
+        raise ValueError(
+            f"{', '.join(slow)}: slow - hours or more on a few thousand genes. "
+            f"Drop {'it' if len(slow) == 1 else 'them'}, or pass allow_slow=True "
+            f"(--allow-slow) to run anyway.")
     return [ALGORITHMS[m] for m in methods]
 
 

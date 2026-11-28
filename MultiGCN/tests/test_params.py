@@ -50,12 +50,12 @@ def test_unknown_param_fails():
 
 def test_bad_choice_fails():
     with pytest.raises(ValueError, match="must be one of"):
-        MultiGCN(methods=["BNLEARN"], bnlearn_algorithm="not_an_algorithm")
+        MultiGCN(methods=["BNLEARN"], allow_slow=True, bnlearn_algorithm="not_an_algorithm")
 
 
 def test_out_of_range_fails():
     with pytest.raises(ValueError, match=">= 2"):
-        MultiGCN(methods=["BNLEARN"], bnlearn_R=1)
+        MultiGCN(methods=["BNLEARN"], allow_slow=True, bnlearn_R=1)
 
 
 def test_unprefixed_unknown_option_is_helpful():

@@ -39,10 +39,11 @@ class MultiGCN:
         methods: Optional[Union[str, List[str]]] = None,
         all_methods: bool = False,
         config: Optional[Config] = None,
+        allow_slow: bool = False,
         **kwargs,
     ):
         self.config = config or Config()
-        self.specs: List[AlgorithmSpec] = resolve(methods, all_methods)
+        self.specs: List[AlgorithmSpec] = resolve(methods, all_methods, allow_slow)
 
         # Split <package>_<param> kwargs from Config kwargs, validating as we go.
         self.algorithm_params, config_kwargs = route(kwargs, self.specs)
