@@ -119,7 +119,12 @@ def train_joint(
     n = next(iter(adjacencies.values())).shape[0]
     pos, src, dst, typ = [], [], [], []
     for r, name in enumerate(names):
-        i, j = np.nonzero(np.triu(adjacencies[name], 1))
+        A = adjacencies[name]
+        if hasattr(A, "tocoo"):                       # scipy.sparse
+            A = A.tocoo(); keep = A.col > A.row
+            i, j = A.row[keep], A.col[keep]
+        else:
+            i, j = np.nonzero(np.triu(A, 1))
         if len(i) == 0:
             raise ValueError(f"{name}: empty input topology")
         pos.append(torch.tensor(np.vstack([i, j]), dtype=torch.long, device=device))

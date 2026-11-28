@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import numpy as np
+from scipy import sparse
 
 from .config import Config
 from .data.loaders import (DataError, load_algorithm_matrices, load_edge_list,
@@ -230,7 +231,8 @@ class MultiGCN:
                 rejected[name] = "no edge list produced"
                 continue
             try:
-                self.matrices[name] = load_edge_list(path, self.genes)
+                # float32: 15 algorithms x 4,511^2 genes is 2.4 GB in float64
+                self.matrices[name] = load_edge_list(path, self.genes).astype(np.float32)
             except DataError as exc:
                 rejected[name] = str(exc).split(". ")[0]
 
@@ -272,9 +274,13 @@ class MultiGCN:
         top_x = cfg.top_x if cfg.degree is None else min(1.0, cfg.degree / (n - 1))
         adjs = {}
         for name, mat in self.matrices.items():
-            adjs[name] = top_x_percent_edges(mat, top_x, cfg.keep_weights,
-                                             symmetric=cfg.symmetric)
-            self._log(f"  {name:<14} input density {density(adjs[name])*100:5.2f}%")
+            adj = top_x_percent_edges(mat, top_x, cfg.keep_weights,
+                                      symmetric=cfg.symmetric)
+            self._log(f"  {name:<14} input density {density(adj)*100:5.2f}%")
+            # the joint model only needs the edge list; a dense float n x n per
+            # algorithm is 2.4 GB for 15 algorithms at 4,511 genes
+            adjs[name] = sparse.csr_matrix(adj) if cfg.model == "joint" else adj
+            del adj
 
         self.reconstructions = {}
         if cfg.model == "joint":

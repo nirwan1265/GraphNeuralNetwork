@@ -45,38 +45,61 @@ def fuse(results: Dict[str, Dict[str, List[np.ndarray]]],
     names = list(results)
     if not names:
         raise ValueError("No reconstructions to fuse.")
-    per_alg = {a: continuous_average(m for mats in results[a].values() for m in mats)
-               for a in names}
     w = np.array([1.0 if weights is None else float(weights.get(a, 0.0)) for a in names])
     if w.sum() <= 0:
         raise ValueError("Fusion weights sum to zero.")
     w = w / w.sum()
-    return np.tensordot(w, np.stack([per_alg[a] for a in names]), axes=1).astype(np.float32)
+    out = None                     # running sum: never more than one extra n x n
+    for wi, a in zip(w, names):
+        if wi <= 0:
+            continue
+        m = continuous_average(m for mats in results[a].values() for m in mats)
+        m *= wi
+        out = m if out is None else out + m
+    return out.astype(np.float32)
 
 
 # --------------------------------------------------------------------------
 # Agreement weighting and the input blend
 # --------------------------------------------------------------------------
 
-def _pair_ranks(mat: np.ndarray, symmetric: bool = True) -> np.ndarray:
-    """Off-diagonal scores (upper triangle of the max-symmetrised matrix when
-    symmetric) as ranks scaled to [0, 1]."""
+def _support(matrices: Dict[str, np.ndarray], symmetric: bool = True) -> np.ndarray:
+    """Pair indices (flat, into the upper triangle or the off-diagonal) that at
+    least one algorithm scored above zero. Pairs nobody scored tie at the
+    bottom of every ranking, so ranking only the support gives the same order
+    at a fraction of the memory - on DREAM5 E. coli with TF-restricted inputs,
+    ~1.5M of 10M pairs."""
+    names = list(matrices)
+    n = matrices[names[0]].shape[0]
+    sel = np.triu_indices(n, 1) if symmetric else np.nonzero(~np.eye(n, dtype=bool))
+    any_pos = np.zeros(len(sel[0]), dtype=bool)
+    for a in names:
+        M = matrices[a]
+        v = np.maximum(M[sel], M.T[sel]) if symmetric else M[sel]
+        any_pos |= v > 0
+    return sel[0][any_pos], sel[1][any_pos]
+
+
+def _pair_ranks(mat: np.ndarray, symmetric: bool = True, support=None) -> np.ndarray:
+    """Scores over `support` pairs (default: every upper-triangle pair when
+    symmetric, else every off-diagonal pair) as ranks scaled to [0, 1]."""
     from scipy.stats import rankdata
     n = mat.shape[0]
-    if symmetric:
-        v = np.maximum(mat, mat.T)[np.triu_indices(n, 1)]
-    else:
-        v = mat[~np.eye(n, dtype=bool)]
-    return ((rankdata(v) - 1) / max(len(v) - 1, 1)).astype(np.float64)
+    if support is None:
+        support = np.triu_indices(n, 1) if symmetric else np.nonzero(~np.eye(n, dtype=bool))
+    i, j = support
+    v = np.maximum(mat[i, j], mat[j, i]) if symmetric else mat[i, j]
+    return ((rankdata(v) - 1) / max(len(v) - 1, 1)).astype(np.float32)
 
 
-def _from_pairs(v: np.ndarray, n: int, symmetric: bool = True) -> np.ndarray:
+def _from_pairs(v: np.ndarray, n: int, symmetric: bool = True, support=None) -> np.ndarray:
     out = np.zeros((n, n), dtype=np.float32)
+    if support is None:
+        support = np.triu_indices(n, 1) if symmetric else np.nonzero(~np.eye(n, dtype=bool))
+    i, j = support
+    out[i, j] = v
     if symmetric:
-        iu = np.triu_indices(n, 1)
-        out[iu] = v; out[(iu[1], iu[0])] = v
-    else:
-        out[~np.eye(n, dtype=bool)] = v
+        out[j, i] = v
     return out
 
 
@@ -96,16 +119,24 @@ def agreement_weights(matrices: Dict[str, np.ndarray], power: float = 2.0,
     networks; grouping algorithms by family, which up-weights the loners, was
     worse on all five.
     """
+    from scipy.stats import rankdata
     names = list(matrices)
     if len(names) < 3:
         return {a: 1.0 / len(names) for a in names}
-    X = np.stack([_pair_ranks(matrices[a], symmetric) for a in names])
-    from scipy.stats import spearmanr
-    rho = np.array([spearmanr(X[i], np.delete(X, i, 0).mean(0)).statistic
-                    for i in range(len(names))])
+    sup = _support(matrices, symmetric)
+    X = np.stack([_pair_ranks(matrices[a], symmetric, sup) for a in names])
+    total = X.sum(axis=0, dtype=np.float64)
+    R = len(names)
+    rho = np.empty(R)
+    for k in range(R):                     # Spearman = Pearson on ranks
+        a = X[k].astype(np.float64)        # (already ranks)
+        b = rankdata((total - a) / (R - 1))
+        a = a - a.mean(); b = b - b.mean()
+        den = np.sqrt((a * a).sum() * (b * b).sum())
+        rho[k] = (a * b).sum() / den if den > 0 else 0.0
     w = np.clip(np.nan_to_num(rho), 0, None) ** power
     if w.sum() <= 0:
-        w = np.ones(len(names))
+        w = np.ones(R)
     w = w / w.sum()
     return dict(zip(names, w.tolist()))
 
@@ -116,10 +147,14 @@ def rank_average(matrices: Dict[str, np.ndarray],
     """(Weighted) mean of each algorithm's pair ranks - the no-GCN baseline."""
     names = list(matrices)
     n = matrices[names[0]].shape[0]
+    sup = _support(matrices, symmetric)
     w = np.array([1.0 if weights is None else weights.get(a, 0.0) for a in names])
     w = w / w.sum()
-    v = sum(wi * _pair_ranks(matrices[a], symmetric) for wi, a in zip(w, names))
-    return _from_pairs(v, n, symmetric)
+    v = np.zeros(len(sup[0]), dtype=np.float64)
+    for wi, a in zip(w, names):
+        if wi > 0:
+            v += wi * _pair_ranks(matrices[a], symmetric, sup)
+    return _from_pairs(v.astype(np.float32), n, symmetric, sup)
 
 
 def blend_with_inputs(fused: np.ndarray, matrices: Dict[str, np.ndarray],
@@ -138,6 +173,6 @@ def blend_with_inputs(fused: np.ndarray, matrices: Dict[str, np.ndarray],
     if not 0 < share <= 1:
         raise ValueError(f"input blend share must be in [0, 1], got {share}")
     n = fused.shape[0]
-    model = _pair_ranks(fused, symmetric)
+    model = _pair_ranks(fused, symmetric)            # every pair: the model scores all
     inputs = _pair_ranks(rank_average(matrices, weights, symmetric), symmetric)
     return _from_pairs((1 - share) * model + share * inputs, n, symmetric)
