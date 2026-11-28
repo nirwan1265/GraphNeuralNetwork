@@ -57,6 +57,7 @@ class MultiGCN:
 
         self.time_series: Optional[Path] = None
         self.knockouts: Optional[Path] = None
+        self.regulators: Optional[Path] = None
         self.priors: Dict[str, np.ndarray] = {}
 
         self.genes: Optional[List[str]] = None
@@ -110,7 +111,7 @@ class MultiGCN:
 
     # -- step 1: inference -------------------------------------------------
     def infer(self, expression_file, time_series=None, knockouts=None,
-              skip_failures: bool = False) -> Path:
+              regulators=None, skip_failures: bool = False) -> Path:
         """
         Run each selected algorithm, writing GRN_<NAME>.csv into lists/.
 
@@ -123,11 +124,18 @@ class MultiGCN:
         Required by KO_ZSCORE; used by PORTIA when given. Keep knockout samples
         OUT of expression_file - they are passed separately so the algorithms
         that understand them know which gene was knocked out.
+
+        regulators: optional list of candidate regulators (e.g. transcription
+        factors), one gene id per line. GENIE3_RF/ET, GRNBOOST2, ELASTICNET and
+        PORTIA then use only those genes as predictors - on DREAM5 E. coli
+        (334 TFs, 4,511 genes) about 13x less work. Other algorithms ignore it.
         """
         from .inference.native import NATIVE
+        from .registry import REGULATOR_AWARE
         expression_file = Path(expression_file)
         self.time_series = Path(time_series) if time_series else None
         self.knockouts = Path(knockouts).resolve() if knockouts else None
+        self.regulators = Path(regulators).resolve() if regulators else None
 
         needs_ko = [s.name for s in self.specs
                     if s.requires is DataRequirement.KNOCKOUT]
@@ -155,6 +163,8 @@ class MultiGCN:
             native = NATIVE.get(spec.name)
             if self.knockouts and native is not None and native.knockouts != "no":
                 params = {**params, "knockouts": str(self.knockouts)}
+            if self.regulators and spec.name in REGULATOR_AWARE:
+                params = {**params, "regulators": str(self.regulators)}
             runner = get_runner(
                 spec, self.config.prefer_docker,
                 params=params,

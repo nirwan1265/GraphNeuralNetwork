@@ -88,6 +88,26 @@ def read_knockouts(path, genes: List[str]) -> Tuple[np.ndarray, List[int]]:
     return X, [pos[g] for g in ko_genes]
 
 
+def read_regulators(path, genes: List[str]) -> List[int]:
+    """
+    Candidate regulators (e.g. transcription factors): one gene id per line,
+    or the first column of a table. Ids not in the expression data are
+    ignored; none matching is an error. Returns 0-based indices into genes.
+    """
+    pos = {g: i for i, g in enumerate(genes)}
+    ids = []
+    with open(path) as fh:
+        for line in fh:
+            tok = line.strip().split("\t")[0].split(",")[0].strip().strip('"')
+            if tok and tok in pos:
+                ids.append(pos[tok])
+    ids = sorted(set(ids))
+    if not ids:
+        raise ValueError(f"{path}: none of the listed regulators are in the "
+                         f"expression data")
+    return ids
+
+
 def zscore(X: np.ndarray, ddof: int = 0) -> np.ndarray:
     """Column-wise z-score. Constant columns become zeros instead of NaN."""
     mu = X.mean(axis=0)

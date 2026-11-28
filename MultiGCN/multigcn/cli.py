@@ -213,7 +213,8 @@ def cmd_run(args, extras):
 
     if not args.use_cached:
         model.infer(args.expression, time_series=ts_path,
-                    knockouts=args.knockouts, skip_failures=not args.strict)
+                    knockouts=args.knockouts, regulators=args.regulators,
+                    skip_failures=not args.strict)
 
     model.load(lists_dir, expression_file=args.expression)
     print(f"\n{len(model.matrices)} algorithm matrices: "
@@ -281,6 +282,10 @@ def main():
     p.add_argument("--allow-slow", action="store_true",
                    help="Allow algorithms marked slow (TIGRESS, BC3NET, BNLEARN, "
                         "...; see 'multigcn list'). Refused otherwise.")
+    p.add_argument("--regulators", type=Path,
+                   help="Candidate regulators (e.g. TFs), one gene id per line. "
+                        "GENIE3_RF/ET, GRNBOOST2, ELASTICNET and PORTIA use only "
+                        "these as predictors.")
     p.add_argument("--knockouts", type=Path,
                    help="Single-gene knockout experiments (one row each; DREAM "
                         "layout or a first column 'knockout'). Needed by "

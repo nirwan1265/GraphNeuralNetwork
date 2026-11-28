@@ -63,10 +63,12 @@ def build_regressor(variant, ntrees, max_features, seed):
     raise ValueError(f"Unknown variant {variant!r}")
 
 
-def importances_for_target(expr, target_idx, variant, ntrees, max_features, seed):
+def importances_for_target(expr, target_idx, variant, ntrees, max_features, seed,
+                           candidates=None):
     """Fit one model for one target gene; return its importance vector."""
     n_genes = expr.shape[1]
-    regulators = [i for i in range(n_genes) if i != target_idx]
+    pool = range(n_genes) if candidates is None else candidates
+    regulators = [i for i in pool if i != target_idx]
 
     X = expr[:, regulators]
     y = expr[:, target_idx]
@@ -86,9 +88,11 @@ def importances_for_target(expr, target_idx, variant, ntrees, max_features, seed
 
 
 def genie3(expr, n_genes, variant="RF", ntrees=1000, max_features="sqrt",
-           seed=777, n_jobs=-1, verbose=True):
+           seed=777, n_jobs=-1, verbose=True, regulators=None):
     """
     expr: samples x genes.
+    regulators: optional candidate-regulator indices (e.g. TFs) - the only
+    predictors, as in GENIE3's own regulators= argument.
     -> (n_genes, n_genes) matrix; entry [i, j] weights the link i -> j.
     """
     if verbose:
@@ -97,7 +101,7 @@ def genie3(expr, n_genes, variant="RF", ntrees=1000, max_features="sqrt",
 
     columns = Parallel(n_jobs=n_jobs, verbose=0)(
         delayed(importances_for_target)(
-            expr, j, variant, ntrees, max_features, seed + j)
+            expr, j, variant, ntrees, max_features, seed + j, regulators)
         for j in range(n_genes)
     )
 
@@ -121,12 +125,22 @@ def main():
     gene_names = np.array(df.index)
     expr = df.to_numpy(dtype=np.float64).T
 
+    regulators = None
+    if params.get("regulators"):
+        pos = {g: i for i, g in enumerate(gene_names)}
+        with open(params["regulators"]) as fh:
+            toks = [l.strip().split("\t")[0].split(",")[0].strip().strip('"') for l in fh]
+        regulators = sorted({pos[t] for t in toks if t in pos})
+        if not regulators:
+            sys.exit(f"none of the regulators in {params['regulators']} are in the data")
+
     vim = genie3(
         expr, len(gene_names), variant=variant,
         ntrees=int(params.get("ntrees", 1000)),
         max_features=params.get("max_features", "sqrt"),
         seed=int(params.get("seed", 777)),
         n_jobs=int(params.get("n_jobs", -1)),
+        regulators=regulators,
     )
 
     idx = np.arange(len(gene_names))
@@ -137,6 +151,8 @@ def main():
         "score": vim.ravel(),
     })
     out = out[out["source"] != out["target"]]
+    if regulators is not None:          # only regulator rows can score
+        out = out[out["source"].isin(set(gene_names[regulators]))]
 
     span = out["score"].max() - out["score"].min()
     out["score"] = 0.0 if span == 0 else (out["score"] - out["score"].min()) / span

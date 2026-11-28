@@ -631,13 +631,21 @@ from .inference.native import specs as _native_specs  # noqa: E402,F401
 # methods that scale at least cubically. None of them was among the strong
 # algorithms on DREAM4. Excluded from every keyword and from all_methods, and
 # refused when named unless allow_slow=True (--allow-slow).
+# Native ones that are fine at ~100 genes but not at thousands: PIDC/PUC
+# (triplets, genes^3 x bins memory), GLASSO (penalty path on a dense
+# genes x genes precision matrix), PLSNET (1000 bootstrap rounds),
+# NONLINEARODES (~10 n / log10 n boosted trees per target).
 SLOW = {"TIGRESS", "BC3NET", "BNLEARN", "MEOMI", "JUMP3", "SWING", "NARROMI",
-        "GRNVBEM", "CMI2NI", "PCACMI", "LOCPCACMI", "G1DBN"}
+        "GRNVBEM", "CMI2NI", "PCACMI", "LOCPCACMI", "G1DBN",
+        "PIDC", "PUC", "GLASSO", "PLSNET", "NONLINEARODES"}
 for _n in SLOW & set(ALGORITHMS):
     from dataclasses import replace as _replace
     ALGORITHMS[_n] = _replace(ALGORITHMS[_n], slow=True)
 
 DEFAULT_METHODS: List[str] = [n for n, s in ALGORITHMS.items() if not s.slow]
+
+# Algorithms that restrict their predictors to infer(regulators=...).
+REGULATOR_AWARE = {"GENIE3_RF", "GENIE3_ET", "GRNBOOST2", "ELASTICNET", "PORTIA"}
 
 
 def resolve(methods=None, all_methods: bool = False,

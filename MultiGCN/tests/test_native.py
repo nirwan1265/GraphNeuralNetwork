@@ -252,3 +252,32 @@ def test_dispatcher_passes_knockouts(knockout_data, tmp_path):
          json.dumps({"knockouts": str(ko)})], capture_output=True, text=True)
     assert out.returncode == 0, out.stderr
     assert (tmp_path / "GRN_KO_ZSCORE.csv").exists()
+
+
+# --------------------------------------------------------------------------
+# Candidate regulators (TF list)
+# --------------------------------------------------------------------------
+
+def test_elasticnet_scores_only_listed_regulators(steady, tmp_path):
+    tf = tmp_path / "tfs.txt"; tf.write_text("G0\nG5\nNOT_A_GENE\n")
+    S = infer("ELASTICNET", expression=steady, regulators=tf, n_jobs=1).to_numpy()
+    rows = np.flatnonzero(S.sum(axis=1) > 0)
+    assert set(rows) <= {0, 5}
+    assert _rank_of(S, 0, 1) <= 2 and _rank_of(S, 0, 2) <= 2
+
+
+def test_genie3_script_restricts_to_regulators(steady, tmp_path):
+    script = SCRIPT.parent / "GENIE3.py"
+    tf = tmp_path / "tfs.txt"; tf.write_text("G0\nG5\n")
+    out = subprocess.run(
+        [sys.executable, str(script), str(steady), str(tmp_path), "ET",
+         json.dumps({"ntrees": 20, "n_jobs": 1, "regulators": str(tf)})],
+        capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr
+    df = pd.read_csv(tmp_path / "GRN_GENIE3_ET.csv", header=None)
+    assert set(df[0]) <= {"G0", "G5"}
+    # Importances sum to 1 per target, so with two TFs each is the sole
+    # predictor of the other; compare them on the non-TF targets.
+    S = df.pivot(index=0, columns=1, values=2).fillna(0)
+    for target in ("G1", "G2"):
+        assert S.loc["G0", target] > 5 * S.loc["G5", target]

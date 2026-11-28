@@ -18,7 +18,8 @@ from typing import Callable, Dict, NamedTuple, Optional
 
 import pandas as pd
 
-from ._io import read_expression, read_knockouts, read_time_series, write_edge_list
+from ._io import (read_expression, read_knockouts, read_regulators,
+                  read_time_series, write_edge_list)
 from .correlation import pearson, wgcna
 from .dynamics import scode, sincerities
 from .graphical import glasso
@@ -50,8 +51,12 @@ NATIVE: Dict[str, NativeAlgorithm] = {
 }
 
 
+# Algorithms that can restrict their predictors to a regulator list.
+REGULATOR_AWARE = {"ELASTICNET", "PORTIA"}
+
+
 def infer(name: str, expression=None, time_series=None, knockouts=None,
-          **params) -> pd.DataFrame:
+          regulators=None, **params) -> pd.DataFrame:
     """
     Run one native algorithm and return its genes x genes score matrix
     (row = regulator, column = target).
@@ -72,6 +77,8 @@ def infer(name: str, expression=None, time_series=None, knockouts=None,
         if expression is None:
             raise ValueError(f"{name} requires an expression file.")
         X, genes = read_expression(expression)
+        if regulators is not None and name in REGULATOR_AWARE:
+            params = {**params, "regulators": read_regulators(regulators, genes)}
         if algo.knockouts != "no" and knockouts is not None:
             X_ko, ko_index = read_knockouts(knockouts, genes)
             params = {**params, "X_ko": X_ko, "ko_index": ko_index}
@@ -82,10 +89,10 @@ def infer(name: str, expression=None, time_series=None, knockouts=None,
 
 
 def run_to_file(name: str, out_dir, expression=None, time_series=None,
-                knockouts=None, **params):
+                knockouts=None, regulators=None, **params):
     """Run one algorithm and write GRN_<name>.csv in the package's edge-list format."""
     S = infer(name, expression=expression, time_series=time_series,
-              knockouts=knockouts, **params)
+              knockouts=knockouts, regulators=regulators, **params)
     return write_edge_list(S.to_numpy(), list(S.index), out_dir, name)
 
 

@@ -12,8 +12,9 @@ from ._io import zscore
 # Elastic net
 # --------------------------------------------------------------------------
 
-def _enet_target(Z, j, l1_ratio, n_alphas, eps):
-    others = np.r_[0:j, j + 1:Z.shape[1]]
+def _enet_target(Z, j, l1_ratio, n_alphas, eps, candidates=None):
+    others = (np.r_[0:j, j + 1:Z.shape[1]] if candidates is None
+              else np.array([c for c in candidates if c != j]))
     Xo, y = Z[:, others], Z[:, j]
     # Explicit grid (largest penalty that still zeroes every coefficient, down
     # to eps of it). Passing the array works across scikit-learn versions,
@@ -27,7 +28,8 @@ def _enet_target(Z, j, l1_ratio, n_alphas, eps):
 
 
 def elasticnet(X: np.ndarray, l1_ratio: float = 0.5, n_alphas: int = 50,
-               eps: float = 1e-3, n_jobs: int = -1, **_) -> np.ndarray:
+               eps: float = 1e-3, n_jobs: int = -1, regulators=None,
+               **_) -> np.ndarray:
     """
     Per-target elastic net, integrated over the regularisation path.
 
@@ -39,10 +41,13 @@ def elasticnet(X: np.ndarray, l1_ratio: float = 0.5, n_alphas: int = 50,
     A linear, additive bias - deliberately different from the tree ensembles
     (GENIE3 and friends), which capture interactions but not linear structure
     as efficiently.
+
+    regulators: optional candidate-regulator indices (e.g. TFs); only they
+    are used as predictors, so only their rows can score.
     """
     Z = zscore(X)
     cols = Parallel(n_jobs=n_jobs)(
-        delayed(_enet_target)(Z, j, l1_ratio, n_alphas, eps)
+        delayed(_enet_target)(Z, j, l1_ratio, n_alphas, eps, regulators)
         for j in range(Z.shape[1]))
     S = np.column_stack(cols)          # S[:, j] = regulators' scores for target j
     np.fill_diagonal(S, 0.0)

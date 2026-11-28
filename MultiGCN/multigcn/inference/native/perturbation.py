@@ -48,7 +48,8 @@ def ko_zscore(X: np.ndarray, X_ko: np.ndarray, ko_index: List[int],
 
 def portia(X: np.ndarray, X_ko: Optional[np.ndarray] = None,
            ko_index: Optional[List[int]] = None, method: str = "fast",
-           lambda1: float = 0.8, normalize: bool = True, **_) -> np.ndarray:
+           lambda1: float = 0.8, normalize: bool = True, regulators=None,
+           **_) -> np.ndarray:
     """
     PORTIA (Passemiers, Moreau & Raimondi 2022, Bioinformatics 38:2802):
     power transform, shrunk precision matrix, gene-bias correction, then
@@ -74,8 +75,8 @@ def portia(X: np.ndarray, X_ko: Optional[np.ndarray] = None,
             ds.add(pt.Experiment(len(X) + k, row, knockout=[i]))
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")   # "negative values" notice: handled by PORTIA
-        S = pt.run(ds, method=method, lambda1=lambda1, normalize=normalize,
-                   verbose=False)
+        S = pt.run(ds, tf_idx=regulators, method=method, lambda1=lambda1,
+                   normalize=normalize, verbose=False)
     S = np.asarray(S, dtype=np.float64)
     np.fill_diagonal(S, 0.0)
     return S
