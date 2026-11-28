@@ -269,9 +269,10 @@ class MultiGCN:
             raise ValueError("fusion_weights must be 'agreement' or 'flat'")
         n = len(self.genes)
 
+        top_x = cfg.top_x if cfg.degree is None else min(1.0, cfg.degree / (n - 1))
         adjs = {}
         for name, mat in self.matrices.items():
-            adjs[name] = top_x_percent_edges(mat, cfg.top_x, cfg.keep_weights,
+            adjs[name] = top_x_percent_edges(mat, top_x, cfg.keep_weights,
                                              symmetric=cfg.symmetric)
             self._log(f"  {name:<14} input density {density(adjs[name])*100:5.2f}%")
 
@@ -282,15 +283,25 @@ class MultiGCN:
                                  "use symmetric=True or model='separate'.")
             self._log(f"  training one joint model over {len(adjs)} algorithms "
                       f"x {cfg.iterations} seed(s)")
-            runs = []
+            # Seeds are averaged as they finish: keeping every seed's R dense
+            # n x n matrices does not fit in memory at thousands of genes.
+            mean = None
             for it in range(cfg.iterations):
                 seed = None if cfg.seed is None else cfg.seed + it
-                runs.append(train_joint(
+                run = train_joint(
                     adjs, epochs=cfg.epochs, lr=cfg.lr,
                     weight_decay=cfg.weight_decay, dim=cfg.embedding_dim,
                     num_bases=cfg.joint_bases, dropout=cfg.dropout,
-                    seed=seed, device=cfg.device))
-            self.reconstructions = {a: {"joint": [r[a] for r in runs]} for a in adjs}
+                    seed=seed, device=cfg.device)
+                if mean is None:
+                    mean = run
+                else:
+                    for a in mean:
+                        mean[a] += run[a]
+                del run
+            for a in mean:
+                mean[a] /= cfg.iterations
+            self.reconstructions = {a: {"joint": [mean[a]]} for a in adjs}
         else:
             for name, adj in adjs.items():
                 edge_index = (normalized_laplacian_edge_index(adj) if cfg.laplacian

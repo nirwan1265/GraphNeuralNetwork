@@ -47,6 +47,9 @@ class JointEncoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, edge_index, edge_type):
+        """x=None means one-hot identity features: RGCNConv then indexes its
+        weights directly instead of multiplying by an n x n identity matrix -
+        the same model, but O(n) instead of O(n^2) work in the first layer."""
         x = self.dropout(F.relu(self.conv1(x, edge_index, edge_type)))
         return self.conv2(x, edge_index, edge_type)
 
@@ -66,3 +69,7 @@ class DistMultDecoder(nn.Module):
     def forward_all(self, z):
         """Probabilities for every pair under every relation: (R, n, n)."""
         return torch.sigmoid(torch.einsum("ik,rk,jk->rij", z, self.rel, z))
+
+    def forward_relation(self, z, relation: int):
+        """Probabilities for every pair under one relation: (n, n)."""
+        return torch.sigmoid((z * self.rel[relation]) @ z.t())

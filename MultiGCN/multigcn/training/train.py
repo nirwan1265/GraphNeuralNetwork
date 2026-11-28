@@ -133,7 +133,7 @@ def train_joint(
     decoder = DistMultDecoder(R, dim).to(device)
     params = list(encoder.parameters()) + list(decoder.parameters())
     opt = torch.optim.Adam(params, lr=lr, weight_decay=weight_decay)
-    x = identity_features(n, device=device)
+    x = None          # one-hot identity, handled inside RGCNConv without an n x n matrix
     bce = torch.nn.functional.binary_cross_entropy_with_logits
 
     for epoch in range(epochs):
@@ -151,10 +151,12 @@ def train_joint(
             print(f"    epoch {epoch + 1:4d}/{epochs}  loss {loss.item():.4f}")
 
     encoder.eval()
-    with torch.no_grad():
-        S = decoder.forward_all(encoder(x, edge_index, edge_type)).cpu().numpy()
     out = {}
-    for r, name in enumerate(names):
-        s = S[r]
-        out[name] = ((s - s.min()) / (s.max() - s.min() + 1e-12)).astype(np.float32)
+    with torch.no_grad():
+        z = encoder(x, edge_index, edge_type)
+        for r, name in enumerate(names):          # one n x n matrix at a time
+            s = decoder.forward_relation(z, r).cpu().numpy().astype(np.float32)
+            lo, hi = float(s.min()), float(s.max())
+            s -= lo; s /= (hi - lo + 1e-12)
+            out[name] = s
     return out

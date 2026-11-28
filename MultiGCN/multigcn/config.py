@@ -24,6 +24,10 @@ class Config:
     #          per-algorithm model on all five DREAM4 networks, held-out
     #          networks included.
     # "separate": the original one-GAE-per-algorithm model.
+    degree: Optional[float] = None  # average neighbours per gene in each input
+                                    # graph; overrides top_x when set
+                                    # (top_x = degree / (n - 1)). Use for large
+                                    # networks: 10% of 4,511 genes is 1M edges.
     model: str = "joint"
     joint_bases: int = 8            # relations share this many weight bases
     hidden: int = 16
